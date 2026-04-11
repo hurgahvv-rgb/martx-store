@@ -20,6 +20,7 @@ body {
   min-height: 100vh;
   background: linear-gradient(180deg, #fcfbf8 0%, #faf8f4 100%);
   color: var(--text);
+  padding-bottom: env(safe-area-inset-bottom);
 }
 
 body::before {
@@ -57,4 +58,10 @@ body:has(.admin-root) {
 body:has(.admin-root)::before,
 body:has(.admin-root) .public-shell {
   display: none;
+}
+
+@media (max-width: 767px) {
+  body:not(:has(.admin-root)) {
+    padding-bottom: calc(5.5rem + env(safe-area-inset-bottom));
+  }
 }

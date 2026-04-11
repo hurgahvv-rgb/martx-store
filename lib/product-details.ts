@@ -5,11 +5,12 @@ export const productDetails: Record<string, ProductDetail> = {
     slug: "felt-weekender-bag",
     subtitle: "Аялал, оффис, өдөр тутмын хэрэглээнд зориулагдсан minimal premium цүнх.",
     gallery: [
-      "https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=1200&q=80",
-      "https://images.unsplash.com/photo-1523398002811-999ca8dec234?auto=format&fit=crop&w=1200&q=80",
-      "https://images.unsplash.com/photo-1548036328-c9fa89d128fa?auto=format&fit=crop&w=1200&q=80",
-      "https://images.unsplash.com/photo-1512436991641-6745cdb1723f?auto=format&fit=crop&w=1200&q=80",
-      "https://images.unsplash.com/photo-1507679799987-c73779587ccf?auto=format&fit=crop&w=1200&q=80"
+      "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?auto=format&fit=crop&w=1200&q=80",
+      "https://images.unsplash.com/photo-1590874103328-eac38a683ce7?auto=format&fit=crop&w=1200&q=80",
+      "https://images.unsplash.com/photo-1547949003-9792a18a2601?auto=format&fit=crop&w=1200&q=80",
+      "https://images.unsplash.com/photo-1584917865442-de89df76afd3?auto=format&fit=crop&w=1200&q=80",
+      "https://images.unsplash.com/photo-1594223274512-ad4803739b7c?auto=format&fit=crop&w=1200&q=80",
+      "https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?auto=format&fit=crop&w=1200&q=80"
     ],
     variants: ["Black", "Sand", "Stone"],
     bullets: [
@@ -33,19 +34,19 @@ export const productDetails: Record<string, ProductDetail> = {
         title: "Form & Function",
         description: "Ажил хэрэгч харагдахуйг алдуулахгүйгээр өдөр тутмын хэрэглээнд хэрэгтэй багтаамжийг өгсөн.",
         image:
-          "https://images.unsplash.com/photo-1523398002811-999ca8dec234?auto=format&fit=crop&w=1200&q=80"
+          "https://images.unsplash.com/photo-1547949003-9792a18a2601?auto=format&fit=crop&w=1200&q=80"
       },
       {
         title: "Perfect Carry",
         description: "Мөрөнд эвтэйхэн, гарт барихад тэнцвэртэй тул хотын амьдралд тохиромжтой.",
         image:
-          "https://images.unsplash.com/photo-1548036328-c9fa89d128fa?auto=format&fit=crop&w=1200&q=80"
+          "https://images.unsplash.com/photo-1590874103328-eac38a683ce7?auto=format&fit=crop&w=1200&q=80"
       },
       {
         title: "Quiet Luxury",
         description: "Ил тод logo-гүй, чимээгүй luxury мэдрэмжтэй minimal хэлбэрийг барьсан.",
         image:
-          "https://images.unsplash.com/photo-1512436991641-6745cdb1723f?auto=format&fit=crop&w=1200&q=80"
+          "https://images.unsplash.com/photo-1584917865442-de89df76afd3?auto=format&fit=crop&w=1200&q=80"
       }
     ],
     reviews: [

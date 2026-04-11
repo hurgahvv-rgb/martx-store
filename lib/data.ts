@@ -10,7 +10,7 @@ export const products: Product[] = [
     compareAtPrice: 229000,
     currency: "MNT",
     image:
-      "https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=1200&q=80",
+      "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?auto=format&fit=crop&w=1200&q=80",
     rating: 4.8,
     description: "Монгол эсгий урлалаас санаа авсан, аялал болон өдөр тутмын хэрэглээнд тохирсон premium цүнх.",
     features: ["Ус тогтоохгүй доторлогоо", "Laptop хийх тасалгаа", "Онгоцонд авч явахад тохиромжтой"],
