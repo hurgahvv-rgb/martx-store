@@ -23,7 +23,6 @@ model User {
   password  String?
   phone     String?
   role      String    @default("customer")
-  orders    Order[]
   addresses Address[]
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
@@ -34,33 +33,27 @@ model Category {
   name        String
   slug        String    @unique
   description String?
-  products    Product[]
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
 }
 
 model Product {
-  id          String      @id @default(cuid())
-  name        String
-  slug        String      @unique
-  description String
-  price       Int
-  currency    String      @default("MNT")
-  stock       Int         @default(0)
-  images      ProductImage[]
-  categoryId  String
-  category    Category    @relation(fields: [categoryId], references: [id])
-  orderItems  OrderItem[]
-  createdAt   DateTime    @default(now())
-  updatedAt   DateTime    @updatedAt
-}
-
-model ProductImage {
-  id        String   @id @default(cuid())
-  url       String
-  alt       String?
-  productId String
-  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  id             String      @id @default(cuid())
+  name           String
+  slug           String      @unique
+  category       String
+  description    String
+  price          Int
+  compareAtPrice Int?
+  currency       String      @default("MNT")
+  image          String
+  rating         Float       @default(5)
+  stock          Int         @default(0)
+  isFeatured     Boolean     @default(false)
+  isActive       Boolean     @default(true)
+  orderItems     OrderItem[]
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
 }
 
 model Address {
@@ -79,14 +72,17 @@ model Address {
 model Order {
   id            String      @id @default(cuid())
   orderNumber   String      @unique
-  userId        String
-  user          User        @relation(fields: [userId], references: [id])
   status        OrderStatus @default(PENDING)
   subtotal      Int
   shippingFee   Int         @default(0)
   total         Int
-  paymentMethod String?
+  paymentMethod String      @default("bank_transfer")
+  customerName  String
+  customerEmail String?
+  customerPhone String
   shippingCity  String
+  shippingDistrict String?
+  shippingAddress  String
   shippingNotes String?
   items         OrderItem[]
   createdAt     DateTime    @default(now())
@@ -94,11 +90,13 @@ model Order {
 }
 
 model OrderItem {
-  id        String  @id @default(cuid())
-  orderId   String
-  order     Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
-  productId String
-  product   Product @relation(fields: [productId], references: [id])
-  quantity  Int
-  price     Int
+  id          String   @id @default(cuid())
+  orderId     String
+  order       Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  productId   String?
+  product     Product? @relation(fields: [productId], references: [id], onDelete: SetNull)
+  productName String
+  variant     String?
+  quantity    Int
+  price       Int
 }

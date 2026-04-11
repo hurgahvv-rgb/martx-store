@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 
 import { CartItem } from "@/lib/cart";
 import { formatPrice } from "@/lib/data";
+import { prisma } from "@/lib/prisma";
 
 type OrderRequest = {
   orderCode: string;
@@ -35,7 +36,49 @@ function escapeHtml(value: string) {
     .replace(/'/g, "&#039;");
 }
 
-function renderOrderEmail(order: OrderRequest) {
+async function saveOrder(order: OrderRequest) {
+  return prisma.$transaction(async (tx) => {
+    const savedOrder = await tx.order.create({
+      data: {
+        orderNumber: order.orderCode,
+        subtotal: order.subtotal,
+        shippingFee: order.shippingFee,
+        total: order.total,
+        customerName: `${order.customer.firstName} ${order.customer.lastName}`.trim() || "Нэр оруулаагүй",
+        customerEmail: order.customer.email || null,
+        customerPhone: order.customer.phone,
+        shippingCity: order.customer.city,
+        shippingDistrict: order.customer.district || null,
+        shippingAddress: order.customer.address,
+        items: {
+          create: order.items.map((item) => ({
+            productName: item.name,
+            variant: item.variant,
+            quantity: item.quantity,
+            price: item.price
+          }))
+        }
+      }
+    });
+
+    for (const item of order.items) {
+      await tx.product
+        .updateMany({
+          where: { slug: item.slug },
+          data: {
+            stock: {
+              decrement: item.quantity
+            }
+          }
+        })
+        .catch(() => null);
+    }
+
+    return savedOrder;
+  });
+}
+
+function renderOrderEmail(order: OrderRequest, savedToDatabase: boolean) {
   const customerName = `${order.customer.firstName} ${order.customer.lastName}`.trim();
   const items = order.items
     .map(
@@ -54,6 +97,7 @@ function renderOrderEmail(order: OrderRequest) {
     <div style="font-family: Arial, sans-serif; color: #111827; line-height: 1.6;">
       <h1 style="margin: 0 0 12px;">Шинэ захиалга: ${escapeHtml(order.orderCode)}</h1>
       <p style="margin: 0 0 24px;">MartX checkout дээр шинэ захиалга бүртгэгдлээ.</p>
+      <p><strong>Database:</strong> ${savedToDatabase ? "Хадгалагдсан" : "Хадгалагдаагүй, DATABASE_URL шалгана уу"}</p>
 
       <h2>Хэрэглэгч</h2>
       <p>
@@ -96,22 +140,13 @@ function renderOrderEmail(order: OrderRequest) {
   `;
 }
 
-export async function POST(request: Request) {
+async function sendOrderEmail(order: OrderRequest, savedToDatabase: boolean) {
   const resendApiKey = process.env.RESEND_API_KEY;
   const orderEmail = process.env.ORDER_EMAIL;
   const fromEmail = process.env.ORDER_FROM_EMAIL ?? "MartX <onboarding@resend.dev>";
 
   if (!resendApiKey || !orderEmail) {
-    return NextResponse.json(
-      { error: "Email тохиргоо дутуу байна. RESEND_API_KEY болон ORDER_EMAIL хэрэгтэй." },
-      { status: 500 }
-    );
-  }
-
-  const order = (await request.json()) as OrderRequest;
-
-  if (!order.orderCode || !order.items?.length) {
-    return NextResponse.json({ error: "Захиалгын мэдээлэл дутуу байна." }, { status: 400 });
+    throw new Error("Email тохиргоо дутуу байна. RESEND_API_KEY болон ORDER_EMAIL хэрэгтэй.");
   }
 
   const response = await fetch("https://api.resend.com/emails", {
@@ -124,14 +159,39 @@ export async function POST(request: Request) {
       from: fromEmail,
       to: [orderEmail],
       subject: `MartX шинэ захиалга ${order.orderCode}`,
-      html: renderOrderEmail(order)
+      html: renderOrderEmail(order, savedToDatabase)
     })
   });
 
   if (!response.ok) {
-    const error = await response.text();
-    return NextResponse.json({ error }, { status: 502 });
+    throw new Error(await response.text());
+  }
+}
+
+export async function POST(request: Request) {
+  const order = (await request.json()) as OrderRequest;
+
+  if (!order.orderCode || !order.items?.length) {
+    return NextResponse.json({ error: "Захиалгын мэдээлэл дутуу байна." }, { status: 400 });
   }
 
-  return NextResponse.json({ ok: true });
+  let savedToDatabase = false;
+
+  try {
+    await saveOrder(order);
+    savedToDatabase = true;
+  } catch (error) {
+    console.error("Order database save failed", error);
+  }
+
+  try {
+    await sendOrderEmail(order, savedToDatabase);
+  } catch (error) {
+    return NextResponse.json(
+      { error: error instanceof Error ? error.message : "Email илгээхэд алдаа гарлаа." },
+      { status: 502 }
+    );
+  }
+
+  return NextResponse.json({ ok: true, savedToDatabase });
 }
