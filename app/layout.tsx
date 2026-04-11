@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 
+import { InstallAppBanner } from "@/components/install-app-banner";
 import { MobileAppNav } from "@/components/mobile-app-nav";
 import { PwaRegister } from "@/components/pwa-register";
 import { ServiceHighlights } from "@/components/service-highlights";
@@ -33,6 +34,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         <main>{children}</main>
         <ServiceHighlights />
         <SiteFooter />
+        <InstallAppBanner />
         <MobileAppNav />
       </body>
     </html>
