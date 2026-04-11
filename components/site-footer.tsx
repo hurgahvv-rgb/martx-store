@@ -17,7 +17,7 @@ const socialLinks = [
 
 export function SiteFooter() {
   return (
-    <footer className="border-t border-stone-200 bg-white text-stone-700">
+    <footer className="public-shell border-t border-stone-200 bg-white text-stone-700">
       <div className="mx-auto max-w-6xl px-4 py-10 sm:px-6 lg:px-8">
         <div className="text-center">
           <h3 className="text-3xl font-medium text-stone-950">Холбоосууд</h3>

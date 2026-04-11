@@ -49,3 +49,12 @@ a {
   letter-spacing: 0.24em;
   text-transform: uppercase;
 }
+
+body:has(.admin-root) {
+  background: #eef2f7;
+}
+
+body:has(.admin-root)::before,
+body:has(.admin-root) .public-shell {
+  display: none;
+}

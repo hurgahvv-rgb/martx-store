@@ -25,7 +25,7 @@ const highlights = [
 
 export function ServiceHighlights() {
   return (
-    <section className="border-t border-stone-200 bg-[#f7f4ee]">
+    <section className="public-shell border-t border-stone-200 bg-[#f7f4ee]">
       <div className="mx-auto max-w-6xl px-4 py-14 sm:px-6 lg:px-8">
         <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-4">
           {highlights.map((item) => {

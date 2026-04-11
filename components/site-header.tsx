@@ -48,11 +48,11 @@ export function SiteHeader() {
 
   return (
     <>
-      <div className="border-b border-stone-200 bg-[#f8f6f2] px-4 py-2 text-center text-xs tracking-[0.24em] text-stone-600">
+      <div className="public-shell border-b border-stone-200 bg-[#f8f6f2] px-4 py-2 text-center text-xs tracking-[0.24em] text-stone-600">
         MARTX | 200,000₮-С ДЭЭШ ҮНЭТЭЙ ЗАХИАЛГАД ХҮРГЭЛТ ҮНЭГҮЙ
       </div>
 
-      <header className="sticky top-0 z-50 border-b border-stone-200/80 bg-white/92 backdrop-blur-xl">
+      <header className="public-shell sticky top-0 z-50 border-b border-stone-200/80 bg-white/92 backdrop-blur-xl">
         <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-4 sm:px-6 lg:px-8">
           <div className="flex items-center gap-3 lg:gap-8">
             <button
