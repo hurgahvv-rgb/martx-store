@@ -1,7 +1,8 @@
 "use client";
 
-import Image from "next/image";
 import { useEffect, useMemo, useState } from "react";
+
+import { ProductImage } from "@/components/product-image";
 
 export function ProductGallery({
   images,
@@ -26,7 +27,7 @@ export function ProductGallery({
     <div className="space-y-4 lg:sticky lg:top-28 lg:w-full">
       <div className="overflow-hidden rounded-[1.2rem] bg-[#f3f0ea]">
         <div className="relative aspect-[1/1.15]">
-          <Image src={activeImage} alt={title} fill className="object-cover" />
+          <ProductImage src={activeImage} alt={title} className="absolute inset-0 h-full w-full object-cover" />
         </div>
       </div>
 
@@ -42,7 +43,7 @@ export function ProductGallery({
             ].join(" ")}
           >
             <div className="relative aspect-square">
-              <Image src={image} alt={title} fill className="object-cover" />
+              <ProductImage src={image} alt={title} className="absolute inset-0 h-full w-full object-cover" />
             </div>
           </button>
         ))}

@@ -1,8 +1,8 @@
-import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { ProductDetailClient } from "@/components/product-detail-client";
+import { ProductImage } from "@/components/product-image";
 import { ReviewSection } from "@/components/review-section";
 import { formatPrice } from "@/lib/data";
 import { getFeaturedStoreProducts, getProductDetail, getStoreProductBySlug } from "@/lib/store-products";
@@ -59,7 +59,7 @@ export default async function ProductDetailPage({ params }: ProductDetailPagePro
                     </div>
                   </div>
                   <div className="relative min-h-[24rem] bg-stone-100">
-                    <Image src={block.image} alt={block.title} fill className="object-cover" sizes="(min-width: 1024px) 50vw, 100vw" />
+                    <ProductImage src={block.image} alt={block.title} className="absolute inset-0 h-full w-full object-cover" />
                   </div>
                 </div>
               ))}
@@ -95,17 +95,15 @@ export default async function ProductDetailPage({ params }: ProductDetailPagePro
                           Sale
                         </span>
                       ) : null}
-                      <Image
+                      <ProductImage
                         src={item.image}
                         alt={item.name}
-                        fill
-                        className="object-cover transition duration-500 group-hover:opacity-0"
+                        className="absolute inset-0 h-full w-full object-cover transition duration-500 group-hover:opacity-0"
                       />
-                      <Image
+                      <ProductImage
                         src={hoverImage}
                         alt={`${item.name} hover`}
-                        fill
-                        className="object-cover opacity-0 transition duration-500 group-hover:opacity-100"
+                        className="absolute inset-0 h-full w-full object-cover opacity-0 transition duration-500 group-hover:opacity-100"
                       />
                     </div>
                   </div>

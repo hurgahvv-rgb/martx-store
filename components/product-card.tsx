@@ -1,12 +1,12 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 
 import { formatPrice } from "@/lib/data";
 import { Product } from "@/lib/types";
+import { ProductImage } from "@/components/product-image";
 
 export function ProductCard({ product }: { product: Product }) {
   const router = useRouter();
@@ -50,11 +50,10 @@ export function ProductCard({ product }: { product: Product }) {
     >
       <div className="overflow-hidden rounded-[2rem] bg-[#f4f1eb]">
         <div className="relative aspect-[4/4.8] overflow-hidden">
-          <Image
+          <ProductImage
             src={product.image}
             alt={product.name}
-            fill
-            className="object-cover transition duration-700 group-hover:scale-[1.03]"
+            className="absolute inset-0 h-full w-full object-cover transition duration-700 group-hover:scale-[1.03]"
           />
         </div>
       </div>

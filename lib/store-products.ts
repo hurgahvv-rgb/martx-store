@@ -3,6 +3,7 @@ import { shouldSkipDatabaseReads } from "@/lib/database-guard";
 import { productDetails } from "@/lib/product-details";
 import { prisma } from "@/lib/prisma";
 import { getStoreSettings } from "@/lib/store-settings";
+import { normalizeImageSrc } from "@/lib/image-src";
 import type { Product, ProductDetail } from "@/lib/types";
 
 type DbProduct = {
@@ -48,6 +49,8 @@ type DbProduct = {
 };
 
 function mapProduct(product: DbProduct): Product {
+  const image = normalizeImageSrc(product.image);
+
   return {
     id: product.id,
     name: product.name,
@@ -56,8 +59,8 @@ function mapProduct(product: DbProduct): Product {
     price: product.price,
     compareAtPrice: product.compareAtPrice ?? undefined,
     currency: product.currency,
-    image: product.image,
-    galleryImages: product.galleryImages,
+    image,
+    galleryImages: product.galleryImages.map(normalizeImageSrc),
     rating: product.rating,
     description: product.description,
     subtitle: product.subtitle,
@@ -70,12 +73,18 @@ function mapProduct(product: DbProduct): Product {
     helpText: product.helpText,
     storyTitle: product.storyTitle,
     storyDescription: product.storyDescription,
-    storyImage: product.storyImage,
-    stories: product.stories ?? [],
+    storyImage: product.storyImage ? normalizeImageSrc(product.storyImage) : null,
+    stories: (product.stories ?? []).map((story) => ({
+      ...story,
+      image: normalizeImageSrc(story.image)
+    })),
     stock: product.stock,
     isFeatured: product.isFeatured,
     isActive: product.isActive,
-    variants: product.variants ?? []
+    variants: (product.variants ?? []).map((variant) => ({
+      ...variant,
+      image: variant.image ? normalizeImageSrc(variant.image) : null
+    }))
   };
 }
 

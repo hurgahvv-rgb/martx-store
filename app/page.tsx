@@ -1,7 +1,7 @@
 import Link from "next/link";
-import Image from "next/image";
 
 import { ProductCard } from "@/components/product-card";
+import { ProductImage } from "@/components/product-image";
 import { formatPrice } from "@/lib/data";
 import { getFeaturedStoreProducts, getStoreProducts } from "@/lib/store-products";
 import { getStoreSettings } from "@/lib/store-settings";
@@ -121,7 +121,7 @@ export default async function HomePage() {
             <div key={product.id} className="h-full overflow-hidden rounded-[2.2rem] bg-white">
               <div className="grid h-full gap-0 md:grid-cols-[1fr_0.9fr]">
                 <div className="relative min-h-[360px] bg-[#efebe5] lg:min-h-[430px]">
-                  <Image src={product.image} alt={product.name} fill className="object-cover" sizes="(min-width: 1024px) 28vw, (min-width: 768px) 50vw, 100vw" />
+                  <ProductImage src={product.image} alt={product.name} className="absolute inset-0 h-full w-full object-cover" />
                 </div>
                 <div className="flex min-h-[360px] flex-col justify-center p-8 sm:p-10 lg:min-h-[430px]">
                   <p className="text-xs uppercase tracking-[0.28em] text-stone-500">{product.category}</p>
