@@ -105,14 +105,47 @@ export async function getStoreProducts() {
 }
 
 export async function getFeaturedStoreProducts() {
-  const products = await getStoreProducts();
-  const featured = products.filter((product) => product.isFeatured);
-  return featured.length > 0 ? featured : products.slice(0, 4);
+  try {
+    const featuredProducts = await prisma.product.findMany({
+      where: { isActive: true },
+      orderBy: [{ isFeatured: "desc" }, { updatedAt: "desc" }],
+      take: 4
+    });
+
+    if (featuredProducts.length > 0) {
+      return featuredProducts.map(mapProduct);
+    }
+  } catch {
+    // Local setup can run before DATABASE_URL is ready; keep the storefront usable.
+  }
+
+  const featured = fallbackProducts.filter((product) => product.isFeatured);
+  return featured.length > 0 ? featured.slice(0, 4) : fallbackProducts.slice(0, 4);
 }
 
 export async function getStoreProductBySlug(slug: string) {
-  const products = await getStoreProducts();
-  return products.find((product) => product.slug === slug) ?? null;
+  try {
+    const product = await prisma.product.findFirst({
+      where: { slug, isActive: true },
+      include: {
+        variants: {
+          where: { isActive: true },
+          orderBy: [{ color: "asc" }, { size: "asc" }]
+        },
+        stories: {
+          orderBy: { sortOrder: "asc" }
+        }
+      }
+    });
+
+    if (product) {
+      return mapProduct(product);
+    }
+  } catch {
+    // Local setup can run before DATABASE_URL is ready; keep the storefront usable.
+  }
+
+  return fallbackProducts.find((product) => product.slug === slug) ?? null;
 }
 
 export async function getProductDetail(product: Product): Promise<ProductDetail> {

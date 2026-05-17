@@ -2,14 +2,17 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 
 import { formatPrice } from "@/lib/data";
 import { Product } from "@/lib/types";
 
 export function ProductCard({ product }: { product: Product }) {
+  const router = useRouter();
   const cardRef = useRef<HTMLAnchorElement | null>(null);
   const [visible, setVisible] = useState(false);
+  const href = `/products/${product.slug}`;
 
   useEffect(() => {
     const element = cardRef.current;
@@ -28,10 +31,18 @@ export function ProductCard({ product }: { product: Product }) {
     return () => observer.disconnect();
   }, []);
 
+  useEffect(() => {
+    if (visible) {
+      router.prefetch(href);
+    }
+  }, [href, router, visible]);
+
   return (
     <Link
       ref={cardRef}
-      href={`/products/${product.slug}`}
+      href={href}
+      onMouseEnter={() => router.prefetch(href)}
+      onFocus={() => router.prefetch(href)}
       className={[
         "group block transition-all duration-700",
         visible ? "translate-y-0 opacity-100" : "translate-y-8 opacity-0"
