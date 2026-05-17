@@ -1,14 +1,32 @@
-import { redirect } from "next/navigation";
 import { NextRequest, NextResponse } from "next/server";
 
-import { clearAdminSession } from "@/lib/admin-auth";
+const adminCookieName = "martx_admin_session";
 
-export async function POST() {
-  await clearAdminSession();
-  redirect("/admin/login");
+function redirectAfterLogout(request: NextRequest) {
+  const response = NextResponse.redirect(new URL("/admin/login", request.url));
+  const cookieOptions = {
+    httpOnly: true,
+    sameSite: "lax" as const,
+    secure: process.env.NODE_ENV === "production",
+    maxAge: 0
+  };
+
+  response.cookies.set(adminCookieName, "", {
+    ...cookieOptions,
+    path: "/"
+  });
+  response.cookies.set(adminCookieName, "", {
+    ...cookieOptions,
+    path: "/admin"
+  });
+
+  return response;
 }
 
 export async function GET(request: NextRequest) {
-  await clearAdminSession();
-  return NextResponse.redirect(new URL("/admin/login", request.url));
+  return redirectAfterLogout(request);
+}
+
+export async function POST(request: NextRequest) {
+  return redirectAfterLogout(request);
 }
