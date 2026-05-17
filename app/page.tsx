@@ -118,12 +118,12 @@ export default async function HomePage() {
 
         <div className="grid gap-8 lg:grid-cols-2">
           {featuredProducts.map((product) => (
-            <div key={product.id} className="overflow-hidden rounded-[2.2rem] bg-white">
-              <div className="grid gap-0 md:grid-cols-[1fr_0.9fr]">
-                <div className="relative min-h-[320px] bg-[#efebe5]">
-                  <Image src={product.image} alt={product.name} fill className="object-cover" />
+            <div key={product.id} className="h-full overflow-hidden rounded-[2.2rem] bg-white">
+              <div className="grid h-full gap-0 md:grid-cols-[1fr_0.9fr]">
+                <div className="relative min-h-[360px] bg-[#efebe5] lg:min-h-[430px]">
+                  <Image src={product.image} alt={product.name} fill className="object-cover" sizes="(min-width: 1024px) 28vw, (min-width: 768px) 50vw, 100vw" />
                 </div>
-                <div className="flex flex-col justify-center p-8 sm:p-10">
+                <div className="flex min-h-[360px] flex-col justify-center p-8 sm:p-10 lg:min-h-[430px]">
                   <p className="text-xs uppercase tracking-[0.28em] text-stone-500">{product.category}</p>
                   <h3 className="mt-4 text-3xl font-medium text-stone-950">{product.name}</h3>
                   <p className="mt-4 text-base leading-8 text-stone-600">{product.description}</p>
