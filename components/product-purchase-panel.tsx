@@ -10,6 +10,7 @@ import {
   RotateCcw,
   Star
 } from "lucide-react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
 
@@ -18,10 +19,10 @@ import { formatPrice } from "@/lib/data";
 import { Product, ProductDetail } from "@/lib/types";
 
 const infoItems = [
-  { key: "shipping", title: "Хүргэлт", icon: PackageCheck },
-  { key: "returns", title: "Буцаалт", icon: RotateCcw },
-  { key: "warranty", title: "Баталгаа", icon: Heart },
-  { key: "help", title: "Тусламж", icon: CircleHelp }
+  { key: "shipping", title: "Хүргэлт", icon: PackageCheck, href: "/shipping", linkLabel: "Хүргэлтийн дэлгэрэнгүй мэдээлэл" },
+  { key: "returns", title: "Буцаалт", icon: RotateCcw, href: "/returns", linkLabel: "Буцаалтын дэлгэрэнгүй нөхцөл" },
+  { key: "warranty", title: "Баталгаа", icon: Heart, href: "/terms", linkLabel: "Баталгааны нөхцөлийг дэлгэрэнгүй харах" },
+  { key: "help", title: "Тусламж", icon: CircleHelp, href: "/contact", linkLabel: "Тусламж авах, холбоо барих" }
 ] as const;
 
 export function ProductPurchasePanel({
@@ -235,7 +236,14 @@ export function ProductPurchasePanel({
               >
                 <div className="overflow-hidden">
                   <div className="pb-5 pl-8 pr-8 text-sm leading-7 text-stone-600">
-                    {infoContent[item.key]}
+                    <p>{infoContent[item.key]}</p>
+                    <p className="mt-3">
+                      Дэлгэрэнгүй мэдээлэл авах бол{" "}
+                      <Link href={item.href} className="font-semibold text-stone-950 underline underline-offset-4 transition hover:text-stone-600">
+                        {item.linkLabel}
+                      </Link>
+                      .
+                    </p>
                   </div>
                 </div>
               </div>
