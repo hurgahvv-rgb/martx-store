@@ -19,8 +19,6 @@ export async function saveProductImages(files: File[]) {
     return images;
   }
 
-  await mkdir(uploadDir, { recursive: true });
-
   for (const file of imageFiles) {
     const cloudinaryUrl = await uploadImageToCloudinary(file, "martx/products");
 
@@ -28,6 +26,8 @@ export async function saveProductImages(files: File[]) {
       images.push(cloudinaryUrl);
       continue;
     }
+
+    await mkdir(uploadDir, { recursive: true });
 
     const bytes = Buffer.from(await file.arrayBuffer());
     const fileName = cleanFileName(file.name);
