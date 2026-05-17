@@ -2,13 +2,6 @@ import Link from "next/link";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
-import { GalleryImageManager } from "@/components/gallery-image-manager";
-import { ImageUploadField } from "@/components/image-upload-field";
-import { MainImageManager } from "@/components/main-image-manager";
-import { SaveNotice } from "@/components/save-notice";
-import { SubmitButton } from "@/components/submit-button";
-import { StoryEditor } from "@/components/story-editor";
-import { VariantEditor } from "@/components/variant-editor";
 import { requireAdminSession } from "@/lib/admin-auth";
 import { formatPrice } from "@/lib/data";
 import { normalizeImageSrc } from "@/lib/image-src";
@@ -144,6 +137,23 @@ function Field({
     <label className={className}>
       <span className="mb-2 block text-xs font-bold uppercase tracking-[0.14em] text-slate-500">{label}</span>
       {children}
+    </label>
+  );
+}
+
+function FileField({
+  name,
+  label,
+  multiple = false
+}: {
+  name: string;
+  label: string;
+  multiple?: boolean;
+}) {
+  return (
+    <label className="rounded-xl border border-dashed border-slate-300 bg-white px-4 py-3 text-sm text-slate-600">
+      <span className="block font-medium">{label}</span>
+      <input name={name} type="file" accept="image/*" multiple={multiple} className="mt-2 block w-full text-sm" />
     </label>
   );
 }
@@ -456,7 +466,11 @@ export default async function AdminProductsPage({
           </div>
         ) : null}
 
-        {params.saved ? <SaveNotice message={getProductSaveMessage(params.saved)} /> : null}
+        {params.saved ? (
+          <div className="mb-6 rounded-xl border border-emerald-200 bg-emerald-50 px-5 py-4 text-sm font-semibold text-emerald-800">
+            {getProductSaveMessage(params.saved)}
+          </div>
+        ) : null}
 
         {isNewMode ? (
         <form action={createProduct} className="mb-6 rounded-xl bg-white p-6 shadow-sm" encType="multipart/form-data">
@@ -465,9 +479,9 @@ export default async function AdminProductsPage({
               <h2 className="text-xl font-bold text-slate-950">Шинэ бараа нэмэх</h2>
               <p className="mt-1 text-sm text-slate-500">Зураг URL бичиж болно, эсвэл шууд компьютерээсээ upload хийнэ.</p>
             </div>
-            <SubmitButton pendingText="Хадгалж байна..." className="rounded-xl bg-blue-600 px-5 py-3 text-sm font-bold text-white shadow-lg shadow-blue-600/20">
+            <button className="rounded-xl bg-blue-600 px-5 py-3 text-sm font-bold text-white shadow-lg shadow-blue-600/20">
               Нэмэх
-            </SubmitButton>
+            </button>
           </div>
 
           <div className="mt-5 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
@@ -481,10 +495,10 @@ export default async function AdminProductsPage({
               <input name="category" list="product-category-options" placeholder="Жишээ: Цүнх" className="w-full rounded-xl border border-slate-200 px-4 py-3 text-sm outline-none focus:border-blue-500" />
             </Field>
             <div className="md:col-span-2">
-              <ImageUploadField name="mainImageFile" label="Үндсэн зураг" />
+              <FileField name="mainImageFile" label="Үндсэн зураг" />
             </div>
             <div className="md:col-span-2">
-              <ImageUploadField name="galleryImageFiles" label="Нэмэлт зургууд" multiple />
+              <FileField name="galleryImageFiles" label="Нэмэлт зургууд" multiple />
             </div>
             <Field label="Үндсэн тайлбар" className="xl:col-span-4">
               <textarea name="description" placeholder="Барааны ерөнхий тайлбар" className="min-h-24 w-full rounded-xl border border-slate-200 px-4 py-3 text-sm outline-none focus:border-blue-500" />
@@ -515,8 +529,20 @@ export default async function AdminProductsPage({
                 <input name="stock" type="number" placeholder="20" className="w-full rounded-xl border border-amber-200 px-4 py-3 text-sm outline-none focus:border-amber-500" />
               </Field>
             </div>
-            <VariantEditor name="variants" />
-            <StoryEditor name="stories" />
+            <Field label="Variant-ууд" className="xl:col-span-4">
+              <textarea
+                name="variants"
+                placeholder="Өнгө | хэмжээ | үнэ | үлдэгдэл | SKU | image URL"
+                className="min-h-24 w-full rounded-xl border border-slate-200 px-4 py-3 text-sm outline-none focus:border-blue-500"
+              />
+            </Field>
+            <Field label="Story-нууд" className="xl:col-span-4">
+              <textarea
+                name="stories"
+                placeholder="Гарчиг | Тайлбар | image URL"
+                className="min-h-24 w-full rounded-xl border border-slate-200 px-4 py-3 text-sm outline-none focus:border-blue-500"
+              />
+            </Field>
             <label className="flex items-center gap-2 text-sm font-semibold text-slate-600">
               <input name="isFeatured" type="checkbox" />
               Онцлох бараа
@@ -590,7 +616,13 @@ export default async function AdminProductsPage({
                   <form action={updateProduct} className="grid gap-3 md:grid-cols-2 xl:grid-cols-4" encType="multipart/form-data">
                     <input type="hidden" name="id" value={product.id} />
                     <input type="hidden" name="currentStoryImage" value={product.storyImage ?? ""} />
-                    <MainImageManager image={product.image} productName={product.name} />
+                    <div className="md:col-span-2">
+                      <input type="hidden" name="currentImage" value={product.image} />
+                      <p className="mb-2 text-xs font-bold uppercase tracking-[0.14em] text-slate-500">Одоогийн үндсэн зураг</p>
+                      <div className="relative h-44 w-44 overflow-hidden rounded-xl border border-slate-200 bg-slate-100">
+                        <img src={product.image} alt={product.name} className="h-full w-full object-cover" />
+                      </div>
+                    </div>
                     <Field label="Барааны нэр">
                       <input name="name" defaultValue={product.name} className="w-full rounded-xl border border-slate-200 px-4 py-3 text-sm" />
                     </Field>
@@ -601,12 +633,30 @@ export default async function AdminProductsPage({
                       <input name="category" list="product-category-options" defaultValue={product.category} className="w-full rounded-xl border border-slate-200 px-4 py-3 text-sm" />
                     </Field>
                     <div className="md:col-span-2">
-                      <ImageUploadField name="mainImageFile" label="Үндсэн зураг солих" />
+                      <FileField name="mainImageFile" label="Үндсэн зураг солих" />
                     </div>
                     <div className="md:col-span-2">
-                      <ImageUploadField name="galleryImageFiles" label="Нэмэлт зураг нэмэх" multiple />
+                      <FileField name="galleryImageFiles" label="Нэмэлт зураг нэмэх" multiple />
                     </div>
-                    <GalleryImageManager images={product.galleryImages} productName={product.name} />
+                    <div className="xl:col-span-4">
+                      <p className="mb-2 text-xs font-bold uppercase tracking-[0.14em] text-slate-500">Gallery зураг</p>
+                      {product.galleryImages.length > 0 ? (
+                        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-5">
+                          {product.galleryImages.map((image) => (
+                            <label key={image} className="overflow-hidden rounded-lg border border-slate-200 bg-white p-2 text-xs text-slate-600">
+                              <input type="checkbox" name="keepGalleryImages" value={image} defaultChecked className="mb-2" /> Keep
+                              <div className="relative aspect-square overflow-hidden rounded-md bg-slate-100">
+                                <img src={image} alt={product.name} className="h-full w-full object-cover" />
+                              </div>
+                            </label>
+                          ))}
+                        </div>
+                      ) : (
+                        <div className="rounded-xl border border-dashed border-slate-200 bg-slate-50 px-4 py-6 text-center text-sm text-slate-500">
+                          Gallery зураг алга.
+                        </div>
+                      )}
+                    </div>
                     <Field label="Үндсэн тайлбар" className="xl:col-span-4">
                       <textarea name="description" defaultValue={product.description} className="min-h-20 w-full rounded-xl border border-slate-200 px-4 py-3 text-sm" />
                     </Field>
@@ -636,23 +686,34 @@ export default async function AdminProductsPage({
                         <input name="stock" type="number" defaultValue={product.stock} className="w-full rounded-xl border border-amber-200 px-4 py-3 text-sm" />
                       </Field>
                     </div>
-                    <VariantEditor name="variants" initialValue={formatVariants(product.variants)} />
-                    <StoryEditor
-                      name="stories"
-                      initialValue={formatStories(
-                        product.stories.length
-                          ? product.stories
-                          : product.storyTitle || product.storyDescription || product.storyImage
-                            ? [
-                                {
-                                  title: product.storyTitle ?? "",
-                                  description: product.storyDescription ?? "",
-                                  image: product.storyImage ?? ""
-                                }
-                              ]
-                            : []
-                      )}
-                    />
+                    <Field label="Variant-ууд" className="xl:col-span-4">
+                      <textarea
+                        name="variants"
+                        defaultValue={formatVariants(product.variants)}
+                        placeholder="Өнгө | хэмжээ | үнэ | үлдэгдэл | SKU | image URL"
+                        className="min-h-24 w-full rounded-xl border border-slate-200 px-4 py-3 text-sm"
+                      />
+                    </Field>
+                    <Field label="Story-нууд" className="xl:col-span-4">
+                      <textarea
+                        name="stories"
+                        defaultValue={formatStories(
+                          product.stories.length
+                            ? product.stories
+                            : product.storyTitle || product.storyDescription || product.storyImage
+                              ? [
+                                  {
+                                    title: product.storyTitle ?? "",
+                                    description: product.storyDescription ?? "",
+                                    image: product.storyImage ?? ""
+                                  }
+                                ]
+                              : []
+                        )}
+                        placeholder="Гарчиг | Тайлбар | image URL"
+                        className="min-h-24 w-full rounded-xl border border-slate-200 px-4 py-3 text-sm"
+                      />
+                    </Field>
                     <div className="flex flex-wrap items-center gap-4 text-sm font-semibold text-slate-600 xl:col-span-4">
                       <label className="flex items-center gap-2">
                         <input name="isFeatured" type="checkbox" defaultChecked={product.isFeatured} />
@@ -662,17 +723,17 @@ export default async function AdminProductsPage({
                         <input name="isActive" type="checkbox" defaultChecked={product.isActive} />
                         Идэвхтэй
                       </label>
-                      <SubmitButton pendingText="Хадгалж байна..." className="rounded-xl bg-slate-950 px-5 py-3 text-sm font-bold text-white">
+                      <button className="rounded-xl bg-slate-950 px-5 py-3 text-sm font-bold text-white">
                         Хадгалах
-                      </SubmitButton>
+                      </button>
                     </div>
                   </form>
 
                   <form action={deleteProduct} className="mt-4 border-t border-red-100 pt-4">
                     <input type="hidden" name="id" value={product.id} />
-                    <SubmitButton pendingText="Устгаж байна..." className="rounded-xl border border-red-200 bg-red-50 px-5 py-3 text-sm font-bold text-red-600 transition hover:bg-red-100">
+                    <button className="rounded-xl border border-red-200 bg-red-50 px-5 py-3 text-sm font-bold text-red-600 transition hover:bg-red-100">
                       Дэлгүүрээс устгах
-                    </SubmitButton>
+                    </button>
                   </form>
                 </div>
               </div>
