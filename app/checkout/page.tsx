@@ -63,7 +63,7 @@ const defaultPaymentSettings: PaymentSettings = {
   paymentBank: "Хаан банк",
   paymentAccountOwner: "Сайнбаяр Даваа",
   paymentAccountNumber: "5015262578",
-  paymentPhone: "+976 7777-0000",
+  paymentPhone: "+976 95958506",
   paymentInstructions: "Төлбөр шилжүүлэхдээ гүйлгээний утга дээр захиалга өгсөн утасны дугаараа бичнэ үү.",
   paymentMethods: [
     {
