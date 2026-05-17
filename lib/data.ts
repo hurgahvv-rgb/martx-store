@@ -64,9 +64,9 @@ export const products: Product[] = [
 export const featuredProducts = products.filter((product) => product.isFeatured);
 
 export function formatPrice(price: number, currency: string) {
-  return new Intl.NumberFormat("mn-MN", {
-    style: "currency",
-    currency,
+  const amount = new Intl.NumberFormat("en-US", {
     maximumFractionDigits: 0
   }).format(price);
+
+  return currency === "MNT" ? `₮ ${amount}` : `${currency} ${amount}`;
 }

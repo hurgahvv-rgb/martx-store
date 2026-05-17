@@ -28,7 +28,8 @@ export default function CartPage() {
   const updateQuantity = (item: CartItem, quantity: number) => {
     const nextItems = cartItems
       .map((cartItem) =>
-        cartItem.productId === item.productId && cartItem.variant === item.variant
+        cartItem.productId === item.productId &&
+        (cartItem.variantId ? cartItem.variantId === item.variantId : cartItem.variant === item.variant)
           ? { ...cartItem, quantity }
           : cartItem
       )
@@ -39,7 +40,11 @@ export default function CartPage() {
 
   const removeItem = (item: CartItem) => {
     const nextItems = cartItems.filter(
-      (cartItem) => !(cartItem.productId === item.productId && cartItem.variant === item.variant)
+      (cartItem) =>
+        !(
+          cartItem.productId === item.productId &&
+          (cartItem.variantId ? cartItem.variantId === item.variantId : cartItem.variant === item.variant)
+        )
     );
 
     saveCart(nextItems);
@@ -53,7 +58,7 @@ export default function CartPage() {
           {cartItems.length > 0 ? (
             cartItems.map((item) => (
               <div
-                key={`${item.productId}-${item.variant}`}
+                key={`${item.productId}-${item.variantId ?? item.variant}`}
                 className="glass-panel grid gap-4 rounded-[1.5rem] p-5 sm:grid-cols-[96px_1fr_auto]"
               >
                 <div className="relative h-24 overflow-hidden rounded-2xl bg-stone-100">

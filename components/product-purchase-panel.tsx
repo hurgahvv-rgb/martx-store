@@ -26,13 +26,38 @@ const infoItems = [
 
 export function ProductPurchasePanel({
   product,
-  detail
+  detail,
+  onVariantImageChange
 }: {
   product: Product;
   detail: ProductDetail;
+  onVariantImageChange?: (image: string) => void;
 }) {
   const router = useRouter();
-  const [variant, setVariant] = useState(detail.variants[0] ?? "Standard");
+  const variantOptions = product.variants?.length
+    ? product.variants.map((item) => {
+        const label = [item.color, item.size].filter(Boolean).join(" / ") || item.sku || "Standard";
+        return {
+          id: item.id,
+          label,
+          color: item.color,
+          size: item.size,
+          image: item.image,
+          price: item.price ?? product.price,
+          stock: item.stock
+        };
+      })
+    : detail.variants.map((item) => ({
+        id: undefined,
+        label: item,
+        color: item,
+        size: null,
+        image: null,
+        price: product.price,
+        stock: product.stock ?? 0
+      }));
+  const [variant, setVariant] = useState(variantOptions[0]?.label ?? "Standard");
+  const [variantId, setVariantId] = useState<string | undefined>(variantOptions[0]?.id);
   const [quantity, setQuantity] = useState(1);
   const [added, setAdded] = useState(false);
   const [openItem, setOpenItem] = useState<(typeof infoItems)[number]["key"] | null>("shipping");
@@ -57,15 +82,19 @@ export function ProductPurchasePanel({
   };
 
   const handleAddToCart = () => {
-    addCartItem(createCartItem(product, variant, quantity));
+    addCartItem(createCartItem(product, variant, quantity, variantId));
     setAdded(true);
     window.setTimeout(() => setAdded(false), 1800);
   };
 
   const handleBuyNow = () => {
-    addCartItem(createCartItem(product, variant, quantity));
+    addCartItem(createCartItem(product, variant, quantity, variantId));
     router.push("/checkout");
   };
+
+  const selectedVariant = variantOptions.find((item) => item.label === variant && item.id === variantId) ?? variantOptions[0];
+  const displayPrice = selectedVariant?.price ?? product.price;
+  const selectedStock = selectedVariant?.stock ?? product.stock ?? 0;
 
   return (
     <div className="space-y-7 self-start">
@@ -80,7 +109,7 @@ export function ProductPurchasePanel({
           <span>({reviewSummary.count} сэтгэгдэл)</span>
         </div>
         <p className="text-2xl font-semibold text-stone-950">
-          {formatPrice(product.price, product.currency)}
+          {formatPrice(displayPrice, product.currency)}
         </p>
         <p className="max-w-xl text-base leading-8 text-stone-600">{detail.subtitle}</p>
       </div>
@@ -89,22 +118,33 @@ export function ProductPurchasePanel({
         <div>
           <p className="mb-3 text-sm font-medium text-stone-800">Сонголт</p>
           <div className="flex flex-wrap gap-2">
-            {detail.variants.map((item) => (
+            {variantOptions.map((item) => (
               <button
-                key={item}
+                key={`${item.id ?? item.label}`}
                 type="button"
-                onClick={() => setVariant(item)}
+                onClick={() => {
+                  setVariant(item.label);
+                  setVariantId(item.id);
+                  onVariantImageChange?.(item.image || product.image);
+                }}
                 className={[
-                  "rounded-full border px-4 py-2 text-sm transition",
-                  variant === item
+                  "rounded-full border px-4 py-2 text-sm transition disabled:cursor-not-allowed disabled:opacity-45",
+                  variant === item.label && variantId === item.id
                     ? "border-stone-900 bg-stone-900 text-white"
                     : "border-stone-300 text-stone-700 hover:border-stone-900"
                 ].join(" ")}
+                disabled={item.stock <= 0}
               >
-                {item}
+                {item.label}
+                {item.stock <= 0 ? " - дууссан" : ""}
               </button>
             ))}
           </div>
+          {selectedVariant?.image ? (
+            <p className="mt-3 text-xs leading-5 text-stone-500">
+              Сонгосон өнгөний зураг preview дээр солигдлоо. Gallery дотор зөвхөн ерөнхий зургууд үлдэнэ.
+            </p>
+          ) : null}
         </div>
 
         <div>
@@ -120,7 +160,7 @@ export function ProductPurchasePanel({
             <span className="min-w-10 text-center text-sm font-medium text-stone-900">{quantity}</span>
             <button
               type="button"
-              onClick={() => setQuantity((value) => value + 1)}
+              onClick={() => setQuantity((value) => Math.min(Math.max(selectedStock, 1), value + 1))}
               className="flex h-11 w-11 items-center justify-center text-stone-700"
             >
               <Plus size={16} />
@@ -132,14 +172,16 @@ export function ProductPurchasePanel({
           <button
             type="button"
             onClick={handleAddToCart}
-            className="rounded-full bg-stone-950 px-6 py-3 text-sm font-semibold text-white transition hover:bg-stone-800"
+            disabled={selectedStock <= 0}
+            className="rounded-full bg-stone-950 px-6 py-3 text-sm font-semibold text-white transition hover:bg-stone-800 disabled:cursor-not-allowed disabled:bg-stone-300"
           >
             {added ? "Сагсанд нэмэгдлээ" : "Сагсанд нэмэх"}
           </button>
           <button
             type="button"
             onClick={handleBuyNow}
-            className="rounded-full border border-stone-300 px-6 py-3 text-sm font-semibold text-stone-800 transition hover:border-stone-900"
+            disabled={selectedStock <= 0}
+            className="rounded-full border border-stone-300 px-6 py-3 text-sm font-semibold text-stone-800 transition hover:border-stone-900 disabled:cursor-not-allowed disabled:border-stone-200 disabled:text-stone-300"
           >
             Шууд худалдан авах
           </button>

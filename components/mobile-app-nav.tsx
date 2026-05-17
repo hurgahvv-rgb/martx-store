@@ -1,20 +1,22 @@
 "use client";
 
 import Link from "next/link";
-import { Home, PackageSearch, ShoppingBag, UserRound } from "lucide-react";
+import { usePathname } from "next/navigation";
+import { PackageSearch, ShoppingBag, UserRound } from "lucide-react";
 import { useEffect, useState } from "react";
 
 import { getCartQuantity, readCart } from "@/lib/cart";
 
 const items = [
-  { href: "/", label: "Нүүр", icon: Home },
   { href: "/products", label: "Бараа", icon: PackageSearch },
   { href: "/cart", label: "Сагс", icon: ShoppingBag },
   { href: "/account", label: "Профайл", icon: UserRound }
 ];
 
 export function MobileAppNav() {
+  const pathname = usePathname();
   const [cartQuantity, setCartQuantity] = useState(0);
+  const isPurchaseFlow = pathname.startsWith("/products/") || pathname === "/checkout";
 
   useEffect(() => {
     const updateCartQuantity = () => setCartQuantity(getCartQuantity(readCart()));
@@ -29,9 +31,13 @@ export function MobileAppNav() {
     };
   }, []);
 
+  if (isPurchaseFlow) {
+    return null;
+  }
+
   return (
     <nav className="public-shell fixed inset-x-3 bottom-3 z-50 rounded-[1.35rem] border border-stone-200/80 bg-white/95 px-3 py-2 shadow-[0_18px_45px_-25px_rgba(17,24,39,0.45)] backdrop-blur-xl md:hidden">
-      <div className="grid grid-cols-4 gap-1">
+      <div className="grid grid-cols-3 gap-1">
         {items.map((item) => {
           const Icon = item.icon;
           const isCart = item.href === "/cart";

@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import { CartItem } from "@/lib/cart";
 import { formatPrice } from "@/lib/data";
 import { prisma } from "@/lib/prisma";
+import { getStoreSettings } from "@/lib/store-settings";
 
 type OrderRequest = {
   orderCode: string;
@@ -18,13 +19,8 @@ type OrderRequest = {
     district: string;
     address: string;
   };
+  paymentMethod?: string;
   items: CartItem[];
-};
-
-const bankAccount = {
-  bank: "Хаан банк",
-  owner: "Сайнбаяр Даваа",
-  number: "5015262578"
 };
 
 function escapeHtml(value: string) {
@@ -44,6 +40,7 @@ async function saveOrder(order: OrderRequest) {
         subtotal: order.subtotal,
         shippingFee: order.shippingFee,
         total: order.total,
+        paymentMethod: order.paymentMethod || "bank_transfer",
         customerName: `${order.customer.firstName} ${order.customer.lastName}`.trim() || "Нэр оруулаагүй",
         customerEmail: order.customer.email || null,
         customerPhone: order.customer.phone,
@@ -52,6 +49,7 @@ async function saveOrder(order: OrderRequest) {
         shippingAddress: order.customer.address,
         items: {
           create: order.items.map((item) => ({
+            productId: item.productId || undefined,
             productName: item.name,
             variant: item.variant,
             quantity: item.quantity,
@@ -62,6 +60,19 @@ async function saveOrder(order: OrderRequest) {
     });
 
     for (const item of order.items) {
+      if (item.variantId) {
+        await tx.productVariant
+          .updateMany({
+            where: { id: item.variantId },
+            data: {
+              stock: {
+                decrement: item.quantity
+              }
+            }
+          })
+          .catch(() => null);
+      }
+
       await tx.product
         .updateMany({
           where: { slug: item.slug },
@@ -78,8 +89,11 @@ async function saveOrder(order: OrderRequest) {
   });
 }
 
-function renderOrderEmail(order: OrderRequest, savedToDatabase: boolean) {
+async function renderOrderEmail(order: OrderRequest, savedToDatabase: boolean) {
+  const settings = await getStoreSettings();
   const customerName = `${order.customer.firstName} ${order.customer.lastName}`.trim();
+  const paymentMethod = settings.paymentMethods.find((method) => method.id === order.paymentMethod);
+  const paymentAccounts = settings.paymentAccounts.filter((account) => account.isActive);
   const items = order.items
     .map(
       (item) => `
@@ -127,15 +141,23 @@ function renderOrderEmail(order: OrderRequest, savedToDatabase: boolean) {
         <strong>Барааны дүн:</strong> ${formatPrice(order.subtotal, "MNT")}<br />
         <strong>Хүргэлт:</strong> ${formatPrice(order.shippingFee, "MNT")}<br />
         <strong>Нийт:</strong> ${formatPrice(order.total, "MNT")}<br />
-        <strong>Гүйлгээний утга:</strong> ${escapeHtml(order.orderCode)}
+        <strong>Төлбөрийн арга:</strong> ${escapeHtml(paymentMethod?.label ?? "Дансаар шилжүүлэх")}<br />
+        <strong>Гүйлгээний утга:</strong> ${escapeHtml(order.customer.phone)}
       </p>
 
       <h2>Данс</h2>
-      <p>
-        <strong>${bankAccount.bank}</strong><br />
-        ${bankAccount.owner}<br />
-        ${bankAccount.number}
-      </p>
+      ${paymentAccounts
+        .map(
+          (account) => `
+            <p>
+              <strong>${escapeHtml(account.bank)}</strong><br />
+              ${escapeHtml(account.owner)}<br />
+              ${escapeHtml(account.number)}
+            </p>
+          `
+        )
+        .join("")}
+      <p>Хэрэглэгч банкны гүйлгээний утга дээр утасны дугаараа бичнэ.</p>
     </div>
   `;
 }
@@ -159,7 +181,7 @@ async function sendOrderEmail(order: OrderRequest, savedToDatabase: boolean) {
       from: fromEmail,
       to: [orderEmail],
       subject: `MartX шинэ захиалга ${order.orderCode}`,
-      html: renderOrderEmail(order, savedToDatabase)
+      html: await renderOrderEmail(order, savedToDatabase)
     })
   });
 
@@ -173,6 +195,10 @@ export async function POST(request: Request) {
 
   if (!order.orderCode || !order.items?.length) {
     return NextResponse.json({ error: "Захиалгын мэдээлэл дутуу байна." }, { status: 400 });
+  }
+
+  if (!/^\d{8}$/.test(order.customer.phone)) {
+    return NextResponse.json({ error: "Утасны дугаар 8 оронтой байх ёстой." }, { status: 400 });
   }
 
   let savedToDatabase = false;

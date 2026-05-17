@@ -47,6 +47,7 @@ export async function POST(request: NextRequest) {
       compareAtPrice: body.compareAtPrice ? Number(body.compareAtPrice) : null,
       currency: "MNT",
       image: String(body.image ?? "https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=1200&q=80"),
+      galleryImages: Array.isArray(body.galleryImages) ? body.galleryImages.map(String) : [],
       stock: Number(body.stock ?? 0),
       isFeatured: Boolean(body.isFeatured),
       isActive: body.isActive ?? true
@@ -77,6 +78,7 @@ export async function PATCH(request: NextRequest) {
       price: body.price === undefined ? undefined : Number(body.price),
       compareAtPrice: body.compareAtPrice === undefined || body.compareAtPrice === "" ? undefined : Number(body.compareAtPrice),
       image: body.image === undefined ? undefined : String(body.image),
+      galleryImages: body.galleryImages === undefined || !Array.isArray(body.galleryImages) ? undefined : body.galleryImages.map(String),
       stock: body.stock === undefined ? undefined : Number(body.stock),
       isFeatured: body.isFeatured === undefined ? undefined : Boolean(body.isFeatured),
       isActive: body.isActive === undefined ? undefined : Boolean(body.isActive)

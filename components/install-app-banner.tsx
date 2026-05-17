@@ -35,11 +35,15 @@ export function InstallAppBanner() {
   const [installEvent, setInstallEvent] = useState<BeforeInstallPromptEvent | null>(null);
   const [visible, setVisible] = useState(false);
   const [showIosHelp, setShowIosHelp] = useState(false);
+  const [iosDevice, setIosDevice] = useState(false);
 
   useEffect(() => {
     if (isStandalone() || window.localStorage.getItem("martx-install-banner-dismissed") === "1") {
       return;
     }
+
+    const onIos = isIos();
+    setIosDevice(onIos);
 
     const handleBeforeInstallPrompt = (event: Event) => {
       event.preventDefault();
@@ -49,7 +53,7 @@ export function InstallAppBanner() {
 
     window.addEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
 
-    if (isIos()) {
+    if (onIos) {
       const timer = window.setTimeout(() => setVisible(true), 1200);
       return () => {
         window.clearTimeout(timer);
@@ -106,10 +110,12 @@ export function InstallAppBanner() {
               </button>
             </div>
 
-            {showIosHelp ? (
-              <p className="mt-3 rounded-2xl bg-white/10 px-3 py-2 text-xs leading-5 text-white/75">
-                iPhone дээр Safari → Share → Add to Home Screen гэж дарна.
-              </p>
+            {showIosHelp || iosDevice ? (
+              <div className="mt-3 rounded-2xl bg-white/10 px-3 py-2 text-xs leading-5 text-white/75">
+                <p className="font-bold text-white">iPhone дээр шууд татагдахгүй.</p>
+                <p>Safari-аар нээгээд доорх Share товчийг дарна.</p>
+                <p>Дараа нь “Add to Home Screen” сонгоно.</p>
+              </div>
             ) : null}
 
             <button
@@ -118,7 +124,7 @@ export function InstallAppBanner() {
               className="mt-4 inline-flex items-center gap-2 rounded-xl bg-white px-4 py-3 text-sm font-bold text-stone-950 transition hover:bg-stone-100"
             >
               <Download size={17} />
-              App суулгах
+              {iosDevice ? "iPhone дээр суулгах заавар" : "App суулгах"}
             </button>
           </div>
         </div>

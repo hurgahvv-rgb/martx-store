@@ -10,19 +10,23 @@ export type CartItem = {
   price: number;
   currency: string;
   image: string;
+  variantId?: string;
   variant: string;
   quantity: number;
 };
 
-export function createCartItem(product: Product, variant: string, quantity: number): CartItem {
+export function createCartItem(product: Product, variant: string, quantity: number, variantId?: string): CartItem {
+  const selectedVariant = product.variants?.find((item) => item.id === variantId);
+
   return {
     productId: product.id,
     slug: product.slug,
     name: product.name,
     category: product.category,
-    price: product.price,
+    price: selectedVariant?.price ?? product.price,
     currency: product.currency,
-    image: product.image,
+    image: selectedVariant?.image ?? product.image,
+    variantId,
     variant,
     quantity
   };
@@ -53,7 +57,9 @@ export function getCartQuantity(items: CartItem[]) {
 export function addCartItem(item: CartItem) {
   const current = readCart();
   const existingIndex = current.findIndex(
-    (cartItem) => cartItem.productId === item.productId && cartItem.variant === item.variant
+    (cartItem) =>
+      cartItem.productId === item.productId &&
+      (cartItem.variantId ? cartItem.variantId === item.variantId : cartItem.variant === item.variant)
   );
 
   if (existingIndex >= 0) {

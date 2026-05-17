@@ -2,11 +2,10 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
-import { ProductGallery } from "@/components/product-gallery";
-import { ProductPurchasePanel } from "@/components/product-purchase-panel";
+import { ProductDetailClient } from "@/components/product-detail-client";
 import { ReviewSection } from "@/components/review-section";
-import { featuredProducts, formatPrice, products } from "@/lib/data";
-import { productDetails } from "@/lib/product-details";
+import { formatPrice } from "@/lib/data";
+import { getFeaturedStoreProducts, getProductDetail, getStoreProductBySlug } from "@/lib/store-products";
 
 type ProductDetailPageProps = {
   params: Promise<{ slug: string }>;
@@ -14,12 +13,14 @@ type ProductDetailPageProps = {
 
 export default async function ProductDetailPage({ params }: ProductDetailPageProps) {
   const { slug } = await params;
-  const product = products.find((item) => item.slug === slug);
-  const detail = productDetails[slug];
+  const product = await getStoreProductBySlug(slug);
 
-  if (!product || !detail) {
+  if (!product) {
     notFound();
   }
+
+  const detail = await getProductDetail(product);
+  const featuredProducts = await getFeaturedStoreProducts();
 
   return (
     <div className="bg-[#fbfaf7]">
@@ -32,53 +33,33 @@ export default async function ProductDetailPage({ params }: ProductDetailPagePro
           <span>{product.name}</span>
         </div>
 
-        <div className="items-start gap-12 lg:grid lg:grid-cols-[1.05fr_0.95fr]">
-          <ProductGallery images={detail.gallery} title={product.name} />
-          <ProductPurchasePanel product={product} detail={detail} />
-        </div>
+        <ProductDetailClient product={product} detail={detail} />
       </section>
 
       {detail.story.length > 0 && (
         <section className="border-t border-stone-200">
-          <div className="mx-auto max-w-6xl px-4 py-14 sm:px-6 lg:px-8 lg:py-24">
-            <div className="space-y-24">
+          <div className="mx-auto max-w-6xl px-4 py-14 sm:px-6 lg:px-8 lg:py-20">
+            <div className="space-y-16">
               {detail.story.map((block, index) => (
                 <div
                   key={block.title}
                   className={[
-                    "relative grid items-center gap-0 lg:grid-cols-[1.02fr_0.98fr]",
-                    index % 2 === 1 ? "lg:grid-cols-[0.98fr_1.02fr]" : ""
+                    "grid overflow-hidden border border-stone-200 bg-[#f3f3f3] lg:grid-cols-2",
+                    index % 2 === 1 ? "lg:[&>*:first-child]:order-2" : ""
                   ].join(" ")}
                 >
-                  <div
-                    className={[
-                      "relative overflow-hidden bg-[#eee9e1]",
-                      index % 2 === 1 ? "lg:order-2" : ""
-                    ].join(" ")}
-                  >
-                    <div className="relative aspect-[1.55/1] min-h-[360px]">
-                      <Image src={block.image} alt={block.title} fill className="object-cover" />
-                    </div>
-                  </div>
-                  <div
-                    className={[
-                      "relative z-10 px-5 py-8 sm:px-8 lg:px-0",
-                      index % 2 === 0
-                        ? "lg:-ml-16 lg:max-w-[31rem]"
-                        : "lg:-mr-16 lg:ml-auto lg:max-w-[31rem] lg:pr-0"
-                    ].join(" ")}
-                  >
-                    <div className="bg-[#f5f1ea] p-8 shadow-[0_24px_60px_-30px_rgba(28,25,23,0.22)] sm:p-10">
-                      <p className="text-xs font-semibold uppercase tracking-[0.28em] text-stone-500">
-                        Product Story
-                      </p>
-                      <h2 className="mt-4 text-3xl font-medium leading-tight text-stone-950 sm:text-4xl">
+                  <div className="flex min-h-[24rem] items-center justify-center bg-[#f4f4f4] px-8 py-14 text-center sm:px-12 lg:px-16">
+                    <div className="max-w-md">
+                      <h2 className="text-2xl font-semibold leading-tight tracking-[-0.01em] text-black sm:text-[1.65rem]">
                         {block.title}
                       </h2>
-                      <p className="mt-5 max-w-xl text-base leading-8 text-stone-600">
+                      <p className="mx-auto mt-5 max-w-sm text-sm font-normal leading-7 text-slate-700">
                         {block.description}
                       </p>
                     </div>
+                  </div>
+                  <div className="relative min-h-[24rem] bg-stone-100">
+                    <Image src={block.image} alt={block.title} fill className="object-cover" sizes="(min-width: 1024px) 50vw, 100vw" />
                   </div>
                 </div>
               ))}
@@ -103,7 +84,7 @@ export default async function ProductDetailPage({ params }: ProductDetailPagePro
           {featuredProducts
             .filter((item) => item.slug !== product.slug)
             .map((item) => {
-              const hoverImage = productDetails[item.slug]?.gallery?.[1] ?? item.image;
+              const hoverImage = item.galleryImages?.[0] ?? item.image;
 
               return (
                 <Link key={item.id} href={`/products/${item.slug}`} className="group block">

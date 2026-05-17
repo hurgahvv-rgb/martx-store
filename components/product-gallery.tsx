@@ -1,10 +1,26 @@
 "use client";
 
 import Image from "next/image";
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
-export function ProductGallery({ images, title }: { images: string[]; title: string }) {
-  const [activeImage, setActiveImage] = useState(images[0]);
+export function ProductGallery({
+  images,
+  title,
+  selectedImage
+}: {
+  images: string[];
+  title: string;
+  selectedImage?: string;
+}) {
+  const galleryImages = useMemo(() => images.filter(Boolean), [images]);
+  const fallbackImage = galleryImages[0] ?? selectedImage ?? "/martx-logo.png";
+  const [activeImage, setActiveImage] = useState(selectedImage ?? fallbackImage);
+
+  useEffect(() => {
+    if (selectedImage) {
+      setActiveImage(selectedImage);
+    }
+  }, [selectedImage]);
 
   return (
     <div className="space-y-4 lg:sticky lg:top-28 lg:w-full">
@@ -15,7 +31,7 @@ export function ProductGallery({ images, title }: { images: string[]; title: str
       </div>
 
       <div className="grid w-full grid-cols-5 gap-3">
-        {images.map((image) => (
+        {galleryImages.map((image) => (
           <button
             key={image}
             type="button"

@@ -2,12 +2,19 @@ import Link from "next/link";
 import Image from "next/image";
 
 import { ProductCard } from "@/components/product-card";
-import { featuredProducts, formatPrice, products } from "@/lib/data";
+import { formatPrice } from "@/lib/data";
+import { getFeaturedStoreProducts, getStoreProducts } from "@/lib/store-products";
+import { getStoreSettings } from "@/lib/store-settings";
 
 const categories = ["Цүнх", "Хувцас", "Гэр ахуй", "Шинэ коллекц"];
-const bannerProduct = products[0];
+export default async function HomePage() {
+  const products = await getStoreProducts();
+  const featuredProducts = await getFeaturedStoreProducts();
+  const bestSellerProducts = products.slice(0, 6);
+  const settings = await getStoreSettings();
+  const selectedBannerProduct = settings.heroProductId ? products.find((product) => product.id === settings.heroProductId) : null;
+  const bannerProduct = selectedBannerProduct ?? featuredProducts[0] ?? products[0];
 
-export default function HomePage() {
   return (
     <div className="bg-[#fbfaf7]">
       <section className="border-b border-stone-200">
@@ -78,32 +85,24 @@ export default function HomePage() {
         </div>
 
         <div className="grid gap-8 md:grid-cols-2 xl:grid-cols-4">
-          {products.map((product) => (
+          {bestSellerProducts.map((product) => (
             <ProductCard key={product.id} product={product} />
           ))}
         </div>
       </section>
 
-      <section className="border-y border-stone-200 bg-[#f3f0ea]">
-        <div className="mx-auto grid max-w-6xl gap-10 px-4 py-16 sm:px-6 lg:grid-cols-[0.9fr_1.1fr] lg:px-8 lg:py-20">
-          <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.28em] text-stone-500">
-              Designed For Daily Use
-            </p>
-            <h2 className="mt-4 max-w-md text-3xl font-medium leading-tight text-stone-950 sm:text-4xl">
-              Цэвэр харагдахуй, удаан хэрэглэгдэх чанарыг зэрэгцүүлсэн цуглуулга.
-            </h2>
-          </div>
-          <div className="space-y-5 text-base leading-8 text-stone-600">
-            <p>
-              MartX-ийн бүтээгдэхүүн бүр өдөр бүр хэрэглэхэд эвтэйхэн, зураг дээр ч гоё харагдах,
-              минимал хэв маягийг барьсан байхаар сонгогдсон.
-            </p>
-            <p>
-              Бид эхний ээлжинд хамгийн их сонирхол татах бараануудыг урд хэсэгт тод гаргаж, доош
-              гүйлгэх тусам итгэл төрүүлэх мэдээллүүдийг цэвэрхэн дарааллаар нь харуулж байна.
-            </p>
-          </div>
+      <section className="border-y border-stone-900 bg-[#242321] text-white">
+        <div className="mx-auto max-w-6xl px-4 py-16 text-center sm:px-6 lg:px-8 lg:py-20">
+          <p className="text-xs font-semibold uppercase tracking-[0.32em] text-white/45">Why Customers Choose MartX</p>
+          <h2 className="mx-auto mt-5 max-w-3xl text-3xl font-medium leading-tight sm:text-5xl">
+            Найдвартай захиалга, тодорхой мэдээлэл, чанартай сонголт.
+          </h2>
+          <p className="mx-auto mt-6 max-w-4xl text-base leading-8 text-white/72 sm:text-lg sm:leading-9">
+            MartX дээрх бараа бүрийг өдөр тутмын хэрэглээнд эвтэйхэн эсэх, материалын мэдрэмж,
+            загварын цэвэрхэн харагдах байдал, бодитоор хэрэглэх үнэ цэнээр нь сонгож байршуулдаг.
+            Үнэ, үлдэгдэл, өнгө хэмжээ, зураг, хүргэлт болон тусламжийн мэдээлэл ил тод тул
+            худалдан авагч захиалгаа эргэлзээгүй, тайван хийх боломжтой.
+          </p>
         </div>
       </section>
 

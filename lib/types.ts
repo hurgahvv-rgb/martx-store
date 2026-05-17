@@ -7,10 +7,36 @@ export type Product = {
   compareAtPrice?: number;
   currency: string;
   image: string;
+  galleryImages?: string[];
   rating: number;
   description: string;
+  subtitle?: string | null;
   features: string[];
+  bullets?: string[];
+  specs?: string[];
+  shippingText?: string | null;
+  returnsText?: string | null;
+  warrantyText?: string | null;
+  helpText?: string | null;
+  storyTitle?: string | null;
+  storyDescription?: string | null;
+  storyImage?: string | null;
+  stories?: ProductStoryBlock[];
+  stock?: number;
   isFeatured?: boolean;
+  isActive?: boolean;
+  variants?: ProductVariant[];
+};
+
+export type ProductVariant = {
+  id: string;
+  color?: string | null;
+  size?: string | null;
+  sku?: string | null;
+  price?: number | null;
+  stock: number;
+  image?: string | null;
+  isActive?: boolean;
 };
 
 export type ProductReview = {

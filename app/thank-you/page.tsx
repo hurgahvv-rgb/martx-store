@@ -1,19 +1,14 @@
 import Link from "next/link";
-import { CheckCircle2, Copy, MessageCircle } from "lucide-react";
+import { CheckCircle2, MessageCircle } from "lucide-react";
 
 import { formatPrice } from "@/lib/data";
-
-const bankAccount = {
-  bank: "Хаан банк",
-  owner: "Сайнбаяр Даваа",
-  number: "5015262578",
-  phone: "+976 7777-0000"
-};
+import { getStoreSettings } from "@/lib/store-settings";
 
 type ThankYouPageProps = {
   searchParams: Promise<{
     order?: string;
     total?: string;
+    phone?: string;
   }>;
 };
 
@@ -21,6 +16,15 @@ export default async function ThankYouPage({ searchParams }: ThankYouPageProps) 
   const params = await searchParams;
   const orderCode = params.order ?? "MX-000000";
   const total = Number(params.total ?? 0);
+  const phone = params.phone ?? "";
+  const settings = await getStoreSettings();
+  const paymentReference =
+    phone ||
+    settings.paymentReferenceFormat
+      .replaceAll("{orderCode}", orderCode)
+      .replaceAll("{phone}", "")
+      .replaceAll("{total}", String(total));
+  const activeAccounts = settings.paymentAccounts.filter((account) => account.isActive);
 
   return (
     <section className="mx-auto max-w-4xl px-4 py-16 sm:px-6 lg:px-8">
@@ -34,17 +38,24 @@ export default async function ThankYouPage({ searchParams }: ThankYouPageProps) 
           Баярлалаа, таны захиалга бүртгэгдлээ
         </h1>
         <p className="mx-auto mt-4 max-w-2xl text-sm leading-7 text-slate-600">
-          Төлбөрөө доорх данс руу шилжүүлээд, гүйлгээний screenshot болон захиалгын кодоо бидэнд илгээнэ үү.
-          Төлбөр баталгаажсаны дараа хүргэлтэд гаргана.
+          Төлбөрөө доорх данс руу шилжүүлэхдээ гүйлгээний утга дээр утасны дугаараа бичээрэй.
+          Бид банкны гүйлгээнээс утсаар нь захиалгыг таньж баталгаажуулна.
         </p>
 
         <div className="mx-auto mt-8 grid max-w-2xl gap-3 text-left">
+          <div className="rounded-2xl border-2 border-emerald-200 bg-emerald-50 px-5 py-5">
+            <p className="text-xs uppercase tracking-[0.18em] text-emerald-700">Гүйлгээний утга дээр бичих</p>
+            <p className="mt-2 text-3xl font-semibold text-emerald-950">{paymentReference}</p>
+            <p className="mt-2 text-sm leading-6 text-emerald-800">Төлбөр шилжүүлэхдээ энэ утасны дугаарыг гүйлгээний утга дээр бичнэ.</p>
+          </div>
+
           {[
-            { label: "Захиалгын код", value: orderCode },
             { label: "Төлөх дүн", value: formatPrice(total, "MNT") },
-            { label: "Банк", value: bankAccount.bank },
-            { label: "Данс эзэмшигч", value: bankAccount.owner },
-            { label: "Дансны дугаар", value: bankAccount.number }
+            ...activeAccounts.flatMap((account) => [
+              { label: `${account.bank} эзэмшигч`, value: account.owner },
+              { label: `${account.bank} данс`, value: account.number }
+            ]),
+            { label: "Захиалгын код", value: orderCode, note: "Лавлагаанд ашиглана" }
           ].map((item) => (
             <div
               key={item.label}
@@ -53,11 +64,8 @@ export default async function ThankYouPage({ searchParams }: ThankYouPageProps) 
               <div>
                 <p className="text-xs uppercase tracking-[0.18em] text-slate-400">{item.label}</p>
                 <p className="mt-1 text-lg font-semibold text-ink">{item.value}</p>
+                {"note" in item ? <p className="mt-1 text-xs text-slate-500">{item.note}</p> : null}
               </div>
-              <span className="inline-flex items-center gap-2 text-sm font-semibold text-slate-500">
-                <Copy size={15} />
-                Хуулах боломжтой
-              </span>
             </div>
           ))}
         </div>
@@ -66,8 +74,7 @@ export default async function ThankYouPage({ searchParams }: ThankYouPageProps) 
           <div className="flex gap-3">
             <MessageCircle className="mt-1 shrink-0" size={18} />
             <p>
-              Screenshot илгээх дугаар: <strong>{bankAccount.phone}</strong>. Гүйлгээний утга дээр{" "}
-              <strong>{orderCode}</strong> кодоо бичсэн эсэхээ шалгаарай.
+              Гүйлгээний утга дээр <strong>{paymentReference}</strong> гэж бичсэн эсэхээ шалгаарай. {settings.paymentWarningText}
             </p>
           </div>
         </div>

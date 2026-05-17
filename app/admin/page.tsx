@@ -1,6 +1,6 @@
 import Link from "next/link";
 import type { ComponentType } from "react";
-import { AlertTriangle, CheckCircle2, ClipboardList, Package, TrendingUp } from "lucide-react";
+import { AlertTriangle, CheckCircle2, ClipboardList, Package, Settings, TrendingUp } from "lucide-react";
 
 import { requireAdminSession } from "@/lib/admin-auth";
 import { formatPrice } from "@/lib/data";
@@ -11,33 +11,47 @@ export const dynamic = "force-dynamic";
 
 async function getDashboardData() {
   try {
-    const [orders, products, lowStockProducts] = await Promise.all([
+    const [recentOrders, recentProducts, lowStockProducts, orderStats] = await Promise.all([
       prisma.order.findMany({
         orderBy: { createdAt: "desc" },
-        take: 5,
+        take: 6,
         include: { items: true }
       }),
-      prisma.product.findMany({ orderBy: { updatedAt: "desc" }, take: 5 }),
-      prisma.product.findMany({ where: { stock: { lte: 3 } }, orderBy: { stock: "asc" }, take: 6 })
+      prisma.product.findMany({
+        orderBy: { updatedAt: "desc" },
+        take: 5
+      }),
+      prisma.product.findMany({
+        where: { stock: { lte: 3 }, isActive: true },
+        orderBy: { stock: "asc" },
+        take: 6
+      }),
+      prisma.$queryRaw<{ totalOrders: bigint; totalRevenue: bigint | null; pendingOrders: bigint; paidOrders: bigint }[]>`
+        SELECT
+          COUNT(*) AS "totalOrders",
+          COALESCE(SUM(total), 0) AS "totalRevenue",
+          COUNT(*) FILTER (WHERE status = 'PENDING') AS "pendingOrders",
+          COUNT(*) FILTER (WHERE status = 'PAID') AS "paidOrders"
+        FROM "Order"
+      `
     ]);
-
-    const allOrders = await prisma.order.findMany({ select: { total: true, status: true } });
+    const stats = orderStats[0];
 
     return {
       connected: true,
-      orders,
-      products,
+      recentOrders,
+      recentProducts,
       lowStockProducts,
-      totalOrders: allOrders.length,
-      totalRevenue: allOrders.reduce((sum, order) => sum + order.total, 0),
-      pendingOrders: allOrders.filter((order) => order.status === "PENDING").length,
-      paidOrders: allOrders.filter((order) => order.status === "PAID").length
+      totalOrders: Number(stats?.totalOrders ?? 0),
+      totalRevenue: Number(stats?.totalRevenue ?? 0),
+      pendingOrders: Number(stats?.pendingOrders ?? 0),
+      paidOrders: Number(stats?.paidOrders ?? 0)
     };
   } catch {
     return {
       connected: false,
-      orders: [],
-      products: [],
+      recentOrders: [],
+      recentProducts: [],
       lowStockProducts: [],
       totalOrders: 0,
       totalRevenue: 0,
@@ -51,120 +65,136 @@ export default async function AdminPage() {
   await requireAdminSession();
   const data = await getDashboardData();
 
-  const setupCards = [
-    { title: "Домэйн үүсгэх", done: true },
-    { title: "Үндсэн өнгө солих", done: true },
-    { title: "Лого оруулах", done: true },
-    { title: "Ангилал үүсгэх", done: false },
-    { title: "Бараа оруулах", done: data.products.length > 0 },
-    { title: "Төлбөрийн данс нэмэх", done: true },
-    { title: "Баннер оруулах", done: true },
-    { title: "Хол хэсэг", done: false }
-  ];
-
   return (
     <section className="px-5 py-8 lg:px-8">
       <div className="mx-auto max-w-7xl">
-        <div className="mb-8 flex flex-col gap-4 xl:flex-row xl:items-end xl:justify-between">
+        <div className="mb-8">
           <div>
-            <p className="text-sm font-semibold uppercase tracking-[0.22em] text-slate-400">Дэлгүүрээ эхлүүлэх</p>
-            <h1 className="mt-2 text-3xl font-bold text-slate-950">MartX удирдлагын самбар</h1>
+            <p className="text-sm font-semibold uppercase tracking-[0.22em] text-slate-400">MartX Admin</p>
+            <h1 className="mt-2 text-3xl font-bold text-slate-950">Удирдлагын самбар</h1>
             <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-500">
-              Захиалга, бараа, үлдэгдэл, борлуулалтаа нэг газраас хянах dashboard.
+              Бараа, зураг, үлдэгдэл, захиалгаа browser дотроосоо удирдана.
             </p>
-          </div>
-          <div className="rounded-2xl border border-blue-200 bg-white px-5 py-4 shadow-sm">
-            <div className="flex items-center gap-3">
-              <span className="flex h-10 w-10 items-center justify-center rounded-full bg-blue-50 text-blue-600">
-                <TrendingUp size={20} />
-              </span>
-              <div>
-                <p className="text-sm text-slate-500">Одоогийн бэлэн байдал</p>
-                <p className="text-xl font-bold text-slate-950">72%</p>
-              </div>
-            </div>
-            <div className="mt-3 h-2 w-72 max-w-full rounded-full bg-slate-100">
-              <div className="h-2 w-[72%] rounded-full bg-blue-600" />
-            </div>
           </div>
         </div>
 
         {!data.connected ? (
-          <div className="mb-6 rounded-2xl border border-amber-200 bg-amber-50 p-5 text-sm leading-6 text-amber-900">
-            Database холбогдоогүй байна. Vercel дээр `DATABASE_URL` зөв байгаа эсэхээ шалгаад дахин deploy хийгээрэй.
+          <div className="mb-6 rounded-xl border border-amber-200 bg-amber-50 p-5 text-sm leading-6 text-amber-900">
+            Database холбогдоогүй байна. `DATABASE_URL` тохиргоогоо шалгаарай.
           </div>
         ) : null}
 
         <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-          {setupCards.map((card) => (
-            <article key={card.title} className="rounded-2xl bg-white p-6 shadow-sm">
-              <div className="flex items-start justify-between">
-                <span className="flex h-11 w-11 items-center justify-center rounded-full bg-blue-50 text-blue-600">
-                  {card.done ? <CheckCircle2 size={22} /> : <Package size={22} />}
-                </span>
-                {card.done ? <CheckCircle2 className="text-emerald-500" size={18} /> : null}
-              </div>
-              <h2 className="mt-5 text-center text-base font-bold text-slate-900">{card.title}</h2>
-              {!card.done ? <p className="mt-3 text-center text-xs text-slate-400">1 минут</p> : null}
-            </article>
-          ))}
-        </div>
-
-        <div className="mt-8 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
           <StatCard label="Нийт захиалга" value={data.totalOrders} icon={ClipboardList} />
-          <StatCard label="Баталгаажаагүй" value={data.pendingOrders} icon={AlertTriangle} />
+          <StatCard label="Хүлээгдэж буй" value={data.pendingOrders} icon={AlertTriangle} />
           <StatCard label="Төлбөртэй" value={data.paidOrders} icon={CheckCircle2} />
           <StatCard label="Борлуулалт" value={formatPrice(data.totalRevenue, "MNT")} icon={TrendingUp} />
         </div>
 
-        <div className="mt-8 grid gap-6 xl:grid-cols-[1.4fr_0.9fr]">
-          <div className="rounded-2xl bg-white p-6 shadow-sm">
-            <div className="flex items-center justify-between">
-              <h2 className="text-xl font-bold text-slate-950">Сүүлийн захиалга</h2>
+        <div className="mt-8 grid gap-6 xl:grid-cols-[1.35fr_0.9fr]">
+          <section className="rounded-xl bg-white p-6 shadow-sm">
+            <div className="flex items-center justify-between gap-4">
+              <div>
+                <h2 className="text-xl font-bold text-slate-950">Сүүлийн захиалга</h2>
+                <p className="mt-1 text-sm text-slate-500">Шинэ захиалга болон төлөвийг хурдан хянах хэсэг.</p>
+              </div>
               <Link href="/admin/orders" className="text-sm font-bold text-blue-600">
                 Бүгдийг харах
               </Link>
             </div>
+
             <div className="mt-5 divide-y divide-slate-100">
-              {data.orders.map((order) => (
-                <Link key={order.id} href="/admin/orders" className="grid gap-3 py-4 md:grid-cols-[1fr_auto_auto] md:items-center">
+              {data.recentOrders.map((order) => (
+                <Link
+                  key={order.id}
+                  href="/admin/orders"
+                  className="grid gap-3 py-4 md:grid-cols-[1fr_auto_auto] md:items-center"
+                >
                   <div>
                     <p className="font-bold text-slate-950">{order.orderNumber}</p>
-                    <p className="mt-1 text-sm text-slate-500">{order.customerName} · {order.customerPhone}</p>
+                    <p className="mt-1 text-sm text-slate-500">
+                      {order.customerName} · {order.customerPhone}
+                    </p>
                   </div>
-                  <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-bold text-slate-600">
+                  <span className="w-fit rounded-full bg-slate-100 px-3 py-1 text-xs font-bold text-slate-600">
                     {orderStatusLabels[order.status]}
                   </span>
                   <span className="font-bold text-slate-950">{formatPrice(order.total, "MNT")}</span>
                 </Link>
               ))}
-              {data.connected && data.orders.length === 0 ? (
-                <p className="py-8 text-center text-sm text-slate-500">Одоогоор захиалга байхгүй байна.</p>
-              ) : null}
-            </div>
-          </div>
 
-          <div className="rounded-2xl bg-white p-6 shadow-sm">
-            <div className="flex items-center justify-between">
-              <h2 className="text-xl font-bold text-slate-950">Үлдэгдэл багатай</h2>
-              <Link href="/admin/products" className="text-sm font-bold text-blue-600">
-                Бараа засах
-              </Link>
-            </div>
-            <div className="mt-5 space-y-3">
-              {data.lowStockProducts.map((product) => (
-                <div key={product.id} className="flex items-center justify-between rounded-xl bg-slate-50 px-4 py-3">
-                  <div>
-                    <p className="font-semibold text-slate-900">{product.name}</p>
-                    <p className="text-xs text-slate-500">{product.category}</p>
-                  </div>
-                  <span className="rounded-full bg-amber-100 px-3 py-1 text-xs font-bold text-amber-700">{product.stock}ш</span>
-                </div>
-              ))}
-              {data.connected && data.lowStockProducts.length === 0 ? (
-                <p className="rounded-xl bg-slate-50 px-4 py-8 text-center text-sm text-slate-500">Үлдэгдэл багатай бараа алга.</p>
+              {data.connected && data.recentOrders.length === 0 ? (
+                <p className="py-10 text-center text-sm text-slate-500">Одоогоор захиалга байхгүй байна.</p>
               ) : null}
             </div>
+          </section>
+
+          <div className="space-y-6">
+            <section className="rounded-xl bg-white p-6 shadow-sm">
+              <div className="flex items-center justify-between gap-4">
+                <div>
+                  <h2 className="text-xl font-bold text-slate-950">Сүүлийн бараа</h2>
+                  <p className="mt-1 text-sm text-slate-500">Сүүлд нэмсэн эсвэл зассан бараанууд.</p>
+                </div>
+                <Package className="text-blue-600" size={22} />
+              </div>
+
+              <div className="mt-5 space-y-3">
+                {data.recentProducts.map((product) => (
+                  <Link
+                    key={product.id}
+                    href="/admin/products"
+                    className="flex items-center justify-between rounded-xl bg-slate-50 px-4 py-3"
+                  >
+                    <div>
+                      <p className="font-semibold text-slate-900">{product.name}</p>
+                      <p className="text-xs text-slate-500">{product.category}</p>
+                    </div>
+                    <span className="text-sm font-bold text-slate-900">{formatPrice(product.price, "MNT")}</span>
+                  </Link>
+                ))}
+
+                {data.connected && data.recentProducts.length === 0 ? (
+                  <p className="rounded-xl bg-slate-50 px-4 py-8 text-center text-sm text-slate-500">
+                    Бараа хараахан нэмээгүй байна.
+                  </p>
+                ) : null}
+              </div>
+            </section>
+
+            <section className="rounded-xl bg-white p-6 shadow-sm">
+              <div className="flex items-center justify-between gap-4">
+                <div>
+                  <h2 className="text-xl font-bold text-slate-950">Үлдэгдэл багатай</h2>
+                  <p className="mt-1 text-sm text-slate-500">3 болон түүнээс цөөн үлдэгдэлтэй бараа.</p>
+                </div>
+                <Settings className="text-slate-400" size={22} />
+              </div>
+
+              <div className="mt-5 space-y-3">
+                {data.lowStockProducts.map((product) => (
+                  <Link
+                    key={product.id}
+                    href="/admin/products"
+                    className="flex items-center justify-between rounded-xl bg-slate-50 px-4 py-3"
+                  >
+                    <div>
+                      <p className="font-semibold text-slate-900">{product.name}</p>
+                      <p className="text-xs text-slate-500">{product.category}</p>
+                    </div>
+                    <span className="rounded-full bg-amber-100 px-3 py-1 text-xs font-bold text-amber-700">
+                      {product.stock}ш
+                    </span>
+                  </Link>
+                ))}
+
+                {data.connected && data.lowStockProducts.length === 0 ? (
+                  <p className="rounded-xl bg-slate-50 px-4 py-8 text-center text-sm text-slate-500">
+                    Үлдэгдэл багатай бараа алга.
+                  </p>
+                ) : null}
+              </div>
+            </section>
           </div>
         </div>
       </div>
@@ -182,8 +212,8 @@ function StatCard({
   icon: ComponentType<{ size?: number; className?: string }>;
 }) {
   return (
-    <article className="rounded-2xl bg-white p-5 shadow-sm">
-      <div className="flex items-center justify-between">
+    <article className="rounded-xl bg-white p-5 shadow-sm">
+      <div className="flex items-center justify-between gap-4">
         <div>
           <p className="text-sm font-semibold text-slate-500">{label}</p>
           <p className="mt-2 text-2xl font-bold text-slate-950">{value}</p>

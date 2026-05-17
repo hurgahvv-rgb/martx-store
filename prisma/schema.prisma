@@ -37,23 +37,98 @@ model Category {
   updatedAt   DateTime  @updatedAt
 }
 
+model StoreSetting {
+  id                    String   @id @default("default")
+  shippingText          String?
+  returnsText           String?
+  warrantyText          String?
+  helpText              String?
+  paymentBank           String?
+  paymentAccountOwner   String?
+  paymentAccountNumber  String?
+  paymentPhone          String?
+  paymentInstructions   String?
+  paymentMethodsJson    String?
+  paymentAccountsJson   String?
+  paymentReferenceFormat String?
+  paymentWarningText    String?
+  shippingUlaanbaatarFee Int?
+  shippingProvinceFee   Int?
+  freeShippingThreshold Int?
+  storeName             String?
+  storeSubtitle         String?
+  storeLogo             String?
+  contactPhone          String?
+  contactEmail          String?
+  facebookUrl           String?
+  instagramUrl          String?
+  youtubeUrl            String?
+  footerText            String?
+  announcementText      String?
+  heroProductId         String?
+  headerMenuJson        String?
+  footerMenuJson        String?
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+}
+
 model Product {
   id             String      @id @default(cuid())
   name           String
   slug           String      @unique
   category       String
   description    String
+  subtitle       String?
+  bullets        String[]    @default([])
+  specs          String[]    @default([])
+  shippingText   String?
+  returnsText    String?
+  warrantyText   String?
+  helpText       String?
+  storyTitle     String?
+  storyDescription String?
+  storyImage     String?
   price          Int
   compareAtPrice Int?
   currency       String      @default("MNT")
   image          String
+  galleryImages  String[]    @default([])
   rating         Float       @default(5)
   stock          Int         @default(0)
   isFeatured     Boolean     @default(false)
   isActive       Boolean     @default(true)
+  variants       ProductVariant[]
+  stories        ProductStory[]
   orderItems     OrderItem[]
   createdAt      DateTime    @default(now())
   updatedAt      DateTime    @updatedAt
+}
+
+model ProductStory {
+  id          String   @id @default(cuid())
+  productId   String
+  product     Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  title       String
+  description String
+  image       String
+  sortOrder   Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model ProductVariant {
+  id        String   @id @default(cuid())
+  productId String
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  color     String?
+  size      String?
+  sku       String?
+  price     Int?
+  stock     Int      @default(0)
+  image     String?
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Address {
@@ -73,6 +148,10 @@ model Order {
   id            String      @id @default(cuid())
   orderNumber   String      @unique
   status        OrderStatus @default(PENDING)
+  paymentStatus String      @default("PENDING")
+  paymentScreenshot String?
+  adminNote     String?
+  paidAt        DateTime?
   subtotal      Int
   shippingFee   Int         @default(0)
   total         Int
