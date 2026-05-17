@@ -2,6 +2,8 @@ import { mkdir, writeFile } from "fs/promises";
 import path from "path";
 import { randomUUID } from "crypto";
 
+import { uploadImageToCloudinary } from "@/lib/cloudinary";
+
 const uploadDir = path.join(process.cwd(), "public", "uploads", "products");
 
 function cleanFileName(name: string) {
@@ -20,6 +22,13 @@ export async function saveProductImages(files: File[]) {
   await mkdir(uploadDir, { recursive: true });
 
   for (const file of imageFiles) {
+    const cloudinaryUrl = await uploadImageToCloudinary(file, "martx/products");
+
+    if (cloudinaryUrl) {
+      images.push(cloudinaryUrl);
+      continue;
+    }
+
     const bytes = Buffer.from(await file.arrayBuffer());
     const fileName = cleanFileName(file.name);
     await writeFile(path.join(uploadDir, fileName), bytes);

@@ -1,5 +1,5 @@
-const CACHE_NAME = "martx-store-v1";
-const APP_SHELL = ["/", "/products", "/cart", "/checkout", "/martx-app-icon.svg"];
+const CACHE_NAME = "martx-store-v2";
+const APP_SHELL = ["/martx-app-icon.svg"];
 
 self.addEventListener("install", (event) => {
   event.waitUntil(
@@ -23,7 +23,14 @@ self.addEventListener("fetch", (event) => {
   const request = event.request;
   const url = new URL(request.url);
 
-  if (request.method !== "GET" || url.origin !== self.location.origin || url.pathname.startsWith("/admin")) {
+  if (
+    request.method !== "GET" ||
+    url.origin !== self.location.origin ||
+    url.pathname.startsWith("/admin") ||
+    url.pathname.startsWith("/_next") ||
+    request.mode === "navigate" ||
+    request.destination === "document"
+  ) {
     return;
   }
 
@@ -37,6 +44,6 @@ self.addEventListener("fetch", (event) => {
 
         return response;
       })
-      .catch(() => caches.match(request).then((response) => response || caches.match("/")))
+      .catch(() => caches.match(request))
   );
 });

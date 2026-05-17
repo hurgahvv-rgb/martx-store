@@ -2,6 +2,8 @@ import { randomUUID } from "crypto";
 import { mkdir, writeFile } from "fs/promises";
 import path from "path";
 
+import { uploadImageToCloudinary } from "@/lib/cloudinary";
+
 const uploadDir = path.join(process.cwd(), "public", "uploads", "store");
 
 function cleanFileName(name: string) {
@@ -12,6 +14,12 @@ function cleanFileName(name: string) {
 export async function saveStoreLogo(file: File | null) {
   if (!file || file.size === 0 || !file.type.startsWith("image/")) {
     return null;
+  }
+
+  const cloudinaryUrl = await uploadImageToCloudinary(file, "martx/store");
+
+  if (cloudinaryUrl) {
+    return cloudinaryUrl;
   }
 
   await mkdir(uploadDir, { recursive: true });
