@@ -11,14 +11,15 @@ function cleanFileName(name: string) {
 
 export async function saveProductImages(files: File[]) {
   const images: string[] = [];
+  const imageFiles = files.filter((file) => file && file.size > 0 && file.type.startsWith("image/"));
+
+  if (imageFiles.length === 0) {
+    return images;
+  }
 
   await mkdir(uploadDir, { recursive: true });
 
-  for (const file of files) {
-    if (!file || file.size === 0 || !file.type.startsWith("image/")) {
-      continue;
-    }
-
+  for (const file of imageFiles) {
     const bytes = Buffer.from(await file.arrayBuffer());
     const fileName = cleanFileName(file.name);
     await writeFile(path.join(uploadDir, fileName), bytes);

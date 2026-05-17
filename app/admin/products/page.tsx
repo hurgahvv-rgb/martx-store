@@ -1,10 +1,13 @@
 import Image from "next/image";
 import Link from "next/link";
 import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
 
 import { GalleryImageManager } from "@/components/gallery-image-manager";
 import { ImageUploadField } from "@/components/image-upload-field";
 import { MainImageManager } from "@/components/main-image-manager";
+import { SaveNotice } from "@/components/save-notice";
+import { SubmitButton } from "@/components/submit-button";
 import { StoryEditor } from "@/components/story-editor";
 import { VariantEditor } from "@/components/variant-editor";
 import { requireAdminSession } from "@/lib/admin-auth";
@@ -141,6 +144,16 @@ function Field({
   );
 }
 
+function getProductSaveMessage(saved: string) {
+  const labels: Record<string, string> = {
+    created: "Бараа амжилттай нэмэгдлээ.",
+    updated: "Бараа амжилттай хадгалагдлаа.",
+    deleted: "Бараа амжилттай устгагдлаа."
+  };
+
+  return labels[saved] ?? "Өөрчлөлт амжилттай хадгалагдлаа.";
+}
+
 async function createProduct(formData: FormData) {
   "use server";
 
@@ -199,6 +212,7 @@ async function createProduct(formData: FormData) {
   revalidatePath(`/products/${slug}`);
   revalidatePath("/admin");
   revalidatePath("/admin/products");
+  redirect("/admin/products?saved=created");
 }
 
 async function updateProduct(formData: FormData) {
@@ -275,6 +289,7 @@ async function updateProduct(formData: FormData) {
   revalidatePath(`/products/${slug}`);
   revalidatePath("/admin");
   revalidatePath("/admin/products");
+  redirect("/admin/products?saved=updated");
 }
 
 async function deleteProduct(formData: FormData) {
@@ -292,6 +307,7 @@ async function deleteProduct(formData: FormData) {
 
   revalidatePath("/admin");
   revalidatePath("/admin/products");
+  redirect("/admin/products?saved=deleted");
 }
 
 async function getProducts() {
@@ -376,7 +392,7 @@ async function getCategoryOptions() {
 export default async function AdminProductsPage({
   searchParams
 }: {
-  searchParams: Promise<{ new?: string }>;
+  searchParams: Promise<{ new?: string; saved?: string }>;
 }) {
   await requireAdminSession();
   const params = await searchParams;
@@ -423,6 +439,8 @@ export default async function AdminProductsPage({
           </div>
         ) : null}
 
+        {params.saved ? <SaveNotice message={getProductSaveMessage(params.saved)} /> : null}
+
         {isNewMode ? (
         <form action={createProduct} className="mb-6 rounded-xl bg-white p-6 shadow-sm" encType="multipart/form-data">
           <div className="flex items-center justify-between gap-4">
@@ -430,9 +448,9 @@ export default async function AdminProductsPage({
               <h2 className="text-xl font-bold text-slate-950">Шинэ бараа нэмэх</h2>
               <p className="mt-1 text-sm text-slate-500">Зураг URL бичиж болно, эсвэл шууд компьютерээсээ upload хийнэ.</p>
             </div>
-            <button className="rounded-xl bg-blue-600 px-5 py-3 text-sm font-bold text-white shadow-lg shadow-blue-600/20">
+            <SubmitButton pendingText="Хадгалж байна..." className="rounded-xl bg-blue-600 px-5 py-3 text-sm font-bold text-white shadow-lg shadow-blue-600/20">
               Нэмэх
-            </button>
+            </SubmitButton>
           </div>
 
           <div className="mt-5 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
@@ -627,15 +645,17 @@ export default async function AdminProductsPage({
                         <input name="isActive" type="checkbox" defaultChecked={product.isActive} />
                         Идэвхтэй
                       </label>
-                      <button className="rounded-xl bg-slate-950 px-5 py-3 text-sm font-bold text-white">Хадгалах</button>
+                      <SubmitButton pendingText="Хадгалж байна..." className="rounded-xl bg-slate-950 px-5 py-3 text-sm font-bold text-white">
+                        Хадгалах
+                      </SubmitButton>
                     </div>
                   </form>
 
                   <form action={deleteProduct} className="mt-4 border-t border-red-100 pt-4">
                     <input type="hidden" name="id" value={product.id} />
-                    <button className="rounded-xl border border-red-200 bg-red-50 px-5 py-3 text-sm font-bold text-red-600 transition hover:bg-red-100">
+                    <SubmitButton pendingText="Устгаж байна..." className="rounded-xl border border-red-200 bg-red-50 px-5 py-3 text-sm font-bold text-red-600 transition hover:bg-red-100">
                       Дэлгүүрээс устгах
-                    </button>
+                    </SubmitButton>
                   </form>
                 </div>
               </div>
