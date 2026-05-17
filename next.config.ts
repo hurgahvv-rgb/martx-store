@@ -4,7 +4,7 @@ const nextConfig: NextConfig = {
   outputFileTracingRoot: process.cwd(),
   experimental: {
     serverActions: {
-      bodySizeLimit: "25mb"
+      bodySizeLimit: "60mb"
     }
   },
   images: {
