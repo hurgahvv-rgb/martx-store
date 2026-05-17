@@ -20,7 +20,17 @@ export async function saveProductImages(files: File[]) {
   }
 
   for (const file of imageFiles) {
-    const cloudinaryUrl = await uploadImageToCloudinary(file, "martx/products");
+    let cloudinaryUrl: string | null = null;
+
+    try {
+      cloudinaryUrl = await uploadImageToCloudinary(file, "martx/products");
+    } catch (error) {
+      console.error("Product image upload failed", error);
+
+      if (process.env.VERCEL) {
+        continue;
+      }
+    }
 
     if (cloudinaryUrl) {
       images.push(cloudinaryUrl);

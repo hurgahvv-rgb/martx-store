@@ -3,8 +3,19 @@
 import { Trash2 } from "lucide-react";
 import { useState } from "react";
 
-export function GalleryImageManager({ images, productName }: { images: string[]; productName: string }) {
-  const [keptImages, setKeptImages] = useState(images);
+import { normalizeImageSrc } from "@/lib/image-src";
+
+function normalizeImages(images: unknown) {
+  return Array.isArray(images)
+    ? images
+        .map((image) => (typeof image === "string" ? image.trim() : ""))
+        .filter(Boolean)
+        .map(normalizeImageSrc)
+    : [];
+}
+
+export function GalleryImageManager({ images, productName }: { images: string[] | null | undefined; productName: string }) {
+  const [keptImages, setKeptImages] = useState(() => normalizeImages(images));
 
   const removeImage = (image: string) => {
     setKeptImages((current) => current.filter((item) => item !== image));

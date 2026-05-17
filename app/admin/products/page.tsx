@@ -11,6 +11,7 @@ import { StoryEditor } from "@/components/story-editor";
 import { VariantEditor } from "@/components/variant-editor";
 import { requireAdminSession } from "@/lib/admin-auth";
 import { formatPrice } from "@/lib/data";
+import { normalizeImageSrc } from "@/lib/image-src";
 import { getFiles, saveProductImages } from "@/lib/product-media";
 import { prisma } from "@/lib/prisma";
 
@@ -18,6 +19,10 @@ export const dynamic = "force-dynamic";
 
 const fallbackImage =
   "https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=1200&q=80";
+
+function getStringArray(value: unknown) {
+  return Array.isArray(value) ? value.filter((item): item is string => typeof item === "string") : [];
+}
 
 function slugify(value: string) {
   return value
@@ -354,6 +359,19 @@ async function getProducts() {
       connected: true,
       products: products.map((product) => ({
         ...product,
+        image: normalizeImageSrc(product.image),
+        galleryImages: getStringArray(product.galleryImages).map(normalizeImageSrc),
+        bullets: getStringArray(product.bullets),
+        specs: getStringArray(product.specs),
+        storyImage: product.storyImage ? normalizeImageSrc(product.storyImage) : null,
+        variants: product.variants.map((variant) => ({
+          ...variant,
+          image: variant.image ? normalizeImageSrc(variant.image) : null
+        })),
+        stories: product.stories.map((story) => ({
+          ...story,
+          image: normalizeImageSrc(story.image)
+        })),
         soldQuantity: soldByProductId.get(product.id) ?? soldByProductName.get(product.name) ?? 0
       }))
     };

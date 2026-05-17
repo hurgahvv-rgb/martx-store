@@ -3,8 +3,10 @@
 import { Trash2 } from "lucide-react";
 import { useState } from "react";
 
-export function MainImageManager({ image, productName }: { image: string; productName: string }) {
-  const [currentImage, setCurrentImage] = useState(image);
+import { normalizeImageSrc } from "@/lib/image-src";
+
+export function MainImageManager({ image, productName }: { image: string | null | undefined; productName: string }) {
+  const [currentImage, setCurrentImage] = useState(() => normalizeImageSrc(image));
 
   return (
     <div className="md:col-span-2">
