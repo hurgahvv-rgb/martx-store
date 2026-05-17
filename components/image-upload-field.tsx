@@ -7,8 +7,74 @@ type Preview = {
   id: string;
   name: string;
   url: string;
-  file: File;
+  uploadedUrl?: string;
+  status: "uploading" | "uploaded" | "error";
+  error?: string;
 };
+
+type CloudinarySignature = {
+  cloudName: string;
+  apiKey: string;
+  folder: string;
+  timestamp: number;
+  signature: string;
+};
+
+function getUploadedUrlFieldName(name: string) {
+  if (name.endsWith("Files")) {
+    return `${name.slice(0, -5)}Urls`;
+  }
+
+  if (name.includes("File_")) {
+    return name.replace("File_", "Url_");
+  }
+
+  if (name.endsWith("File")) {
+    return `${name.slice(0, -4)}Url`;
+  }
+
+  return `${name}Url`;
+}
+
+async function getCloudinarySignature() {
+  const response = await fetch("/api/cloudinary/sign", {
+    method: "POST",
+    cache: "no-store"
+  });
+
+  if (!response.ok) {
+    throw new Error("Cloudinary тохиргоо алдаатай байна.");
+  }
+
+  return (await response.json()) as CloudinarySignature;
+}
+
+async function uploadDirectlyToCloudinary(file: File) {
+  const signature = await getCloudinarySignature();
+  const formData = new FormData();
+  formData.append("file", file);
+  formData.append("api_key", signature.apiKey);
+  formData.append("folder", signature.folder);
+  formData.append("timestamp", String(signature.timestamp));
+  formData.append("signature", signature.signature);
+
+  const response = await fetch(`https://api.cloudinary.com/v1_1/${signature.cloudName}/image/upload`, {
+    method: "POST",
+    body: formData
+  });
+
+  if (!response.ok) {
+    throw new Error("Зураг Cloudinary руу upload хийж чадсангүй.");
+  }
+
+  const result = (await response.json()) as { secure_url?: string };
+
+  if (!result.secure_url) {
+    throw new Error("Cloudinary URL буцаасангүй.");
+  }
+
+  return result.secure_url;
+}
 
 export function ImageUploadField({
   name,
@@ -21,6 +87,7 @@ export function ImageUploadField({
 }) {
   const inputRef = useRef<HTMLInputElement | null>(null);
   const [previews, setPreviews] = useState<Preview[]>([]);
+  const uploadedUrlFieldName = getUploadedUrlFieldName(name);
 
   useEffect(() => {
     return () => {
@@ -28,16 +95,45 @@ export function ImageUploadField({
     };
   }, [previews]);
 
-  const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
+  const handleChange = async (event: ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(event.target.files ?? []).filter((file) => file.type.startsWith("image/"));
     const nextPreviews = files.map((file) => ({
       id: `${file.name}-${file.lastModified}-${file.size}`,
       name: file.name,
       url: URL.createObjectURL(file),
-      file
+      status: "uploading" as const
     }));
 
     setPreviews(nextPreviews);
+
+    if (inputRef.current) {
+      inputRef.current.value = "";
+    }
+
+    await Promise.all(
+      files.map(async (file, index) => {
+        const preview = nextPreviews[index];
+
+        try {
+          const uploadedUrl = await uploadDirectlyToCloudinary(file);
+          setPreviews((current) =>
+            current.map((item) => (item.id === preview.id ? { ...item, uploadedUrl, status: "uploaded" } : item))
+          );
+        } catch (error) {
+          setPreviews((current) =>
+            current.map((item) =>
+              item.id === preview.id
+                ? {
+                    ...item,
+                    status: "error",
+                    error: error instanceof Error ? error.message : "Upload алдаа гарлаа."
+                  }
+                : item
+            )
+          );
+        }
+      })
+    );
   };
 
   const removePreview = (id: string) => {
@@ -74,6 +170,7 @@ export function ImageUploadField({
         <div className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-3">
           {previews.map((preview) => (
             <div key={preview.id} className="overflow-hidden rounded-lg border border-slate-200 bg-slate-50 p-2">
+              {preview.uploadedUrl ? <input type="hidden" name={uploadedUrlFieldName} value={preview.uploadedUrl} /> : null}
               <div className="relative aspect-square overflow-hidden rounded-md bg-slate-100">
                 <img src={preview.url} alt={preview.name} className="h-full w-full object-cover" />
                 <button
@@ -86,6 +183,18 @@ export function ImageUploadField({
                 </button>
               </div>
               <p className="mt-2 truncate text-xs text-slate-500">{preview.name}</p>
+              <p
+                className={[
+                  "mt-1 text-xs font-semibold",
+                  preview.status === "uploaded"
+                    ? "text-emerald-600"
+                    : preview.status === "error"
+                      ? "text-red-600"
+                      : "text-blue-600"
+                ].join(" ")}
+              >
+                {preview.status === "uploaded" ? "Uploaded" : preview.status === "error" ? preview.error : "Uploading..."}
+              </p>
             </div>
           ))}
         </div>

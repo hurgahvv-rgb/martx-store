@@ -50,6 +50,23 @@ function getLines(formData: FormData, key: string) {
     .filter(Boolean);
 }
 
+function getUrls(formData: FormData, key: string) {
+  return formData
+    .getAll(key)
+    .map((value) => String(value).trim())
+    .filter(Boolean);
+}
+
+async function getUploadedImages(formData: FormData, fileKey: string, urlKey: string) {
+  const directUrls = getUrls(formData, urlKey);
+
+  if (directUrls.length > 0) {
+    return directUrls;
+  }
+
+  return saveProductImages(getFiles(formData, fileKey));
+}
+
 async function parseVariants(formData: FormData) {
   const lines = getText(formData, "variants")
     .split(/\r?\n/)
@@ -60,7 +77,7 @@ async function parseVariants(formData: FormData) {
 
   for (const [index, line] of lines.entries()) {
     const [color, size, price, stock, sku, existingImage] = line.split("|").map((item) => item.trim());
-    const uploadedImages = await saveProductImages(getFiles(formData, `variantImageFile_${index}`));
+    const uploadedImages = await getUploadedImages(formData, `variantImageFile_${index}`, `variantImageUrl_${index}`);
     const image = uploadedImages[0] ?? existingImage;
 
     if (color || size || price || stock || sku || image) {
@@ -105,7 +122,7 @@ async function parseStories(formData: FormData) {
 
   for (const [index, line] of lines.entries()) {
     const [title = "", description = "", existingImage = ""] = line.split("|").map((item) => item.trim());
-    const uploadedImages = await saveProductImages(getFiles(formData, `storyImageFile_${index}`));
+    const uploadedImages = await getUploadedImages(formData, `storyImageFile_${index}`, `storyImageUrl_${index}`);
     const image = uploadedImages[0] ?? getText(formData, `storyExistingImage_${index}`) ?? existingImage;
 
     if (title || description || image) {
@@ -169,9 +186,9 @@ async function createProduct(formData: FormData) {
     return;
   }
 
-  const mainUploads = await saveProductImages(getFiles(formData, "mainImageFile"));
-  const galleryUploads = await saveProductImages(getFiles(formData, "galleryImageFiles"));
-  const storyUploads = await saveProductImages(getFiles(formData, "storyImageFile"));
+  const mainUploads = await getUploadedImages(formData, "mainImageFile", "mainImageUrl");
+  const galleryUploads = await getUploadedImages(formData, "galleryImageFiles", "galleryImageUrls");
+  const storyUploads = await getUploadedImages(formData, "storyImageFile", "storyImageUrl");
   const image = mainUploads[0] ?? fallbackImage;
   const storyImage = storyUploads[0];
   const variants = await parseVariants(formData);
@@ -235,9 +252,9 @@ async function updateProduct(formData: FormData) {
     select: { slug: true }
   });
 
-  const mainUploads = await saveProductImages(getFiles(formData, "mainImageFile"));
-  const galleryUploads = await saveProductImages(getFiles(formData, "galleryImageFiles"));
-  const storyUploads = await saveProductImages(getFiles(formData, "storyImageFile"));
+  const mainUploads = await getUploadedImages(formData, "mainImageFile", "mainImageUrl");
+  const galleryUploads = await getUploadedImages(formData, "galleryImageFiles", "galleryImageUrls");
+  const storyUploads = await getUploadedImages(formData, "storyImageFile", "storyImageUrl");
   const keptGalleryImages = formData
     .getAll("keepGalleryImages")
     .map((value) => String(value))

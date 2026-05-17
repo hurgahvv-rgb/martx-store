@@ -53,6 +53,28 @@ export function hasCloudinaryConfig() {
   return Boolean(getCloudinaryConfig());
 }
 
+export function createCloudinaryUploadSignature(folder: string) {
+  const config = getCloudinaryConfig();
+
+  if (!config) {
+    throw new Error("Cloudinary environment variables are missing.");
+  }
+
+  const timestamp = Math.round(Date.now() / 1000);
+  const uploadParams = {
+    folder,
+    timestamp
+  };
+
+  return {
+    cloudName: config.cloudName,
+    apiKey: config.apiKey,
+    folder,
+    timestamp,
+    signature: signUploadParams(uploadParams, config.apiSecret)
+  };
+}
+
 export async function uploadImageToCloudinary(file: File, folder: string) {
   const config = getCloudinaryConfig();
 
@@ -64,19 +86,15 @@ export async function uploadImageToCloudinary(file: File, folder: string) {
     return null;
   }
 
-  const timestamp = Math.round(Date.now() / 1000);
-  const uploadParams = {
-    folder,
-    timestamp
-  };
+  const signedUpload = createCloudinaryUploadSignature(folder);
   const formData = new FormData();
   formData.append("file", file);
-  formData.append("api_key", config.apiKey);
+  formData.append("api_key", signedUpload.apiKey);
   formData.append("folder", folder);
-  formData.append("timestamp", String(timestamp));
-  formData.append("signature", signUploadParams(uploadParams, config.apiSecret));
+  formData.append("timestamp", String(signedUpload.timestamp));
+  formData.append("signature", signedUpload.signature);
 
-  const response = await fetch(`https://api.cloudinary.com/v1_1/${config.cloudName}/image/upload`, {
+  const response = await fetch(`https://api.cloudinary.com/v1_1/${signedUpload.cloudName}/image/upload`, {
     method: "POST",
     body: formData
   });
