@@ -68,8 +68,8 @@ export const defaultPaymentAccounts: PaymentAccountSetting[] = [
 export const defaultHeaderMenu: MenuLinkSetting[] = [
   { id: "products", label: "Бүх бараа", href: "/products", isActive: true },
   { id: "categories", label: "Ангилал", href: "/categories", isActive: true },
-  { id: "new", label: "Шинэ", href: "/products", isActive: true },
-  { id: "featured", label: "Онцлох", href: "/products", isActive: true }
+  { id: "new", label: "Шинэ", href: "/products?filter=new", isActive: true },
+  { id: "featured", label: "Онцлох", href: "/products?filter=featured", isActive: true }
 ];
 
 export const defaultFooterMenu: MenuLinkSetting[] = [

@@ -28,10 +28,22 @@ const defaultStoreProfile: StoreProfile = {
   headerMenu: [
     { id: "products", label: "Бүх бараа", href: "/products", isActive: true },
     { id: "categories", label: "Ангилал", href: "/categories", isActive: true },
-    { id: "new", label: "Шинэ", href: "/products", isActive: true },
-    { id: "featured", label: "Онцлох", href: "/products", isActive: true }
+    { id: "new", label: "Шинэ", href: "/products?filter=new", isActive: true },
+    { id: "featured", label: "Онцлох", href: "/products?filter=featured", isActive: true }
   ]
 };
+
+function resolveMenuHref(item: StoreProfile["headerMenu"][number]) {
+  if (item.id === "new" && item.href === "/products") {
+    return "/products?filter=new";
+  }
+
+  if (item.id === "featured" && item.href === "/products") {
+    return "/products?filter=featured";
+  }
+
+  return item.href;
+}
 
 export function SiteHeader() {
   const pathname = usePathname();
@@ -116,7 +128,7 @@ export function SiteHeader() {
 
             <nav className="hidden items-center gap-6 text-sm font-medium text-stone-700 lg:flex">
               {profile.headerMenu.filter((item) => item.isActive).map((item) => (
-                <Link key={`${item.href}-${item.label}`} href={item.href} className="transition hover:text-black">
+                <Link key={`${item.href}-${item.label}`} href={resolveMenuHref(item)} className="transition hover:text-black">
                   {item.label}
                 </Link>
               ))}
@@ -178,7 +190,7 @@ export function SiteHeader() {
               {profile.headerMenu.filter((item) => item.isActive).map((item) => (
                 <Link
                   key={`mobile-${item.href}-${item.label}`}
-                  href={item.href}
+                  href={resolveMenuHref(item)}
                   onClick={() => setMobileMenuOpen(false)}
                   className="rounded-2xl bg-stone-50 px-4 py-3 transition active:bg-stone-100"
                 >
