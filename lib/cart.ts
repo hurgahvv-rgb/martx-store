@@ -47,8 +47,12 @@ export function readCart() {
 }
 
 export function writeCart(items: CartItem[]) {
-  window.localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(items));
-  window.dispatchEvent(new Event("martx-cart-updated"));
+  try {
+    window.localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(items));
+    window.dispatchEvent(new Event("martx-cart-updated"));
+  } catch {
+    // Cart writes should not break the product page controls.
+  }
 }
 
 export function getCartQuantity(items: CartItem[]) {

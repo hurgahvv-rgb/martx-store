@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import Link from "next/link";
 
 import { ProductImage } from "@/components/product-image";
 
@@ -33,9 +34,10 @@ export function ProductGallery({
 
       <div className="grid w-full grid-cols-5 gap-3">
         {galleryImages.map((image) => (
-          <button
+          <Link
             key={image}
-            type="button"
+            href={`?image=${encodeURIComponent(image)}`}
+            scroll={false}
             onClick={() => setActiveImage(image)}
             className={[
               "overflow-hidden rounded-[0.95rem] border bg-[#f3f0ea] transition",
@@ -45,7 +47,7 @@ export function ProductGallery({
             <div className="relative aspect-square">
               <ProductImage src={image} alt={title} className="absolute inset-0 h-full w-full object-cover" />
             </div>
-          </button>
+          </Link>
         ))}
       </div>
     </div>

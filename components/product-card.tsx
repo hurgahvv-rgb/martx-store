@@ -1,52 +1,17 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
-
 import { formatPrice } from "@/lib/data";
 import { Product } from "@/lib/types";
 import { ProductImage } from "@/components/product-image";
 
 export function ProductCard({ product }: { product: Product }) {
-  const router = useRouter();
-  const cardRef = useRef<HTMLAnchorElement | null>(null);
-  const [visible, setVisible] = useState(false);
   const href = `/products/${product.slug}`;
-
-  useEffect(() => {
-    const element = cardRef.current;
-
-    if (!element) {
-      return;
-    }
-
-    const observer = new IntersectionObserver(
-      ([entry]) => setVisible(entry.isIntersecting),
-      { threshold: 0.16 }
-    );
-
-    observer.observe(element);
-
-    return () => observer.disconnect();
-  }, []);
-
-  useEffect(() => {
-    if (visible) {
-      router.prefetch(href);
-    }
-  }, [href, router, visible]);
 
   return (
     <Link
-      ref={cardRef}
       href={href}
-      onMouseEnter={() => router.prefetch(href)}
-      onFocus={() => router.prefetch(href)}
-      className={[
-        "group block transition-all duration-700",
-        visible ? "translate-y-0 opacity-100" : "translate-y-8 opacity-0"
-      ].join(" ")}
+      className="group block transition-all duration-300"
     >
       <div className="overflow-hidden rounded-[2rem] bg-[#f4f1eb]">
         <div className="relative aspect-[4/4.8] overflow-hidden">

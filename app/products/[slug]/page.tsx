@@ -9,10 +9,12 @@ import { getFeaturedStoreProducts, getProductDetail, getStoreProductBySlug } fro
 
 type ProductDetailPageProps = {
   params: Promise<{ slug: string }>;
+  searchParams: Promise<{ image?: string }>;
 };
 
-export default async function ProductDetailPage({ params }: ProductDetailPageProps) {
+export default async function ProductDetailPage({ params, searchParams }: ProductDetailPageProps) {
   const { slug } = await params;
+  const { image } = await searchParams;
   const product = await getStoreProductBySlug(slug);
 
   if (!product) {
@@ -21,6 +23,7 @@ export default async function ProductDetailPage({ params }: ProductDetailPagePro
 
   const detail = await getProductDetail(product);
   const featuredProducts = await getFeaturedStoreProducts();
+  const selectedImage = image && detail.gallery.includes(image) ? image : undefined;
 
   return (
     <div className="bg-[#fbfaf7]">
@@ -33,7 +36,7 @@ export default async function ProductDetailPage({ params }: ProductDetailPagePro
           <span>{product.name}</span>
         </div>
 
-        <ProductDetailClient product={product} detail={detail} />
+        <ProductDetailClient product={product} detail={detail} selectedImage={selectedImage} />
       </section>
 
       {detail.story.length > 0 && (
