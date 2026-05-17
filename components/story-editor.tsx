@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import { Plus, Trash2 } from "lucide-react";
 import { useMemo, useState } from "react";
 
@@ -116,7 +115,7 @@ export function StoryEditor({ name, initialValue }: { name: string; initialValue
                   <input type="hidden" name={`storyExistingImage_${index}`} value={row.image} />
                   <p className="mb-2 text-xs font-bold uppercase tracking-[0.14em] text-slate-500">Одоогийн story зураг</p>
                   <div className="relative h-36 w-52 overflow-hidden rounded-xl border border-slate-200 bg-slate-100">
-                    <Image src={row.image} alt={row.title || "Product story"} fill className="object-cover" sizes="208px" />
+                    <img src={row.image} alt={row.title || "Product story"} className="h-full w-full object-cover" />
                     <button
                       type="button"
                       onClick={() => removeImage(index)}

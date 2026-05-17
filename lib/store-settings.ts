@@ -1,3 +1,4 @@
+import { shouldSkipDatabaseReads } from "@/lib/database-guard";
 import { prisma } from "@/lib/prisma";
 
 export type PaymentMethodSetting = {
@@ -158,6 +159,10 @@ function parseJsonArray<T>(value: string | null, fallback: T[]) {
 }
 
 export async function getStoreSettings() {
+  if (shouldSkipDatabaseReads()) {
+    return defaultStoreSettings;
+  }
+
   try {
     const rows = await prisma.$queryRaw<RawStoreSetting[]>`
       SELECT

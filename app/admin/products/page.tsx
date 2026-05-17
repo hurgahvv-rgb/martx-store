@@ -1,4 +1,3 @@
-import Image from "next/image";
 import Link from "next/link";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
@@ -515,7 +514,7 @@ export default async function AdminProductsPage({
               <summary className="list-none cursor-pointer p-4 transition hover:bg-slate-50 [&::-webkit-details-marker]:hidden">
                 <div className="grid gap-4 md:grid-cols-[120px_1fr_auto] md:items-center">
                   <div className="relative h-28 overflow-hidden rounded-xl bg-slate-100">
-                    {product.image ? <Image src={product.image} alt={product.name} fill className="object-cover" sizes="120px" /> : null}
+                    {product.image ? <img src={product.image} alt={product.name} className="h-full w-full object-cover" /> : null}
                   </div>
                   <div>
                     <p className="text-xs font-bold uppercase tracking-[0.18em] text-slate-400">Edit хийхийн тулд зураг дээр дар</p>

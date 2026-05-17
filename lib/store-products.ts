@@ -1,4 +1,5 @@
 import { products as fallbackProducts } from "@/lib/data";
+import { shouldSkipDatabaseReads } from "@/lib/database-guard";
 import { productDetails } from "@/lib/product-details";
 import { prisma } from "@/lib/prisma";
 import { getStoreSettings } from "@/lib/store-settings";
@@ -79,6 +80,10 @@ function mapProduct(product: DbProduct): Product {
 }
 
 export async function getStoreProducts() {
+  if (shouldSkipDatabaseReads()) {
+    return fallbackProducts;
+  }
+
   try {
     const products = await prisma.product.findMany({
       where: { isActive: true },
@@ -105,6 +110,11 @@ export async function getStoreProducts() {
 }
 
 export async function getFeaturedStoreProducts() {
+  if (shouldSkipDatabaseReads()) {
+    const featured = fallbackProducts.filter((product) => product.isFeatured);
+    return featured.length > 0 ? featured.slice(0, 4) : fallbackProducts.slice(0, 4);
+  }
+
   try {
     const featuredProducts = await prisma.product.findMany({
       where: { isActive: true },
@@ -124,6 +134,10 @@ export async function getFeaturedStoreProducts() {
 }
 
 export async function getStoreProductBySlug(slug: string) {
+  if (shouldSkipDatabaseReads()) {
+    return fallbackProducts.find((product) => product.slug === slug) ?? null;
+  }
+
   try {
     const product = await prisma.product.findFirst({
       where: { slug, isActive: true },

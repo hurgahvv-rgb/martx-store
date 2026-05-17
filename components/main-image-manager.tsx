@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import { Trash2 } from "lucide-react";
 import { useState } from "react";
 
@@ -13,7 +12,7 @@ export function MainImageManager({ image, productName }: { image: string; produc
       <p className="mb-2 text-xs font-bold uppercase tracking-[0.14em] text-slate-500">Одоогийн үндсэн зураг</p>
       {currentImage ? (
         <div className="relative h-44 w-44 overflow-hidden rounded-xl border border-slate-200 bg-slate-100">
-          <Image src={currentImage} alt={productName} fill className="object-cover" sizes="176px" />
+          <img src={currentImage} alt={productName} className="h-full w-full object-cover" />
           <button
             type="button"
             onClick={() => setCurrentImage("")}

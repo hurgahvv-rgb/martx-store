@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import { Trash2 } from "lucide-react";
 import { useState } from "react";
 
@@ -27,7 +26,7 @@ export function GalleryImageManager({ images, productName }: { images: string[];
           <div key={image} className="overflow-hidden rounded-lg border border-slate-200 bg-white p-2">
             <input type="hidden" name="keepGalleryImages" value={image} />
             <div className="relative aspect-square overflow-hidden rounded-md bg-slate-100">
-              <Image src={image} alt={productName} fill className="object-cover" sizes="120px" />
+              <img src={image} alt={productName} className="h-full w-full object-cover" />
               <button
                 type="button"
                 onClick={() => removeImage(image)}

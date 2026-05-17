@@ -1,5 +1,6 @@
 import Link from "next/link";
 
+import { shouldSkipDatabaseReads } from "@/lib/database-guard";
 import { prisma } from "@/lib/prisma";
 
 export const dynamic = "force-dynamic";
@@ -11,6 +12,10 @@ const fallbackCategories = [
 ];
 
 async function getCategories() {
+  if (shouldSkipDatabaseReads()) {
+    return fallbackCategories;
+  }
+
   try {
     const [categories, products] = await Promise.all([
       prisma.category.findMany({ orderBy: { name: "asc" } }),
