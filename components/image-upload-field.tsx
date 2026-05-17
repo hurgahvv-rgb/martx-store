@@ -28,16 +28,6 @@ export function ImageUploadField({
     };
   }, [previews]);
 
-  const syncFiles = (nextPreviews: Preview[]) => {
-    if (!inputRef.current) {
-      return;
-    }
-
-    const transfer = new DataTransfer();
-    nextPreviews.forEach((preview) => transfer.items.add(preview.file));
-    inputRef.current.files = transfer.files;
-  };
-
   const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(event.target.files ?? []).filter((file) => file.type.startsWith("image/"));
     const nextPreviews = files.map((file) => ({
@@ -59,7 +49,10 @@ export function ImageUploadField({
         URL.revokeObjectURL(removed.url);
       }
 
-      syncFiles(next);
+      if (inputRef.current) {
+        inputRef.current.value = "";
+      }
+
       return next;
     });
   };
