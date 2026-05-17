@@ -17,9 +17,10 @@ export async function SiteFooter() {
       <div className="mx-auto max-w-6xl px-4 py-10 sm:px-6 lg:px-8">
         <div className="text-center">
           <h3 className="text-3xl font-medium text-stone-950">Холбоосууд</h3>
-          <p className="mt-3 text-sm text-stone-500">
-            {settings.contactPhone} · {settings.contactEmail}
-          </p>
+          <div className="mt-3 flex flex-wrap items-center justify-center gap-x-10 gap-y-2 text-sm text-stone-500">
+            <span>Утас : {settings.contactPhone}</span>
+            <span>{settings.contactEmail}</span>
+          </div>
 
           <div className="mt-6 flex flex-wrap items-center justify-center gap-x-6 gap-y-3 text-sm text-stone-600">
             {footerLinks.map((item) => (
