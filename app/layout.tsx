@@ -1,11 +1,6 @@
 import type { Metadata } from "next";
 
-import { InstallAppBanner } from "@/components/install-app-banner";
-import { MobileAppNav } from "@/components/mobile-app-nav";
-import { PwaRegister } from "@/components/pwa-register";
-import { ServiceHighlights } from "@/components/service-highlights";
-import { SiteFooter } from "@/components/site-footer";
-import { SiteHeader } from "@/components/site-header";
+import { AppChrome } from "@/components/app-chrome";
 
 import "./globals.css";
 
@@ -29,13 +24,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
   return (
     <html lang="mn">
       <body className="min-h-screen font-sans text-ink antialiased">
-        <PwaRegister />
-        <SiteHeader />
-        <main>{children}</main>
-        <ServiceHighlights />
-        <SiteFooter />
-        <InstallAppBanner />
-        <MobileAppNav />
+        <AppChrome>{children}</AppChrome>
       </body>
     </html>
   );
