@@ -174,7 +174,7 @@ export function ProductPurchasePanel({
             type="button"
             onClick={handleAddToCart}
             disabled={selectedStock <= 0}
-            className="rounded-full bg-stone-950 px-6 py-3 text-sm font-semibold text-white transition hover:bg-stone-800 disabled:cursor-not-allowed disabled:bg-stone-300"
+            className="rounded-full border border-stone-300 px-6 py-3 text-sm font-semibold text-stone-800 transition hover:border-stone-900 disabled:cursor-not-allowed disabled:border-stone-200 disabled:text-stone-300"
           >
             {added ? "Сагсанд нэмэгдлээ" : "Сагсанд нэмэх"}
           </button>
@@ -182,7 +182,7 @@ export function ProductPurchasePanel({
             type="button"
             onClick={handleBuyNow}
             disabled={selectedStock <= 0}
-            className="rounded-full border border-stone-300 px-6 py-3 text-sm font-semibold text-stone-800 transition hover:border-stone-900 disabled:cursor-not-allowed disabled:border-stone-200 disabled:text-stone-300"
+            className="rounded-full bg-stone-950 px-6 py-3 text-sm font-semibold text-white transition hover:bg-stone-800 disabled:cursor-not-allowed disabled:bg-stone-300"
           >
             Шууд худалдан авах
           </button>
