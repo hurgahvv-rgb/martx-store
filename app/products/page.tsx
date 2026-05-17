@@ -1,5 +1,6 @@
 import { ProductCard } from "@/components/product-card";
 import { getStoreProducts } from "@/lib/store-products";
+import Link from "next/link";
 
 export default async function ProductsPage({
   searchParams
@@ -20,9 +21,9 @@ export default async function ProductsPage({
           {selectedCategory ? `${selectedCategory} ангиллын идэвхтэй бараанууд.` : "Admin дээр нэмсэн идэвхтэй бараанууд энд шууд харагдана."}
         </p>
         {selectedCategory ? (
-          <a href="/products" className="inline-flex text-sm font-semibold text-stone-600 underline-offset-4 hover:underline">
+          <Link href="/products" className="inline-flex text-sm font-semibold text-stone-600 underline-offset-4 hover:underline">
             Бүх бараа харах
-          </a>
+          </Link>
         ) : null}
       </div>
 

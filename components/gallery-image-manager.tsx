@@ -14,7 +14,7 @@ export function GalleryImageManager({ images, productName }: { images: string[];
   if (keptImages.length === 0) {
     return (
       <div className="rounded-xl border border-dashed border-slate-200 bg-slate-50 px-4 py-6 text-center text-sm text-slate-500 xl:col-span-4">
-        Gallery зураг алга. "Нэмэлт зураг нэмэх" дээрээс шинээр upload хийнэ.
+        Gallery зураг алга. &quot;Нэмэлт зураг нэмэх&quot; дээрээс шинээр upload хийнэ.
       </div>
     );
   }
