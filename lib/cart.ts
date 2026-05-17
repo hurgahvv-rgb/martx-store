@@ -39,7 +39,8 @@ export function readCart() {
 
   try {
     const value = window.localStorage.getItem(CART_STORAGE_KEY);
-    return value ? (JSON.parse(value) as CartItem[]) : [];
+    const parsed = value ? JSON.parse(value) : [];
+    return Array.isArray(parsed) ? (parsed as CartItem[]) : [];
   } catch {
     return [];
   }
@@ -51,7 +52,7 @@ export function writeCart(items: CartItem[]) {
 }
 
 export function getCartQuantity(items: CartItem[]) {
-  return items.reduce((sum, item) => sum + item.quantity, 0);
+  return items.reduce((sum, item) => sum + (Number.isFinite(item.quantity) ? item.quantity : 0), 0);
 }
 
 export function addCartItem(item: CartItem) {

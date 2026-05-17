@@ -45,6 +45,17 @@ function resolveMenuHref(item: StoreProfile["headerMenu"][number]) {
   return item.href;
 }
 
+function normalizeStoreProfile(data: Partial<StoreProfile>): StoreProfile {
+  return {
+    ...defaultStoreProfile,
+    ...data,
+    storeName: data.storeName || defaultStoreProfile.storeName,
+    storeLogo: data.storeLogo || defaultStoreProfile.storeLogo,
+    announcementText: data.announcementText || defaultStoreProfile.announcementText,
+    headerMenu: Array.isArray(data.headerMenu) && data.headerMenu.length > 0 ? data.headerMenu : defaultStoreProfile.headerMenu
+  };
+}
+
 export function SiteHeader() {
   const pathname = usePathname();
   const [scrolled, setScrolled] = useState(false);
@@ -87,9 +98,9 @@ export function SiteHeader() {
           return;
         }
 
-        const data = (await response.json()) as StoreProfile;
+        const data = (await response.json()) as Partial<StoreProfile>;
         if (active) {
-          setProfile(data);
+          setProfile(normalizeStoreProfile(data));
         }
       } catch {
         // Default profile keeps the storefront usable.
