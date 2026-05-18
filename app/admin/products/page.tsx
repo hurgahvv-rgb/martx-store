@@ -114,6 +114,30 @@ function formatVariants(
 }
 
 async function parseStories(formData: FormData) {
+  const storyCount = Number(formData.get("storyCount") ?? 0);
+
+  if (storyCount > 0) {
+    const stories = [];
+
+    for (let index = 0; index < storyCount; index += 1) {
+      const title = getText(formData, `storyTitle_${index}`);
+      const description = getText(formData, `storyDescription_${index}`);
+      const uploadedImages = await getUploadedImages(formData, `storyImageFile_${index}`, `storyImageUrl_${index}`);
+      const image = uploadedImages[0] ?? getText(formData, `storyExistingImage_${index}`);
+
+      if (title || description || image) {
+        stories.push({
+          title: title || "Product Story",
+          description,
+          image: image || fallbackImage,
+          sortOrder: index
+        });
+      }
+    }
+
+    return stories;
+  }
+
   const lines = getText(formData, "stories")
     .split(/\r?\n/)
     .map((line) => line.trim())
@@ -136,16 +160,6 @@ async function parseStories(formData: FormData) {
   }
 
   return stories;
-}
-
-function formatStories(
-  stories: {
-    title: string;
-    description: string;
-    image: string;
-  }[]
-) {
-  return stories.map((story) => [story.title, story.description, story.image].join(" | ")).join("\n");
 }
 
 function Field({
@@ -656,7 +670,7 @@ export default async function AdminProductsPage({
                     <VariantEditor name="variants" initialValue={formatVariants(product.variants)} />
                     <StoryEditor
                       name="stories"
-                      initialValue={formatStories(
+                      initialStories={
                         product.stories.length
                           ? product.stories
                           : product.storyTitle || product.storyDescription || product.storyImage
@@ -668,7 +682,7 @@ export default async function AdminProductsPage({
                                 }
                               ]
                             : []
-                      )}
+                      }
                     />
                     <div className="flex flex-wrap items-center gap-4 text-sm font-semibold text-slate-600 xl:col-span-4">
                       <label className="flex items-center gap-2">

@@ -1,7 +1,7 @@
 "use client";
 
 import { Plus, Trash2 } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useState } from "react";
 
 import { ImageUploadField } from "@/components/image-upload-field";
 
@@ -31,15 +31,18 @@ function parseInitialValue(value?: string) {
   return rows.length > 0 ? rows : [{ ...emptyStory }];
 }
 
-function serializeRows(rows: StoryRow[]) {
-  return rows
-    .map((row) => [row.title, row.description, row.image].join(" | "))
-    .join("\n");
-}
-
-export function StoryEditor({ name, initialValue }: { name: string; initialValue?: string }) {
-  const [rows, setRows] = useState<StoryRow[]>(() => parseInitialValue(initialValue));
-  const serialized = useMemo(() => serializeRows(rows), [rows]);
+export function StoryEditor({
+  name: _name,
+  initialValue,
+  initialStories
+}: {
+  name: string;
+  initialValue?: string;
+  initialStories?: StoryRow[];
+}) {
+  const [rows, setRows] = useState<StoryRow[]>(() =>
+    initialStories && initialStories.length > 0 ? initialStories : parseInitialValue(initialValue)
+  );
 
   const updateRow = (index: number, key: keyof StoryRow, value: string) => {
     setRows((current) =>
@@ -58,7 +61,7 @@ export function StoryEditor({ name, initialValue }: { name: string; initialValue
 
   return (
     <section className="xl:col-span-4 overflow-hidden rounded-2xl border border-cyan-200 bg-gradient-to-br from-cyan-50 via-white to-emerald-50 p-5 shadow-sm">
-      <input type="hidden" name={name} value={serialized} />
+      <input type="hidden" name="storyCount" value={rows.length} />
 
       <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
@@ -94,6 +97,7 @@ export function StoryEditor({ name, initialValue }: { name: string; initialValue
               <label>
                 <span className="mb-2 block text-xs font-bold uppercase tracking-[0.14em] text-slate-500">Story гарчиг</span>
                 <input
+                  name={`storyTitle_${index}`}
                   value={row.title}
                   onChange={(event) => updateRow(index, "title", event.target.value)}
                   placeholder="Form & Function"
@@ -104,6 +108,7 @@ export function StoryEditor({ name, initialValue }: { name: string; initialValue
               <label className="md:col-span-2">
                 <span className="mb-2 block text-xs font-bold uppercase tracking-[0.14em] text-slate-500">Story тайлбар</span>
                 <textarea
+                  name={`storyDescription_${index}`}
                   value={row.description}
                   onChange={(event) => updateRow(index, "description", event.target.value)}
                   placeholder="Энэ хэсэг product page дээр зурагны хажууд гарна."
