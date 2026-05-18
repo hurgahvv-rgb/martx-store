@@ -22,6 +22,7 @@ export type Product = {
   storyDescription?: string | null;
   storyImage?: string | null;
   stories?: ProductStoryBlock[];
+  reviews?: ProductReview[];
   stock?: number;
   isFeatured?: boolean;
   isActive?: boolean;

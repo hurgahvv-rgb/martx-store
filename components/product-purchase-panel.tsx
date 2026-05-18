@@ -61,7 +61,7 @@ export function ProductPurchasePanel({
   const [variantId, setVariantId] = useState<string | undefined>(variantOptions[0]?.id);
   const [quantity, setQuantity] = useState(1);
   const [added, setAdded] = useState(false);
-  const [openItem, setOpenItem] = useState<(typeof infoItems)[number]["key"] | null>("shipping");
+  const [openItem, setOpenItem] = useState<(typeof infoItems)[number]["key"] | null>(null);
 
   const reviewSummary = useMemo(() => {
     if (detail.reviews.length === 0) {
@@ -192,13 +192,18 @@ export function ProductPurchasePanel({
       <div className="space-y-4">
         <ul className="space-y-2 text-sm leading-7 text-stone-700">
           {detail.bullets.map((item) => (
-            <li key={item}>• {item}</li>
+            <li key={item} className="flex gap-2">
+              <span className="mt-[0.7em] h-1 w-1 shrink-0 rounded-full bg-stone-500" />
+              <span>{item}</span>
+            </li>
           ))}
         </ul>
         <p className="text-sm leading-7 text-stone-600">{product.description}</p>
-        <ul className="grid gap-2 text-sm leading-7 text-stone-700 sm:grid-cols-2">
+        <ul className="grid gap-2 text-sm text-stone-700 sm:grid-cols-2">
           {detail.specs.map((item) => (
-            <li key={item}>• {item}</li>
+            <li key={item} className="rounded-lg border border-stone-200 bg-white/55 px-3 py-2 leading-6">
+              {item}
+            </li>
           ))}
         </ul>
       </div>

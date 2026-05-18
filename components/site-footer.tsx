@@ -1,16 +1,76 @@
+"use client";
+
 import Link from "next/link";
 import { Facebook, Instagram, Youtube } from "lucide-react";
+import { useEffect, useState } from "react";
 
-import { getStoreSettings } from "@/lib/store-settings";
+import { defaultStoreSettings, type MenuLinkSetting } from "@/lib/store-settings";
 
-export async function SiteFooter() {
-  const settings = await getStoreSettings();
+type FooterSettings = {
+  contactPhone: string;
+  contactEmail: string;
+  facebookUrl: string;
+  instagramUrl: string;
+  youtubeUrl: string;
+  footerText: string;
+  footerMenu: MenuLinkSetting[];
+};
+
+const defaultFooterSettings: FooterSettings = {
+  contactPhone: defaultStoreSettings.contactPhone,
+  contactEmail: defaultStoreSettings.contactEmail,
+  facebookUrl: defaultStoreSettings.facebookUrl,
+  instagramUrl: defaultStoreSettings.instagramUrl,
+  youtubeUrl: defaultStoreSettings.youtubeUrl,
+  footerText: defaultStoreSettings.footerText,
+  footerMenu: defaultStoreSettings.footerMenu
+};
+
+function normalizeFooterSettings(data: Partial<FooterSettings>): FooterSettings {
+  return {
+    ...defaultFooterSettings,
+    ...data,
+    contactPhone: data.contactPhone || defaultFooterSettings.contactPhone,
+    contactEmail: data.contactEmail || defaultFooterSettings.contactEmail,
+    footerText: data.footerText || defaultFooterSettings.footerText,
+    footerMenu: Array.isArray(data.footerMenu) && data.footerMenu.length > 0 ? data.footerMenu : defaultFooterSettings.footerMenu
+  };
+}
+
+export function SiteFooter() {
+  const [settings, setSettings] = useState<FooterSettings>(defaultFooterSettings);
   const footerLinks = settings.footerMenu.filter((item) => item.isActive);
   const socialLinks = [
     { href: settings.facebookUrl, label: "Facebook", icon: Facebook },
     { href: settings.instagramUrl, label: "Instagram", icon: Instagram },
     { href: settings.youtubeUrl, label: "YouTube", icon: Youtube }
   ].filter((item) => item.href && item.href !== "#");
+
+  useEffect(() => {
+    let active = true;
+
+    async function loadFooterSettings() {
+      try {
+        const response = await fetch("/api/settings/store", { cache: "no-store" });
+        if (!response.ok) {
+          return;
+        }
+
+        const data = (await response.json()) as Partial<FooterSettings>;
+        if (active) {
+          setSettings(normalizeFooterSettings(data));
+        }
+      } catch {
+        // Default footer keeps the storefront usable.
+      }
+    }
+
+    loadFooterSettings();
+
+    return () => {
+      active = false;
+    };
+  }, []);
 
   return (
     <footer className="public-shell border-t border-stone-200 bg-white text-stone-700">

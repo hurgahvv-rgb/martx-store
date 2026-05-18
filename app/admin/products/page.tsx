@@ -396,11 +396,18 @@ async function getProducts() {
         specs: getStringArray(product.specs),
         storyImage: product.storyImage ? normalizeImageSrc(product.storyImage) : null,
         variants: product.variants.map((variant) => ({
-          ...variant,
-          image: variant.image ? normalizeImageSrc(variant.image) : null
+          id: variant.id,
+          color: variant.color,
+          size: variant.size,
+          sku: variant.sku,
+          price: variant.price,
+          stock: variant.stock,
+          image: variant.image ? normalizeImageSrc(variant.image) : null,
+          isActive: variant.isActive
         })),
         stories: product.stories.map((story) => ({
-          ...story,
+          title: story.title,
+          description: story.description,
           image: normalizeImageSrc(story.image)
         })),
         soldQuantity: soldByProductId.get(product.id) ?? soldByProductName.get(product.name) ?? 0
@@ -490,7 +497,7 @@ export default async function AdminProductsPage({
         {params.saved ? <SaveNotice message={getProductSaveMessage(params.saved)} /> : null}
 
         {isNewMode ? (
-        <form action={createProduct} className="mb-6 rounded-xl bg-white p-6 shadow-sm" encType="multipart/form-data">
+        <form action={createProduct} className="mb-6 rounded-xl bg-white p-6 shadow-sm">
           <div className="flex items-center justify-between gap-4">
             <div>
               <h2 className="text-xl font-bold text-slate-950">Шинэ бараа нэмэх</h2>
@@ -618,7 +625,7 @@ export default async function AdminProductsPage({
                     </span>
                   </div>
 
-                  <form action={updateProduct} className="grid gap-3 md:grid-cols-2 xl:grid-cols-4" encType="multipart/form-data">
+                  <form action={updateProduct} className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
                     <input type="hidden" name="id" value={product.id} />
                     <input type="hidden" name="currentStoryImage" value={product.storyImage ?? ""} />
                     <MainImageManager image={product.image} productName={product.name} />
@@ -672,7 +679,11 @@ export default async function AdminProductsPage({
                       name="stories"
                       initialStories={
                         product.stories.length
-                          ? product.stories
+                          ? product.stories.map((story) => ({
+                              title: story.title,
+                              description: story.description,
+                              image: story.image
+                            }))
                           : product.storyTitle || product.storyDescription || product.storyImage
                             ? [
                                 {

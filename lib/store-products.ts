@@ -75,15 +75,22 @@ function mapProduct(product: DbProduct): Product {
     storyDescription: product.storyDescription,
     storyImage: product.storyImage ? normalizeImageSrc(product.storyImage) : null,
     stories: (product.stories ?? []).map((story) => ({
-      ...story,
+      title: story.title,
+      description: story.description,
       image: normalizeImageSrc(story.image)
     })),
     stock: product.stock,
     isFeatured: product.isFeatured,
     isActive: product.isActive,
     variants: (product.variants ?? []).map((variant) => ({
-      ...variant,
-      image: variant.image ? normalizeImageSrc(variant.image) : null
+      id: variant.id,
+      color: variant.color,
+      size: variant.size,
+      sku: variant.sku,
+      price: variant.price,
+      stock: variant.stock,
+      image: variant.image ? normalizeImageSrc(variant.image) : null,
+      isActive: variant.isActive
     }))
   };
 }
@@ -201,6 +208,6 @@ export async function getProductDetail(product: Product): Promise<ProductDetail>
     warranty: settings.warrantyText,
     help: settings.helpText,
     story,
-    reviews: savedDetail?.reviews ?? []
+    reviews: product.reviews?.length ? product.reviews : savedDetail?.reviews ?? []
   };
 }

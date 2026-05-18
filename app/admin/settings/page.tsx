@@ -3,9 +3,8 @@ import { redirect } from "next/navigation";
 
 import { SaveNotice } from "@/components/save-notice";
 import { requireAdminSession } from "@/lib/admin-auth";
-import { defaultFooterMenu, defaultHeaderMenu, defaultPaymentMethods, getStoreSettings } from "@/lib/store-settings";
+import { defaultPaymentMethods, getStoreSettings } from "@/lib/store-settings";
 import { prisma } from "@/lib/prisma";
-import { getFile, saveStoreLogo } from "@/lib/store-media";
 
 export const dynamic = "force-dynamic";
 
@@ -20,15 +19,6 @@ function getNumber(formData: FormData, key: string) {
 
 function shortText(value: string) {
   return value.length > 96 ? `${value.slice(0, 96)}...` : value;
-}
-
-function parseMenuLinks(formData: FormData, prefix: string, count: number) {
-  return Array.from({ length: count }, (_, index) => ({
-    id: `${prefix}_${index + 1}`,
-    label: getText(formData, `${prefix}_${index}_label`),
-    href: getText(formData, `${prefix}_${index}_href`),
-    isActive: formData.get(`${prefix}_${index}_active`) === "on"
-  })).filter((item) => item.label && item.href);
 }
 
 async function saveSettings(formData: FormData) {
@@ -136,63 +126,6 @@ async function savePaymentSettings(formData: FormData) {
   redirect("/admin/settings?saved=payment");
 }
 
-async function saveStoreProfile(formData: FormData) {
-  "use server";
-
-  await requireAdminSession();
-
-  const currentLogo = getText(formData, "currentStoreLogo");
-  const uploadedLogo = await saveStoreLogo(getFile(formData, "storeLogoFile"));
-  const storeLogo = uploadedLogo ?? currentLogo;
-
-  await prisma.$executeRaw`
-    INSERT INTO "StoreSetting" (
-      id,
-      "storeName",
-      "storeSubtitle",
-      "storeLogo",
-      "contactPhone",
-      "contactEmail",
-      "facebookUrl",
-      "instagramUrl",
-      "youtubeUrl",
-      "footerText",
-      "announcementText",
-      "updatedAt"
-    )
-    VALUES (
-      'default',
-      ${getText(formData, "storeName")},
-      ${getText(formData, "storeSubtitle")},
-      ${storeLogo},
-      ${getText(formData, "contactPhone")},
-      ${getText(formData, "contactEmail")},
-      ${getText(formData, "facebookUrl")},
-      ${getText(formData, "instagramUrl")},
-      ${getText(formData, "youtubeUrl")},
-      ${getText(formData, "footerText")},
-      ${getText(formData, "announcementText")},
-      NOW()
-    )
-    ON CONFLICT (id) DO UPDATE SET
-      "storeName" = EXCLUDED."storeName",
-      "storeSubtitle" = EXCLUDED."storeSubtitle",
-      "storeLogo" = EXCLUDED."storeLogo",
-      "contactPhone" = EXCLUDED."contactPhone",
-      "contactEmail" = EXCLUDED."contactEmail",
-      "facebookUrl" = EXCLUDED."facebookUrl",
-      "instagramUrl" = EXCLUDED."instagramUrl",
-      "youtubeUrl" = EXCLUDED."youtubeUrl",
-      "footerText" = EXCLUDED."footerText",
-      "announcementText" = EXCLUDED."announcementText",
-      "updatedAt" = NOW()
-  `;
-
-  revalidatePath("/");
-  revalidatePath("/admin/settings");
-  redirect("/admin/settings?saved=store-profile");
-}
-
 async function saveHomepageSettings(formData: FormData) {
   "use server";
 
@@ -217,38 +150,6 @@ async function saveHomepageSettings(formData: FormData) {
   revalidatePath("/");
   revalidatePath("/admin/settings");
   redirect("/admin/settings?saved=homepage");
-}
-
-async function saveMenuSettings(formData: FormData) {
-  "use server";
-
-  await requireAdminSession();
-
-  const headerMenu = parseMenuLinks(formData, "headerMenu", 8);
-  const footerMenu = parseMenuLinks(formData, "footerMenu", 10);
-
-  await prisma.$executeRaw`
-    INSERT INTO "StoreSetting" (
-      id,
-      "headerMenuJson",
-      "footerMenuJson",
-      "updatedAt"
-    )
-    VALUES (
-      'default',
-      ${JSON.stringify(headerMenu.length > 0 ? headerMenu : defaultHeaderMenu)},
-      ${JSON.stringify(footerMenu.length > 0 ? footerMenu : defaultFooterMenu)},
-      NOW()
-    )
-    ON CONFLICT (id) DO UPDATE SET
-      "headerMenuJson" = EXCLUDED."headerMenuJson",
-      "footerMenuJson" = EXCLUDED."footerMenuJson",
-      "updatedAt" = NOW()
-  `;
-
-  revalidatePath("/");
-  revalidatePath("/admin/settings");
-  redirect("/admin/settings?saved=menu");
 }
 
 export default async function AdminSettingsPage({
@@ -280,15 +181,6 @@ export default async function AdminSettingsPage({
         isActive: false
       }
   );
-  const headerMenuSlots = Array.from(
-    { length: 8 },
-    (_, index) => settings.headerMenu[index] ?? { id: `header_${index + 1}`, label: "", href: "", isActive: false }
-  );
-  const footerMenuSlots = Array.from(
-    { length: 10 },
-    (_, index) => settings.footerMenu[index] ?? { id: `footer_${index + 1}`, label: "", href: "", isActive: false }
-  );
-
   return (
     <section className="px-5 py-8 lg:px-8">
       <div className="mx-auto max-w-7xl">
@@ -364,122 +256,6 @@ export default async function AdminSettingsPage({
                     </button>
                   </div>
                 </div>
-              </div>
-            </form>
-          </details>
-
-          <details className="group overflow-hidden rounded-xl bg-white shadow-sm">
-            <summary className="list-none cursor-pointer p-5 transition hover:bg-slate-50 [&::-webkit-details-marker]:hidden">
-              <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-                <div>
-                  <p className="text-xs font-bold uppercase tracking-[0.18em] text-blue-600">Store profile</p>
-                  <h2 className="mt-2 text-xl font-bold text-slate-950">Дэлгүүрийн нэр, logo, холбоос</h2>
-                  <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-500">
-                    Header, footer, admin bar дээр харагдах дэлгүүрийн үндсэн мэдээлэл.
-                  </p>
-                </div>
-                <div className="flex items-center gap-3">
-                  <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-bold text-slate-600">10 тохиргоо</span>
-                  <span className="rounded-xl border border-blue-100 bg-blue-50 px-4 py-2 text-sm font-bold text-blue-700 group-open:hidden">Edit</span>
-                  <span className="hidden rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-bold text-slate-600 group-open:inline-flex">Хураах</span>
-                </div>
-              </div>
-
-              <div className="mt-4 grid gap-3 md:grid-cols-2">
-                <Preview label="Дэлгүүрийн нэр" value={settings.storeName} />
-                <Preview label="Subtitle / domain" value={settings.storeSubtitle} />
-                <Preview label="Утас" value={settings.contactPhone} />
-                <Preview label="И-мэйл" value={settings.contactEmail} />
-              </div>
-            </summary>
-
-            <form action={saveStoreProfile} encType="multipart/form-data" className="border-t border-slate-100 p-6">
-              <input type="hidden" name="currentStoreLogo" value={settings.storeLogo} />
-              <div className="mb-5 flex flex-col gap-4 rounded-xl border border-slate-200 bg-slate-50 p-4 sm:flex-row sm:items-center">
-                <div className="flex h-20 w-36 items-center justify-center rounded-xl bg-white p-3 shadow-sm">
-                  <img src={settings.storeLogo} alt={`${settings.storeName} logo`} className="max-h-full max-w-full object-contain" />
-                </div>
-                <div>
-                  <p className="text-sm font-bold text-slate-950">Одоогийн navigation / header logo</p>
-                  <p className="mt-1 text-sm text-slate-500">Доорх file input-оор шинэ зураг сонгоод хадгална.</p>
-                </div>
-              </div>
-              <div className="grid gap-4 md:grid-cols-2">
-                <Field label="Дэлгүүрийн нэр">
-                  <input name="storeName" defaultValue={settings.storeName} className="w-full rounded-xl border border-slate-200 px-4 py-3 text-sm outline-none focus:border-blue-500" />
-                </Field>
-                <Field label="Subtitle / domain">
-                  <input name="storeSubtitle" defaultValue={settings.storeSubtitle} className="w-full rounded-xl border border-slate-200 px-4 py-3 text-sm outline-none focus:border-blue-500" />
-                </Field>
-                <Field label="Утас">
-                  <input name="contactPhone" defaultValue={settings.contactPhone} className="w-full rounded-xl border border-slate-200 px-4 py-3 text-sm outline-none focus:border-blue-500" />
-                </Field>
-                <Field label="И-мэйл">
-                  <input name="contactEmail" defaultValue={settings.contactEmail} className="w-full rounded-xl border border-slate-200 px-4 py-3 text-sm outline-none focus:border-blue-500" />
-                </Field>
-                <Field label="Facebook link">
-                  <input name="facebookUrl" defaultValue={settings.facebookUrl} className="w-full rounded-xl border border-slate-200 px-4 py-3 text-sm outline-none focus:border-blue-500" />
-                </Field>
-                <Field label="Instagram link">
-                  <input name="instagramUrl" defaultValue={settings.instagramUrl} className="w-full rounded-xl border border-slate-200 px-4 py-3 text-sm outline-none focus:border-blue-500" />
-                </Field>
-                <Field label="YouTube link">
-                  <input name="youtubeUrl" defaultValue={settings.youtubeUrl} className="w-full rounded-xl border border-slate-200 px-4 py-3 text-sm outline-none focus:border-blue-500" />
-                </Field>
-                <Field label="Navigation / header logo солих">
-                  <input name="storeLogoFile" type="file" accept="image/*" className="w-full rounded-xl border border-dashed border-slate-300 px-4 py-3 text-sm" />
-                </Field>
-                <Field label="Announcement bar">
-                  <textarea name="announcementText" defaultValue={settings.announcementText} className="min-h-24 w-full rounded-xl border border-slate-200 px-4 py-3 text-sm outline-none focus:border-blue-500" />
-                </Field>
-                <Field label="Footer текст">
-                  <textarea name="footerText" defaultValue={settings.footerText} className="min-h-24 w-full rounded-xl border border-slate-200 px-4 py-3 text-sm outline-none focus:border-blue-500" />
-                </Field>
-              </div>
-
-              <div className="mt-6 flex justify-end">
-                <button className="rounded-xl bg-blue-600 px-5 py-3 text-sm font-bold text-white shadow-lg shadow-blue-600/20">
-                  Дэлгүүрийн профайл хадгалах
-                </button>
-              </div>
-            </form>
-          </details>
-
-          <details className="group overflow-hidden rounded-xl bg-white shadow-sm">
-            <summary className="list-none cursor-pointer p-5 transition hover:bg-slate-50 [&::-webkit-details-marker]:hidden">
-              <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-                <div>
-                  <p className="text-xs font-bold uppercase tracking-[0.18em] text-blue-600">Menu pages</p>
-                  <h2 className="mt-2 text-xl font-bold text-slate-950">Menu дээрх page хуудсууд</h2>
-                  <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-500">
-                    Header болон footer дээр харагдах хуудасны link-үүдийг нэмэх, хасах, нэр/замыг нь засах хэсэг.
-                  </p>
-                </div>
-                <div className="flex items-center gap-3">
-                  <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-bold text-slate-600">
-                    {settings.headerMenu.filter((item) => item.isActive).length + settings.footerMenu.filter((item) => item.isActive).length} идэвхтэй
-                  </span>
-                  <span className="rounded-xl border border-blue-100 bg-blue-50 px-4 py-2 text-sm font-bold text-blue-700 group-open:hidden">Edit</span>
-                  <span className="hidden rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-bold text-slate-600 group-open:inline-flex">Хураах</span>
-                </div>
-              </div>
-
-              <div className="mt-4 grid gap-3 md:grid-cols-2">
-                <Preview label="Header menu" value={settings.headerMenu.filter((item) => item.isActive).map((item) => item.label).join(", ") || "Идэвхтэй link байхгүй"} />
-                <Preview label="Footer menu" value={settings.footerMenu.filter((item) => item.isActive).map((item) => item.label).join(", ") || "Идэвхтэй link байхгүй"} />
-              </div>
-            </summary>
-
-            <form action={saveMenuSettings} className="border-t border-slate-100 p-6">
-              <div className="grid gap-8 xl:grid-cols-2">
-                <MenuEditor title="Header menu" prefix="headerMenu" items={headerMenuSlots} />
-                <MenuEditor title="Footer menu" prefix="footerMenu" items={footerMenuSlots} />
-              </div>
-
-              <div className="mt-6 flex justify-end">
-                <button className="rounded-xl bg-blue-600 px-5 py-3 text-sm font-bold text-white shadow-lg shadow-blue-600/20">
-                  Menu хадгалах
-                </button>
               </div>
             </form>
           </details>
@@ -735,59 +511,12 @@ function Preview({ label, value }: { label: string; value: string }) {
 
 function getSaveMessage(saved: string) {
   const labels: Record<string, string> = {
-    "store-profile": "Дэлгүүрийн профайл амжилттай хадгалагдлаа.",
     homepage: "Нүүр banner дээр гаргах бараа амжилттай хадгалагдлаа.",
     "product-detail": "Product detail тохиргоо амжилттай хадгалагдлаа.",
-    payment: "Төлбөрийн тохиргоо амжилттай хадгалагдлаа.",
-    menu: "Menu хуудсууд амжилттай хадгалагдлаа."
+    payment: "Төлбөрийн тохиргоо амжилттай хадгалагдлаа."
   };
 
   return labels[saved] ?? "Тохиргоо амжилттай хадгалагдлаа.";
-}
-
-function MenuEditor({
-  title,
-  prefix,
-  items
-}: {
-  title: string;
-  prefix: string;
-  items: { id: string; label: string; href: string; isActive: boolean }[];
-}) {
-  return (
-    <section>
-      <h3 className="text-sm font-bold uppercase tracking-[0.16em] text-slate-400">{title}</h3>
-      <div className="mt-4 space-y-3">
-        {items.map((item, index) => (
-          <article key={`${prefix}-${index}`} className="rounded-xl border border-slate-200 bg-slate-50 p-4">
-            <label className="mb-3 flex items-center gap-3 text-sm font-bold text-slate-900">
-              <input
-                name={`${prefix}_${index}_active`}
-                type="checkbox"
-                defaultChecked={item.isActive}
-                className="h-4 w-4 accent-blue-600"
-              />
-              Menu дээр харуулах
-            </label>
-            <div className="grid gap-3 md:grid-cols-[1fr_1.2fr]">
-              <input
-                name={`${prefix}_${index}_label`}
-                defaultValue={item.label}
-                placeholder="Нэр: Хүргэлт"
-                className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none focus:border-blue-500"
-              />
-              <input
-                name={`${prefix}_${index}_href`}
-                defaultValue={item.href}
-                placeholder="URL: /shipping"
-                className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none focus:border-blue-500"
-              />
-            </div>
-          </article>
-        ))}
-      </div>
-    </section>
-  );
 }
 
 function Field({ label, children }: { label: string; children: React.ReactNode }) {

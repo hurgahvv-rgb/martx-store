@@ -40,28 +40,28 @@ export default async function ProductDetailPage({ params, searchParams }: Produc
       </section>
 
       {detail.story.length > 0 && (
-        <section className="border-t border-stone-200">
-          <div className="mx-auto max-w-6xl px-4 py-14 sm:px-6 lg:px-8 lg:py-20">
-            <div className="space-y-16">
+        <section className="border-t border-stone-200 bg-white">
+          <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8 lg:py-24">
+            <div className="space-y-12">
               {detail.story.map((block, index) => (
                 <div
                   key={block.title}
                   className={[
-                    "grid overflow-hidden border border-stone-200 bg-[#f3f3f3] lg:grid-cols-2",
+                    "grid overflow-hidden bg-[#f3f3f3] lg:grid-cols-2",
                     index % 2 === 1 ? "lg:[&>*:first-child]:order-2" : ""
                   ].join(" ")}
                 >
-                  <div className="flex min-h-[24rem] items-center justify-center bg-[#f4f4f4] px-8 py-14 text-center sm:px-12 lg:px-16">
-                    <div className="max-w-md">
-                      <h2 className="text-2xl font-semibold leading-tight tracking-[-0.01em] text-black sm:text-[1.65rem]">
+                  <div className="flex min-h-[28rem] items-center justify-center px-8 py-16 text-center sm:px-12 lg:aspect-square lg:px-20">
+                    <div className="max-w-lg">
+                      <h2 className="text-3xl font-semibold leading-tight text-black sm:text-4xl">
                         {block.title}
                       </h2>
-                      <p className="mx-auto mt-5 max-w-sm text-sm font-normal leading-7 text-slate-700">
+                      <p className="mx-auto mt-7 max-w-md text-base font-normal leading-8 text-stone-700">
                         {block.description}
                       </p>
                     </div>
                   </div>
-                  <div className="relative min-h-[24rem] bg-stone-100">
+                  <div className="relative min-h-[28rem] bg-stone-100 lg:aspect-square">
                     <ProductImage src={block.image} alt={block.title} className="absolute inset-0 h-full w-full object-cover" />
                   </div>
                 </div>
