@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { FALLBACK_IMAGE, normalizeImageSrc } from "@/lib/image-src";
 
@@ -12,6 +12,10 @@ type ProductImageProps = {
 
 export function ProductImage({ src, alt, className = "" }: ProductImageProps) {
   const [currentSrc, setCurrentSrc] = useState(() => normalizeImageSrc(src));
+
+  useEffect(() => {
+    setCurrentSrc(normalizeImageSrc(src));
+  }, [src]);
 
   return (
     <img

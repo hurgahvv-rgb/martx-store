@@ -1,28 +1,32 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import Link from "next/link";
 
 import { ProductImage } from "@/components/product-image";
 
 export function ProductGallery({
   images,
   title,
-  selectedImage
+  selectedImage,
+  onImageChange
 }: {
   images: string[];
   title: string;
   selectedImage?: string;
+  onImageChange?: (image: string) => void;
 }) {
   const galleryImages = useMemo(() => images.filter(Boolean), [images]);
   const fallbackImage = galleryImages[0] ?? selectedImage ?? "/martx-logo.png";
   const [activeImage, setActiveImage] = useState(selectedImage ?? fallbackImage);
 
   useEffect(() => {
-    if (selectedImage) {
-      setActiveImage(selectedImage);
-    }
-  }, [selectedImage]);
+    setActiveImage(selectedImage ?? fallbackImage);
+  }, [fallbackImage, selectedImage]);
+
+  const handleImageSelect = (image: string) => {
+    setActiveImage(image);
+    onImageChange?.(image);
+  };
 
   return (
     <div className="space-y-4 lg:sticky lg:top-28 lg:w-full">
@@ -34,20 +38,20 @@ export function ProductGallery({
 
       <div className="grid w-full grid-cols-5 gap-3">
         {galleryImages.map((image) => (
-          <Link
+          <button
             key={image}
-            href={`?image=${encodeURIComponent(image)}`}
-            scroll={false}
-            onClick={() => setActiveImage(image)}
+            type="button"
+            onClick={() => handleImageSelect(image)}
             className={[
               "overflow-hidden rounded-[0.95rem] border bg-[#f3f0ea] transition",
               activeImage === image ? "border-stone-900" : "border-transparent hover:border-stone-300"
             ].join(" ")}
+            aria-label={`${title} зураг сонгох`}
           >
             <div className="relative aspect-square">
               <ProductImage src={image} alt={title} className="absolute inset-0 h-full w-full object-cover" />
             </div>
-          </Link>
+          </button>
         ))}
       </div>
     </div>
