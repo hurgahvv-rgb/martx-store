@@ -33,7 +33,7 @@ const commonColors = [
   { label: "Шар", className: "border-yellow-300 bg-yellow-300 text-yellow-950" },
   { label: "Бор", className: "border-amber-900 bg-amber-800 text-white" },
   { label: "Ягаан", className: "border-pink-400 bg-pink-300 text-pink-950" },
-  { label: "Beige", className: "border-stone-300 bg-stone-200 text-stone-950" }
+  { label: "Шаргал", className: "border-stone-300 bg-stone-200 text-stone-950" }
 ];
 const commonSizes = ["XS", "S", "M", "L", "XL", "XXL", "36", "37", "38", "39", "40", "41", "42", "43"];
 

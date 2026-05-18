@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Menu, Search, ShoppingBag, User } from "lucide-react";
+import { ChevronDown, Menu, Search, ShoppingBag, User } from "lucide-react";
 import { useEffect, useState } from "react";
 
 import { getCartQuantity, readCart } from "@/lib/cart";
@@ -13,6 +13,8 @@ const actionItems = [
   { href: "/account", label: "Хэрэглэгч", icon: User },
   { href: "/cart", label: "Сагс", icon: ShoppingBag }
 ];
+
+const categoryItems = ["Хувцас", "Гэр ахуй", "Цүнх"];
 
 type StoreProfile = {
   storeName: string;
@@ -61,6 +63,8 @@ export function SiteHeader() {
   const [scrolled, setScrolled] = useState(false);
   const [cartQuantity, setCartQuantity] = useState(0);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [categoryMenuOpen, setCategoryMenuOpen] = useState(false);
+  const [mobileCategoryOpen, setMobileCategoryOpen] = useState(false);
   const [profile, setProfile] = useState<StoreProfile>(defaultStoreProfile);
   const isCheckout = pathname === "/checkout";
   const isProductDetail = pathname.startsWith("/products/");
@@ -138,11 +142,50 @@ export function SiteHeader() {
             )}
 
             <nav className="hidden items-center gap-6 text-sm font-medium text-stone-700 lg:flex">
-              {profile.headerMenu.filter((item) => item.isActive).map((item) => (
-                <Link key={`${item.href}-${item.label}`} href={resolveMenuHref(item)} className="transition hover:text-black">
-                  {item.label}
-                </Link>
-              ))}
+              {profile.headerMenu.filter((item) => item.isActive).map((item) =>
+                item.id === "categories" ? (
+                  <div
+                    key={`${item.href}-${item.label}`}
+                    className="relative"
+                    onMouseEnter={() => setCategoryMenuOpen(true)}
+                    onMouseLeave={() => setCategoryMenuOpen(false)}
+                  >
+                    <button
+                      type="button"
+                      onClick={() => setCategoryMenuOpen((open) => !open)}
+                      className="inline-flex items-center gap-1.5 transition hover:text-black"
+                      aria-expanded={categoryMenuOpen}
+                    >
+                      {item.label}
+                      <ChevronDown
+                        size={14}
+                        className={["transition-transform", categoryMenuOpen ? "rotate-180" : ""].join(" ")}
+                      />
+                    </button>
+
+                    {categoryMenuOpen ? (
+                      <div className="absolute left-0 top-full z-50 pt-4">
+                        <div className="min-w-44 rounded-2xl border border-stone-200 bg-white p-2 shadow-xl shadow-stone-900/10">
+                          {categoryItems.map((category) => (
+                            <Link
+                              key={category}
+                              href={`/products?category=${encodeURIComponent(category)}`}
+                              onClick={() => setCategoryMenuOpen(false)}
+                              className="block rounded-xl px-4 py-2.5 text-sm text-stone-700 transition hover:bg-stone-50 hover:text-stone-950"
+                            >
+                              {category}
+                            </Link>
+                          ))}
+                        </div>
+                      </div>
+                    ) : null}
+                  </div>
+                ) : (
+                  <Link key={`${item.href}-${item.label}`} href={resolveMenuHref(item)} className="transition hover:text-black">
+                    {item.label}
+                  </Link>
+                )
+              )}
             </nav>
           </div>
 
@@ -198,16 +241,50 @@ export function SiteHeader() {
         {mobileMenuOpen && !hideMobileMenu ? (
           <div className="border-t border-stone-100 bg-white px-4 pb-4 lg:hidden">
             <nav className="mx-auto grid max-w-6xl gap-2 pt-3 text-sm font-semibold text-stone-700">
-              {profile.headerMenu.filter((item) => item.isActive).map((item) => (
-                <Link
-                  key={`mobile-${item.href}-${item.label}`}
-                  href={resolveMenuHref(item)}
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="rounded-2xl bg-stone-50 px-4 py-3 transition active:bg-stone-100"
-                >
-                  {item.label}
-                </Link>
-              ))}
+              {profile.headerMenu.filter((item) => item.isActive).map((item) =>
+                item.id === "categories" ? (
+                  <div key={`mobile-${item.href}-${item.label}`} className="rounded-2xl bg-stone-50">
+                    <button
+                      type="button"
+                      onClick={() => setMobileCategoryOpen((open) => !open)}
+                      className="flex w-full items-center justify-between px-4 py-3 text-left transition active:bg-stone-100"
+                      aria-expanded={mobileCategoryOpen}
+                    >
+                      <span>{item.label}</span>
+                      <ChevronDown
+                        size={16}
+                        className={["transition-transform", mobileCategoryOpen ? "rotate-180" : ""].join(" ")}
+                      />
+                    </button>
+                    {mobileCategoryOpen ? (
+                      <div className="grid gap-1 px-2 pb-2">
+                        {categoryItems.map((category) => (
+                          <Link
+                            key={category}
+                            href={`/products?category=${encodeURIComponent(category)}`}
+                            onClick={() => {
+                              setMobileMenuOpen(false);
+                              setMobileCategoryOpen(false);
+                            }}
+                            className="rounded-xl bg-white px-4 py-2.5 text-sm font-medium text-stone-600 transition active:bg-stone-100"
+                          >
+                            {category}
+                          </Link>
+                        ))}
+                      </div>
+                    ) : null}
+                  </div>
+                ) : (
+                  <Link
+                    key={`mobile-${item.href}-${item.label}`}
+                    href={resolveMenuHref(item)}
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="rounded-2xl bg-stone-50 px-4 py-3 transition active:bg-stone-100"
+                  >
+                    {item.label}
+                  </Link>
+                )
+              )}
             </nav>
           </div>
         ) : null}

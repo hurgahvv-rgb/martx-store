@@ -57,6 +57,8 @@ export function ProductPurchasePanel({
         price: product.price,
         stock: product.stock ?? 0
       }));
+  const hasSelectableVariants =
+    (product.variants?.length ?? 0) > 0 || detail.variants.some((item) => item.toLowerCase() !== "standard");
   const [variant, setVariant] = useState(variantOptions[0]?.label ?? "Standard");
   const [variantId, setVariantId] = useState<string | undefined>(variantOptions[0]?.id);
   const [quantity, setQuantity] = useState(1);
@@ -83,13 +85,13 @@ export function ProductPurchasePanel({
   };
 
   const handleAddToCart = () => {
-    addCartItem(createCartItem(product, variant, quantity, variantId));
+    addCartItem(createCartItem(product, hasSelectableVariants ? variant : "Сонголтгүй", quantity, variantId));
     setAdded(true);
     window.setTimeout(() => setAdded(false), 1800);
   };
 
   const handleBuyNow = () => {
-    addCartItem(createCartItem(product, variant, quantity, variantId));
+    addCartItem(createCartItem(product, hasSelectableVariants ? variant : "Сонголтгүй", quantity, variantId));
     router.push("/checkout");
   };
 
@@ -109,44 +111,53 @@ export function ProductPurchasePanel({
           </div>
           <span>({reviewSummary.count} сэтгэгдэл)</span>
         </div>
-        <p className="text-2xl font-semibold text-stone-950">
-          {formatPrice(displayPrice, product.currency)}
-        </p>
+        <div className="flex items-center gap-3">
+          {product.compareAtPrice && product.compareAtPrice > displayPrice ? (
+            <span className="text-lg font-medium text-stone-400 line-through">
+              {formatPrice(product.compareAtPrice, product.currency)}
+            </span>
+          ) : null}
+          <span className="text-2xl font-semibold text-stone-950">
+            {formatPrice(displayPrice, product.currency)}
+          </span>
+        </div>
         <p className="max-w-xl text-base leading-8 text-stone-600">{detail.subtitle}</p>
       </div>
 
       <div className="space-y-5 border-y border-stone-200 py-6">
-        <div>
-          <p className="mb-3 text-sm font-medium text-stone-800">Сонголт</p>
-          <div className="flex flex-wrap gap-2">
-            {variantOptions.map((item) => (
-              <button
-                key={`${item.id ?? item.label}`}
-                type="button"
-                onClick={() => {
-                  setVariant(item.label);
-                  setVariantId(item.id);
-                  onVariantImageChange?.(item.image || product.image);
-                }}
-                className={[
-                  "rounded-full border px-4 py-2 text-sm transition disabled:cursor-not-allowed disabled:opacity-45",
-                  variant === item.label && variantId === item.id
-                    ? "border-stone-900 bg-stone-900 text-white"
-                    : "border-stone-300 text-stone-700 hover:border-stone-900"
-                ].join(" ")}
-                disabled={item.stock <= 0}
-              >
-                {item.label}
-                {item.stock <= 0 ? " - дууссан" : ""}
-              </button>
-            ))}
+        {hasSelectableVariants ? (
+          <div>
+            <p className="mb-3 text-sm font-medium text-stone-800">Сонголт</p>
+            <div className="flex flex-wrap gap-2">
+              {variantOptions.map((item) => (
+                <button
+                  key={`${item.id ?? item.label}`}
+                  type="button"
+                  onClick={() => {
+                    setVariant(item.label);
+                    setVariantId(item.id);
+                    onVariantImageChange?.(item.image || product.image);
+                  }}
+                  className={[
+                    "rounded-full border px-4 py-2 text-sm transition disabled:cursor-not-allowed disabled:opacity-45",
+                    variant === item.label && variantId === item.id
+                      ? "border-stone-900 bg-stone-900 text-white"
+                      : "border-stone-300 text-stone-700 hover:border-stone-900"
+                  ].join(" ")}
+                  disabled={item.stock <= 0}
+                >
+                  {item.label}
+                  {item.stock <= 0 ? " - дууссан" : ""}
+                </button>
+              ))}
+            </div>
+            {selectedVariant?.image ? (
+              <p className="mt-3 text-xs leading-5 text-stone-500">
+                Сонгосон өнгөний зураг preview дээр солигдлоо. Gallery дотор зөвхөн ерөнхий зургууд үлдэнэ.
+              </p>
+            ) : null}
           </div>
-          {selectedVariant?.image ? (
-            <p className="mt-3 text-xs leading-5 text-stone-500">
-              Сонгосон өнгөний зураг preview дээр солигдлоо. Gallery дотор зөвхөн ерөнхий зургууд үлдэнэ.
-            </p>
-          ) : null}
-        </div>
+        ) : null}
 
         <div>
           <p className="mb-3 text-sm font-medium text-stone-800">Тоо ширхэг</p>

@@ -6,14 +6,14 @@ import { formatPrice } from "@/lib/data";
 import { getFeaturedStoreProducts, getStoreProducts } from "@/lib/store-products";
 import { getStoreSettings } from "@/lib/store-settings";
 
-const categories = ["Цүнх", "Хувцас", "Гэр ахуй", "Шинэ коллекц"];
 export default async function HomePage() {
   const products = await getStoreProducts();
   const featuredProducts = await getFeaturedStoreProducts();
   const bestSellerProducts = products.slice(0, 6);
   const settings = await getStoreSettings();
   const selectedBannerProduct = settings.heroProductId ? products.find((product) => product.id === settings.heroProductId) : null;
-  const bannerProduct = selectedBannerProduct ?? featuredProducts[0] ?? products[0];
+  const lampProduct = products.find((product) => product.slug === "wave-floor-lamp");
+  const bannerProduct = selectedBannerProduct ?? lampProduct ?? featuredProducts[0] ?? products[0];
 
   return (
     <div className="bg-[#fbfaf7]">
@@ -31,10 +31,10 @@ export default async function HomePage() {
                 MartX онцлох бүтээгдэхүүн
               </p>
               <h1 className="mt-6 text-4xl font-medium leading-tight sm:text-6xl">
-                {bannerProduct.name} - өдөр бүр барихад дэгжин minimal сонголт.
+                {bannerProduct.name} - өрөөнд дулаан уур амьсгал нэмэх minimal сонголт.
               </h1>
               <p className="mx-auto mt-5 max-w-2xl text-sm font-medium uppercase tracking-[0.2em] text-white/75 sm:text-base">
-                Цэвэр хэлбэр, premium материал, өдөр тутмын хэрэглээнд тохирсон ухаалаг загвар.
+                3 өнгийн гэрлийн горим, долгионт хэлбэр, гэр ахуйн тухтай premium акцент.
               </p>
               <div className="mt-8 flex flex-wrap items-center justify-center gap-4">
                 <Link
@@ -54,19 +54,6 @@ export default async function HomePage() {
                 {formatPrice(bannerProduct.price, bannerProduct.currency)}
               </p>
             </div>
-          </div>
-        </div>
-
-        <div className="mx-auto max-w-5xl px-4 pb-16 pt-8 text-center sm:px-6 lg:px-8">
-          <div className="mt-4 flex flex-wrap items-center justify-center gap-3">
-            {categories.map((item) => (
-              <span
-                key={item}
-                className="rounded-full border border-stone-200 bg-white px-4 py-2 text-xs font-medium uppercase tracking-[0.18em] text-stone-600"
-              >
-                {item}
-              </span>
-            ))}
           </div>
         </div>
       </section>
