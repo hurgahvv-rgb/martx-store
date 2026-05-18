@@ -157,7 +157,7 @@ async function renderOrderEmail(order: OrderRequest, savedToDatabase: boolean) {
           `
         )
         .join("")}
-      <p>Хэрэглэгч банкны гүйлгээний утга дээр утасны дугаараа бичнэ.</p>
+      <p>Хэрэглэгч банкны гүйлгээний утга дээр өөрийн 8 оронтой утасны дугаараа бичнэ.</p>
     </div>
   `;
 }

@@ -64,12 +64,12 @@ const defaultPaymentSettings: PaymentSettings = {
   paymentAccountOwner: "Сэндэн Золзаяа",
   paymentAccountNumber: "5020961431",
   paymentPhone: "+976 95958506",
-  paymentInstructions: "Төлбөр шилжүүлэхдээ гүйлгээний утга дээр захиалга өгсөн утасны дугаараа бичнэ үү.",
+  paymentInstructions: "Төлбөр шилжүүлэхдээ гүйлгээний утга дээр захиалга өгсөн өөрийн 8 оронтой утасны дугаараа заавал бичнэ үү.",
   paymentMethods: [
     {
       id: "bank_transfer",
       label: "Дансаар шилжүүлэх",
-      description: "Банкны данс руу шилжүүлээд гүйлгээний утга дээр утасны дугаараа бичнэ.",
+      description: "Банкны данс руу шилжүүлээд гүйлгээний утга дээр өөрийн 8 оронтой утасны дугаараа бичнэ.",
       isActive: true
     }
   ],
@@ -159,7 +159,9 @@ export default function CheckoutPage() {
   const total = cartItems.length > 0 ? subtotal + shippingFee : 0;
   const activePaymentMethods = paymentSettings.paymentMethods.filter((method) => method.isActive);
   const activePaymentAccounts = paymentSettings.paymentAccounts.filter((account) => account.isActive);
-  const paymentReference = customer.phone || "утасны дугаар";
+  const paymentReference = customer.phone;
+  const paymentReferenceLabel = paymentReference || "Утасны дугаараа эхлээд бөглөнө үү";
+  const paymentReferenceInstruction = paymentReference || "утасны талбарт оруулсан 8 оронтой дугаараа";
 
   const updateCustomer = (key: keyof typeof customer, value: string) => {
     const nextValue = key === "phone" ? value.replace(/\D/g, "").slice(0, 8) : value;
@@ -338,7 +340,7 @@ export default function CheckoutPage() {
                         <span className="block font-semibold text-ink">{method.label}</span>
                       <span className="mt-1 block text-sm leading-6 text-slate-500">
                         {method.id === "bank_transfer"
-                          ? "Банкны данс руу шилжүүлээд гүйлгээний утга дээр утасны дугаараа бичнэ."
+                          ? "Банкны данс руу шилжүүлээд гүйлгээний утга дээр өөрийн 8 оронтой утасны дугаараа бичнэ."
                           : method.description}
                       </span>
                     </span>
@@ -364,7 +366,7 @@ export default function CheckoutPage() {
               ))}
 
               {[
-                { label: "Гүйлгээний утга", value: paymentReference, key: "order" },
+                { label: "Гүйлгээний утга", value: paymentReferenceLabel, key: "order" },
                 { label: "Төлөх дүн", value: formatPrice(total, "MNT"), key: "amount" }
               ].map((item) => (
                 <div
@@ -388,7 +390,7 @@ export default function CheckoutPage() {
             </div>
 
             <div className="mt-5 rounded-2xl bg-amber-50 p-4 text-sm leading-7 text-amber-900">
-              Төлбөр шилжүүлэхдээ гүйлгээний утга дээр захиалга өгсөн утасны дугаараа бичнэ үү. Бид банкны гүйлгээний утга дээрх утсаар захиалгыг таньж баталгаажуулна.
+              Төлбөр шилжүүлэхдээ гүйлгээний утга дээр захиалга өгсөн өөрийн 8 оронтой утасны дугаараа заавал бичнэ үү. Бид банкны гүйлгээний утга дээрх утсаар захиалгыг таньж баталгаажуулна.
               <br />
               {paymentSettings.paymentWarningText}
             </div>
@@ -447,7 +449,7 @@ export default function CheckoutPage() {
           <div className="mt-6 rounded-2xl bg-white/10 p-4 text-sm leading-7 text-white/85">
             <p className="font-semibold text-white">Төлбөрийн заавар</p>
             <p className="mt-1">
-              Гүйлгээний утга дээр <strong>{paymentReference}</strong> гэж бичээд, нийт {formatPrice(total, "MNT")} шилжүүлнэ.
+              Гүйлгээний утга дээр <strong>{paymentReferenceInstruction}</strong> заавал бичээд, нийт {formatPrice(total, "MNT")} шилжүүлнэ.
             </p>
           </div>
 

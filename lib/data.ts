@@ -256,5 +256,5 @@ export function formatPrice(price: number, currency: string) {
     maximumFractionDigits: 0
   }).format(price);
 
-  return currency === "MNT" ? `₮ ${amount}` : `${currency} ${amount}`;
+  return currency === "MNT" ? `${amount} ₮` : `${amount} ${currency}`;
 }

@@ -27,7 +27,7 @@ export const defaultPaymentMethods: PaymentMethodSetting[] = [
   {
     id: "bank_transfer",
     label: "Дансаар шилжүүлэх",
-    description: "Банкны данс руу шилжүүлээд гүйлгээний утга дээр утасны дугаараа бичнэ.",
+    description: "Банкны данс руу шилжүүлээд гүйлгээний утга дээр өөрийн 8 оронтой утасны дугаараа бичнэ.",
     isActive: true
   },
   {
@@ -90,7 +90,7 @@ export const defaultStoreSettings = {
   paymentAccountOwner: "Сэндэн Золзаяа",
   paymentAccountNumber: "5020961431",
   paymentPhone: "+976 95958506",
-  paymentInstructions: "Төлбөр шилжүүлэхдээ гүйлгээний утга дээр захиалга өгсөн утасны дугаараа бичнэ үү.",
+  paymentInstructions: "Төлбөр шилжүүлэхдээ гүйлгээний утга дээр захиалга өгсөн өөрийн 8 оронтой утасны дугаараа заавал бичнэ үү.",
   paymentReferenceFormat: "{phone}",
   paymentWarningText: "Захиалга 24 цагийн дотор төлөгдөөгүй бол автоматаар цуцлагдаж болно.",
   shippingUlaanbaatarFee: 0,

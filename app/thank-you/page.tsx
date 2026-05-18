@@ -38,7 +38,7 @@ export default async function ThankYouPage({ searchParams }: ThankYouPageProps) 
           Баярлалаа, таны захиалга бүртгэгдлээ
         </h1>
         <p className="mx-auto mt-4 max-w-2xl text-sm leading-7 text-slate-600">
-          Төлбөрөө доорх данс руу шилжүүлэхдээ гүйлгээний утга дээр утасны дугаараа бичээрэй.
+          Төлбөрөө доорх данс руу шилжүүлэхдээ гүйлгээний утга дээр захиалга өгсөн өөрийн 8 оронтой утасны дугаараа заавал бичээрэй.
           Бид банкны гүйлгээнээс утсаар нь захиалгыг таньж баталгаажуулна.
         </p>
 
@@ -46,7 +46,7 @@ export default async function ThankYouPage({ searchParams }: ThankYouPageProps) 
           <div className="rounded-2xl border-2 border-emerald-200 bg-emerald-50 px-5 py-5">
             <p className="text-xs uppercase tracking-[0.18em] text-emerald-700">Гүйлгээний утга дээр бичих</p>
             <p className="mt-2 text-3xl font-semibold text-emerald-950">{paymentReference}</p>
-            <p className="mt-2 text-sm leading-6 text-emerald-800">Төлбөр шилжүүлэхдээ энэ утасны дугаарыг гүйлгээний утга дээр бичнэ.</p>
+            <p className="mt-2 text-sm leading-6 text-emerald-800">Төлбөр шилжүүлэхдээ энэ 8 оронтой утасны дугаарыг гүйлгээний утга дээр бичнэ.</p>
           </div>
 
           {[
