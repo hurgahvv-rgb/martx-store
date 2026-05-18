@@ -201,7 +201,7 @@ export function ReviewSection({ initialReviews }: ReviewSectionProps) {
                 <h3 className="mt-4 text-lg font-medium text-stone-950">{review.title}</h3>
                 <p className="mt-3 text-sm leading-7 text-stone-600">{review.body}</p>
                 {review.image && (
-                  <div className="relative mt-5 aspect-[4/3] overflow-hidden bg-stone-100">
+                  <div className="relative mt-5 h-36 w-full max-w-56 overflow-hidden rounded-xl bg-stone-100 sm:h-40">
                     <Image src={review.image} alt={review.title} fill className="object-cover" />
                   </div>
                 )}
