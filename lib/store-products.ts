@@ -143,13 +143,15 @@ export async function getFeaturedStoreProducts() {
 }
 
 export async function getStoreProductBySlug(slug: string) {
+  const decodedSlug = decodeURIComponent(slug);
+
   if (shouldSkipDatabaseReads()) {
-    return fallbackProducts.find((product) => product.slug === slug) ?? null;
+    return fallbackProducts.find((product) => product.slug === decodedSlug) ?? null;
   }
 
   try {
     const product = await prisma.product.findFirst({
-      where: { slug, isActive: true },
+      where: { slug: decodedSlug, isActive: true },
       include: {
         variants: {
           where: { isActive: true },
@@ -168,7 +170,7 @@ export async function getStoreProductBySlug(slug: string) {
     // Local setup can run before DATABASE_URL is ready; keep the storefront usable.
   }
 
-  return fallbackProducts.find((product) => product.slug === slug) ?? null;
+  return fallbackProducts.find((product) => product.slug === decodedSlug) ?? null;
 }
 
 export async function getProductDetail(product: Product): Promise<ProductDetail> {
