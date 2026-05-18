@@ -60,8 +60,8 @@ export const defaultPaymentAccounts: PaymentAccountSetting[] = [
   {
     id: "main",
     bank: "Хаан банк",
-    owner: "Сайнбаяр Даваа",
-    number: "5015262578",
+    owner: "Сэндэн Золзаяа",
+    number: "5020961431",
     isActive: true
   }
 ];
@@ -87,14 +87,14 @@ export const defaultStoreSettings = {
   warrantyText: "Үйлдвэрлэлийн гэмтэлд баталгаа өгнө.",
   helpText: "Асуух зүйл байвал дэлгүүртэй чат эсвэл утсаар холбогдоорой.",
   paymentBank: "Хаан банк",
-  paymentAccountOwner: "Сайнбаяр Даваа",
-  paymentAccountNumber: "5015262578",
+  paymentAccountOwner: "Сэндэн Золзаяа",
+  paymentAccountNumber: "5020961431",
   paymentPhone: "+976 95958506",
   paymentInstructions: "Төлбөр шилжүүлэхдээ гүйлгээний утга дээр захиалга өгсөн утасны дугаараа бичнэ үү.",
   paymentReferenceFormat: "{phone}",
   paymentWarningText: "Захиалга 24 цагийн дотор төлөгдөөгүй бол автоматаар цуцлагдаж болно.",
-  shippingUlaanbaatarFee: 12000,
-  shippingProvinceFee: 18000,
+  shippingUlaanbaatarFee: 0,
+  shippingProvinceFee: 5000,
   freeShippingThreshold: 0,
   paymentMethods: defaultPaymentMethods,
   paymentAccounts: defaultPaymentAccounts,
@@ -107,7 +107,7 @@ export const defaultStoreSettings = {
   instagramUrl: "#",
   youtubeUrl: "#",
   footerText: "Copyright © All Right Reserved | Powered by MartX",
-  announcementText: "MARTX | 200,000₮-С ДЭЭШ ҮНЭТЭЙ ЗАХИАЛГАД ХҮРГЭЛТ ҮНЭГҮЙ",
+  announcementText: "MARTX | УЛААНБААТАРТ ХҮРГЭЛТ ҮНЭГҮЙ, ОРОН НУТАГТ 5,000₮",
   heroProductId: "",
   headerMenu: defaultHeaderMenu,
   footerMenu: defaultFooterMenu

@@ -3,7 +3,7 @@ import { BadgeCheck, Headphones, ShieldCheck, Truck } from "lucide-react";
 const highlights = [
   {
     title: "ШУУРХАЙ ХҮРГЭЛТ",
-    description: "200,000₮-с дээш захиалгад хот дотор түргэн хүргэлт.",
+    description: "Улаанбаатарт үнэгүй, орон нутагт 5,000₮-ийн хүргэлттэй.",
     icon: Truck
   },
   {

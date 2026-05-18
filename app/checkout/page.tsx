@@ -61,8 +61,8 @@ type PaymentSettings = {
 
 const defaultPaymentSettings: PaymentSettings = {
   paymentBank: "Хаан банк",
-  paymentAccountOwner: "Сайнбаяр Даваа",
-  paymentAccountNumber: "5015262578",
+  paymentAccountOwner: "Сэндэн Золзаяа",
+  paymentAccountNumber: "5020961431",
   paymentPhone: "+976 95958506",
   paymentInstructions: "Төлбөр шилжүүлэхдээ гүйлгээний утга дээр захиалга өгсөн утасны дугаараа бичнэ үү.",
   paymentMethods: [
@@ -77,15 +77,15 @@ const defaultPaymentSettings: PaymentSettings = {
     {
       id: "main",
       bank: "Хаан банк",
-      owner: "Сайнбаяр Даваа",
-      number: "5015262578",
+      owner: "Сэндэн Золзаяа",
+      number: "5020961431",
       isActive: true
     }
   ],
   paymentReferenceFormat: "{phone}",
   paymentWarningText: "Захиалга 24 цагийн дотор төлөгдөөгүй бол автоматаар цуцлагдаж болно.",
-  shippingUlaanbaatarFee: 12000,
-  shippingProvinceFee: 18000,
+  shippingUlaanbaatarFee: 0,
+  shippingProvinceFee: 5000,
   freeShippingThreshold: 0
 };
 
@@ -243,9 +243,7 @@ export default function CheckoutPage() {
             <div className="grid gap-4 md:grid-cols-2">
               {[
                 { key: "firstName", label: "Нэр" },
-                { key: "lastName", label: "Овог" },
-                { key: "phone", label: "Утас" },
-                { key: "email", label: "И-мэйл" }
+                { key: "phone", label: "Утас" }
               ].map((field) => (
                 <label key={field.key} className="space-y-2 text-sm text-slate-600">
                   <span>{field.label}</span>

@@ -24,7 +24,7 @@ type StoreProfile = {
 const defaultStoreProfile: StoreProfile = {
   storeName: "MartX",
   storeLogo: "/martx-logo.png",
-  announcementText: "MARTX | 200,000₮-С ДЭЭШ ҮНЭТЭЙ ЗАХИАЛГАД ХҮРГЭЛТ ҮНЭГҮЙ",
+  announcementText: "MARTX | УЛААНБААТАРТ ХҮРГЭЛТ ҮНЭГҮЙ, ОРОН НУТАГТ 5,000₮",
   headerMenu: [
     { id: "products", label: "Бүх бараа", href: "/products", isActive: true },
     { id: "categories", label: "Ангилал", href: "/categories", isActive: true },
