@@ -14,7 +14,7 @@ const actionItems = [
   { href: "/cart", label: "Сагс", icon: ShoppingBag }
 ];
 
-const categoryItems = ["Хувцас", "Гэр ахуй", "Цүнх"];
+const categoryItems = ["Гоо сайхан", "Хувцас", "Гэр ахуй", "Цүнх"];
 
 type StoreProfile = {
   storeName: string;

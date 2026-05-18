@@ -161,7 +161,6 @@ export default function CheckoutPage() {
   const activePaymentAccounts = paymentSettings.paymentAccounts.filter((account) => account.isActive);
   const paymentReference = customer.phone;
   const paymentReferenceLabel = paymentReference || "Утасны дугаараа эхлээд бөглөнө үү";
-  const paymentReferenceInstruction = paymentReference || "утасны талбарт оруулсан 8 оронтой дугаараа";
 
   const updateCustomer = (key: keyof typeof customer, value: string) => {
     const nextValue = key === "phone" ? value.replace(/\D/g, "").slice(0, 8) : value;
@@ -449,7 +448,7 @@ export default function CheckoutPage() {
           <div className="mt-6 rounded-2xl bg-white/10 p-4 text-sm leading-7 text-white/85">
             <p className="font-semibold text-white">Төлбөрийн заавар</p>
             <p className="mt-1">
-              Гүйлгээний утга дээр <strong>{paymentReferenceInstruction}</strong> заавал бичээд, нийт {formatPrice(total, "MNT")} шилжүүлнэ.
+              Гүйлгээний утга дээр <strong>утасны дугаараа</strong> заавал бичээд, нийт {formatPrice(total, "MNT")} шилжүүлнэ.
             </p>
           </div>
 

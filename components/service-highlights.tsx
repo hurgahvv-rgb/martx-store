@@ -7,8 +7,8 @@ const highlights = [
     icon: Truck
   },
   {
-    title: "ХЯЛБАР ТӨЛБӨР",
-    description: "QPay, SocialPay болон картаар төлөх боломжтой.",
+    title: "БАТАЛГААТ ЗАХИАЛГА",
+    description: "Төлбөр баталгаажмагц захиалгыг бэлтгэж, хүргэлтийн мэдээллийг утсаар баталгаажуулна.",
     icon: BadgeCheck
   },
   {

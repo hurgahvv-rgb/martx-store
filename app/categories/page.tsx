@@ -6,6 +6,7 @@ import { prisma } from "@/lib/prisma";
 export const dynamic = "force-dynamic";
 
 const fallbackCategories = [
+  { name: "Гоо сайхан", slug: "goo-saihan", description: "Арьс, үс болон өдөр тутмын арчилгаанд зориулсан сонголтууд.", count: 0 },
   { name: "Хувцас", slug: "huvtsas", description: "Ноолуур, гадуур хувцас, өдөр тутмын premium загварууд.", count: 0 },
   { name: "Гэр ахуй", slug: "ger-ahuj", description: "Үнэртэн, керамик болон өдөр тутмын тав тух нэмэх бүтээгдэхүүн.", count: 0 },
   { name: "Цүнх", slug: "tsunh", description: "Аялал, ажил, амралтад тохирсон загварлаг сонголтууд.", count: 0 }
