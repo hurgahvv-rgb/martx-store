@@ -32,6 +32,97 @@ function escapeHtml(value: string) {
     .replace(/'/g, "&#039;");
 }
 
+function createOrderCode() {
+  return `MX-${Date.now().toString().slice(-6)}${Math.floor(Math.random() * 10)}`;
+}
+
+function getVariantLabel(variant: { color: string | null; size: string | null } | null, fallback: string) {
+  if (!variant) {
+    return fallback || "Standard";
+  }
+
+  return [variant.color, variant.size].filter(Boolean).join(" / ") || fallback || "Standard";
+}
+
+async function verifyOrder(order: OrderRequest): Promise<OrderRequest> {
+  const settings = await getStoreSettings();
+  const incomingItems = Array.isArray(order.items) ? order.items : [];
+
+  if (incomingItems.length === 0) {
+    throw new Error("Сагс хоосон байна.");
+  }
+
+  if (incomingItems.length > 50) {
+    throw new Error("Нэг захиалгад хэт олон мөр байна.");
+  }
+
+  const productIds = Array.from(new Set(incomingItems.map((item) => item.productId).filter(Boolean)));
+  const slugs = Array.from(new Set(incomingItems.map((item) => item.slug).filter(Boolean)));
+
+  if (productIds.length === 0 && slugs.length === 0) {
+    throw new Error("Сагсанд танигдахгүй бараа байна.");
+  }
+
+  const products = await prisma.product.findMany({
+    where: {
+      isActive: true,
+      OR: [
+        ...(productIds.length ? [{ id: { in: productIds } }] : []),
+        ...(slugs.length ? [{ slug: { in: slugs } }] : [])
+      ]
+    },
+    include: {
+      variants: {
+        where: { isActive: true }
+      }
+    }
+  });
+  const productsById = new Map(products.map((product) => [product.id, product]));
+  const productsBySlug = new Map(products.map((product) => [product.slug, product]));
+
+  const verifiedItems = incomingItems.map((item) => {
+    const product = productsById.get(item.productId) ?? productsBySlug.get(item.slug);
+    const quantity = Math.max(1, Math.min(99, Math.floor(Number(item.quantity) || 0)));
+
+    if (!product) {
+      throw new Error("Сагсанд идэвхгүй эсвэл олдохгүй бараа байна.");
+    }
+
+    const variant = item.variantId ? product.variants.find((entry) => entry.id === item.variantId) ?? null : null;
+    const availableStock = variant ? variant.stock : product.stock;
+
+    if (quantity > availableStock) {
+      throw new Error(`${product.name} барааны үлдэгдэл хүрэлцэхгүй байна.`);
+    }
+
+    return {
+      productId: product.id,
+      slug: product.slug,
+      name: product.name,
+      category: product.category,
+      price: variant?.price ?? product.price,
+      currency: product.currency,
+      image: variant?.image ?? product.image,
+      variantId: variant?.id,
+      variant: getVariantLabel(variant, item.variant),
+      quantity
+    };
+  });
+  const subtotal = verifiedItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
+  const qualifiesForFreeShipping = settings.freeShippingThreshold > 0 && subtotal >= settings.freeShippingThreshold;
+  const isUlaanbaatar = order.customer.city === "Улаанбаатар";
+  const shippingFee = qualifiesForFreeShipping ? 0 : isUlaanbaatar ? settings.shippingUlaanbaatarFee : settings.shippingProvinceFee;
+
+  return {
+    ...order,
+    orderCode: createOrderCode(),
+    items: verifiedItems,
+    subtotal,
+    shippingFee,
+    total: subtotal + shippingFee
+  };
+}
+
 async function saveOrder(order: OrderRequest) {
   return prisma.$transaction(async (tx) => {
     const savedOrder = await tx.order.create({
@@ -110,7 +201,7 @@ async function renderOrderEmail(order: OrderRequest, savedToDatabase: boolean) {
   return `
     <div style="font-family: Arial, sans-serif; color: #111827; line-height: 1.6;">
       <h1 style="margin: 0 0 12px;">Шинэ захиалга: ${escapeHtml(order.orderCode)}</h1>
-      <p style="margin: 0 0 24px;">MartX checkout дээр шинэ захиалга бүртгэгдлээ.</p>
+      <p style="margin: 0 0 24px;">Өөрсдөө урлая checkout дээр шинэ захиалга бүртгэгдлээ.</p>
       <p><strong>Database:</strong> ${savedToDatabase ? "Хадгалагдсан" : "Хадгалагдаагүй, DATABASE_URL шалгана уу"}</p>
 
       <h2>Хэрэглэгч</h2>
@@ -165,7 +256,7 @@ async function renderOrderEmail(order: OrderRequest, savedToDatabase: boolean) {
 async function sendOrderEmail(order: OrderRequest, savedToDatabase: boolean) {
   const resendApiKey = process.env.RESEND_API_KEY;
   const orderEmail = process.env.ORDER_EMAIL;
-  const fromEmail = process.env.ORDER_FROM_EMAIL ?? "MartX <onboarding@resend.dev>";
+  const fromEmail = process.env.ORDER_FROM_EMAIL ?? "Өөрсдөө урлая <onboarding@resend.dev>";
 
   if (!resendApiKey || !orderEmail) {
     throw new Error("Email тохиргоо дутуу байна. RESEND_API_KEY болон ORDER_EMAIL хэрэгтэй.");
@@ -180,7 +271,7 @@ async function sendOrderEmail(order: OrderRequest, savedToDatabase: boolean) {
     body: JSON.stringify({
       from: fromEmail,
       to: [orderEmail],
-      subject: `MartX шинэ захиалга ${order.orderCode}`,
+      subject: `Өөрсдөө урлая шинэ захиалга ${order.orderCode}`,
       html: await renderOrderEmail(order, savedToDatabase)
     })
   });
@@ -191,14 +282,25 @@ async function sendOrderEmail(order: OrderRequest, savedToDatabase: boolean) {
 }
 
 export async function POST(request: Request) {
-  const order = (await request.json()) as OrderRequest;
+  const rawOrder = (await request.json()) as OrderRequest;
 
-  if (!order.orderCode || !order.items?.length) {
+  if (!rawOrder.customer || !rawOrder.items?.length) {
     return NextResponse.json({ error: "Захиалгын мэдээлэл дутуу байна." }, { status: 400 });
   }
 
-  if (!/^\d{8}$/.test(order.customer.phone)) {
+  if (!/^\d{8}$/.test(rawOrder.customer.phone)) {
     return NextResponse.json({ error: "Утасны дугаар 8 оронтой байх ёстой." }, { status: 400 });
+  }
+
+  let order: OrderRequest;
+
+  try {
+    order = await verifyOrder(rawOrder);
+  } catch (error) {
+    return NextResponse.json(
+      { error: error instanceof Error ? error.message : "Захиалгын мэдээлэл буруу байна." },
+      { status: 400 }
+    );
   }
 
   let savedToDatabase = false;
@@ -219,5 +321,5 @@ export async function POST(request: Request) {
     );
   }
 
-  return NextResponse.json({ ok: true, savedToDatabase });
+  return NextResponse.json({ ok: true, savedToDatabase, orderCode: order.orderCode, total: order.total });
 }

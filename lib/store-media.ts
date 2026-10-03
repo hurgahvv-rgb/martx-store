@@ -3,6 +3,7 @@ import { mkdir, writeFile } from "fs/promises";
 import path from "path";
 
 import { uploadImageToCloudinary } from "@/lib/cloudinary";
+import { isSafeImageFile } from "@/lib/upload-security";
 
 const uploadDir = path.join(process.cwd(), "public", "uploads", "store");
 
@@ -12,7 +13,7 @@ function cleanFileName(name: string) {
 }
 
 export async function saveStoreLogo(file: File | null) {
-  if (!file || file.size === 0 || !file.type.startsWith("image/")) {
+  if (!file || !isSafeImageFile(file)) {
     return null;
   }
 

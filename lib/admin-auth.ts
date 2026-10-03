@@ -5,20 +5,30 @@ import { redirect } from "next/navigation";
 
 const adminCookieName = "martx_admin_session";
 
+function isProduction() {
+  return process.env.NODE_ENV === "production";
+}
+
 function getAdminUsername() {
-  return process.env.ADMIN_USERNAME || "admin";
+  return process.env.ADMIN_USERNAME || (isProduction() ? "" : "admin");
 }
 
 function getAdminPassword() {
-  return process.env.ADMIN_PASSWORD || process.env.ADMIN_TOKEN || "martx2026";
+  return process.env.ADMIN_PASSWORD || process.env.ADMIN_TOKEN || (isProduction() ? "" : "martx2026");
 }
 
 function getSessionSecret() {
-  return process.env.ADMIN_SESSION_SECRET || process.env.ADMIN_TOKEN || process.env.ADMIN_PASSWORD || "martx-local-secret";
+  return process.env.ADMIN_SESSION_SECRET || process.env.ADMIN_TOKEN || process.env.ADMIN_PASSWORD || (isProduction() ? "" : "martx-local-secret");
 }
 
 function signSession(username: string) {
-  return createHmac("sha256", getSessionSecret()).update(username).digest("hex");
+  const secret = getSessionSecret();
+
+  if (!secret) {
+    throw new Error("ADMIN_SESSION_SECRET or ADMIN_PASSWORD must be configured.");
+  }
+
+  return createHmac("sha256", secret).update(username).digest("hex");
 }
 
 function safeEqual(a: string, b: string) {
@@ -29,7 +39,10 @@ function safeEqual(a: string, b: string) {
 }
 
 export function validateAdminLogin(username: string, password: string) {
-  return safeEqual(username, getAdminUsername()) && safeEqual(password, getAdminPassword());
+  const expectedUsername = getAdminUsername();
+  const expectedPassword = getAdminPassword();
+
+  return Boolean(expectedUsername && expectedPassword) && safeEqual(username, expectedUsername) && safeEqual(password, expectedPassword);
 }
 
 export async function createAdminSession() {
@@ -71,7 +84,11 @@ export async function isAdminSessionValid() {
     return false;
   }
 
-  return username === getAdminUsername() && safeEqual(signature, signSession(username));
+  try {
+    return username === getAdminUsername() && safeEqual(signature, signSession(username));
+  } catch {
+    return false;
+  }
 }
 
 export async function requireAdminSession() {
@@ -83,9 +100,25 @@ export async function requireAdminSession() {
 export function isAdminRequest(request: NextRequest) {
   const adminToken = process.env.ADMIN_TOKEN;
 
-  if (!adminToken) {
+  if (adminToken && safeEqual(request.headers.get("x-admin-token") ?? "", adminToken)) {
     return true;
   }
 
-  return request.headers.get("x-admin-token") === adminToken;
+  const value = request.cookies.get(adminCookieName)?.value;
+
+  if (!value) {
+    return false;
+  }
+
+  const [username, signature] = value.split(".");
+
+  if (!username || !signature) {
+    return false;
+  }
+
+  try {
+    return username === getAdminUsername() && safeEqual(signature, signSession(username));
+  } catch {
+    return false;
+  }
 }

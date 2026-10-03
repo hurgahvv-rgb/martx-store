@@ -209,15 +209,16 @@ export default function CheckoutPage() {
         })
       });
 
+      const data = (await response.json().catch(() => null)) as { error?: string; orderCode?: string; total?: number } | null;
+
       if (!response.ok) {
-        const data = (await response.json().catch(() => null)) as { error?: string } | null;
         throw new Error(data?.error ?? "Захиалгын email илгээхэд алдаа гарлаа.");
       }
 
       writeCart([]);
       const params = new URLSearchParams({
-        order: orderCode,
-        total: String(total),
+        order: data?.orderCode ?? orderCode,
+        total: String(data?.total ?? total),
         phone: customer.phone
       });
 

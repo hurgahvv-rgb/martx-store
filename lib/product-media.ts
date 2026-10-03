@@ -3,6 +3,7 @@ import path from "path";
 import { randomUUID } from "crypto";
 
 import { uploadImageToCloudinary } from "@/lib/cloudinary";
+import { isSafeImageFile } from "@/lib/upload-security";
 
 const uploadDir = path.join(process.cwd(), "public", "uploads", "products");
 
@@ -13,7 +14,7 @@ function cleanFileName(name: string) {
 
 export async function saveProductImages(files: File[]) {
   const images: string[] = [];
-  const imageFiles = files.filter((file) => file && file.size > 0 && file.type.startsWith("image/"));
+  const imageFiles = files.filter(isSafeImageFile);
 
   if (imageFiles.length === 0) {
     return images;
