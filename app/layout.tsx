@@ -8,16 +8,9 @@ import "./globals.css";
 export const metadata: Metadata = {
   title: "NaRa",
   description: "Ručně vyráběné kožené kabelky a doplňky.",
-  manifest: "/manifest.webmanifest",
   applicationName: "NaRa",
-  appleWebApp: {
-    capable: true,
-    statusBarStyle: "default",
-    title: "NaRa"
-  },
   icons: {
-    icon: "/martx-app-icon.svg",
-    apple: "/martx-app-icon.svg"
+    icon: "/nara-logo.svg"
   }
 };
 
@@ -59,6 +52,33 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
                   stack: reason.stack
                 });
               });
+            })();
+          `}
+        </Script>
+        <Script id="remove-pwa-registration" strategy="afterInteractive">
+          {`
+            (function () {
+              if (!("serviceWorker" in navigator)) return;
+
+              navigator.serviceWorker.getRegistrations()
+                .then(function (registrations) {
+                  registrations.forEach(function (registration) {
+                    registration.unregister();
+                  });
+                })
+                .catch(function () {});
+
+              if ("caches" in window) {
+                caches.keys()
+                  .then(function (keys) {
+                    keys.forEach(function (key) {
+                      if (key.indexOf("martx-store") === 0) {
+                        caches.delete(key);
+                      }
+                    });
+                  })
+                  .catch(function () {});
+              }
             })();
           `}
         </Script>
