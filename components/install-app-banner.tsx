@@ -95,15 +95,15 @@ export function InstallAppBanner() {
           <div className="min-w-0 flex-1">
             <div className="flex items-start justify-between gap-3">
               <div>
-                <h2 className="text-base font-bold">MartX app суулгах</h2>
+                <h2 className="text-base font-bold">Nainstalovat aplikaci NaRa</h2>
                 <p className="mt-1 text-sm leading-5 text-white/70">
-                  Дэлгүүрээ утсан дээрээ app шиг хурдан нээгээрэй.
+                  Otevřete obchod v telefonu rychle jako aplikaci.
                 </p>
               </div>
               <button
                 type="button"
                 onClick={dismiss}
-                aria-label="Хаах"
+                aria-label="Zavřít"
                 className="rounded-full p-1 text-white/60 transition hover:bg-white/10 hover:text-white"
               >
                 <X size={18} />
@@ -112,9 +112,9 @@ export function InstallAppBanner() {
 
             {showIosHelp || iosDevice ? (
               <div className="mt-3 rounded-2xl bg-white/10 px-3 py-2 text-xs leading-5 text-white/75">
-                <p className="font-bold text-white">iPhone дээр шууд татагдахгүй.</p>
-                <p>Safari-аар нээгээд доорх Share товчийг дарна.</p>
-                <p>Дараа нь “Add to Home Screen” сонгоно.</p>
+                <p className="font-bold text-white">Na iPhonu instalace probíhá přes Safari.</p>
+                <p>Otevřete stránku v Safari a klepněte na tlačítko Sdílet.</p>
+                <p>Potom zvolte “Přidat na plochu”.</p>
               </div>
             ) : null}
 
@@ -124,7 +124,7 @@ export function InstallAppBanner() {
               className="mt-4 inline-flex items-center gap-2 rounded-xl bg-white px-4 py-3 text-sm font-bold text-stone-950 transition hover:bg-stone-100"
             >
               <Download size={17} />
-              {iosDevice ? "iPhone дээр суулгах заавар" : "App суулгах"}
+              {iosDevice ? "Návod pro iPhone" : "Nainstalovat aplikaci"}
             </button>
           </div>
         </div>

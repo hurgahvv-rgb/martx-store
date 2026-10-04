@@ -26,32 +26,32 @@ export type MenuLinkSetting = {
 export const defaultPaymentMethods: PaymentMethodSetting[] = [
   {
     id: "bank_transfer",
-    label: "Дансаар шилжүүлэх",
-    description: "Банкны данс руу шилжүүлээд гүйлгээний утга дээр өөрийн 8 оронтой утасны дугаараа бичнэ.",
+    label: "Bankovní převod",
+    description: "Platbu odešlete na bankovní účet a do zprávy pro příjemce uvedete telefon z objednávky.",
     isActive: true
   },
   {
     id: "qpay",
     label: "QPay",
-    description: "QR кодоор төлөх тохиргоог дараа API-тай холбоно.",
+    description: "Platba přes QR kód bude dostupná po napojení platební brány.",
     isActive: false
   },
   {
     id: "socialpay",
     label: "SocialPay",
-    description: "SocialPay-р төлөх боломжийг checkout дээр харуулна.",
+    description: "Volitelný způsob platby pro budoucí nastavení.",
     isActive: false
   },
   {
     id: "storepay",
     label: "StorePay",
-    description: "Хувааж төлөх эсвэл зээлээр авах сонголт.",
+    description: "Volitelná platba na splátky nebo odložená platba.",
     isActive: false
   },
   {
     id: "cash_on_delivery",
-    label: "Хүргэлтийн үед төлөх",
-    description: "Бараа хүрэх үед бэлнээр эсвэл шилжүүлгээр төлнө.",
+    label: "Dobírka",
+    description: "Platba při převzetí zásilky.",
     isActive: false
   }
 ];
@@ -59,55 +59,55 @@ export const defaultPaymentMethods: PaymentMethodSetting[] = [
 export const defaultPaymentAccounts: PaymentAccountSetting[] = [
   {
     id: "main",
-    bank: "Хаан банк",
-    owner: "Сэндэн Золзаяа",
+    bank: "Banka",
+    owner: "NaRa",
     number: "5020961431",
     isActive: true
   }
 ];
 
 export const defaultHeaderMenu: MenuLinkSetting[] = [
-  { id: "products", label: "Бүх бараа", href: "/products", isActive: true },
-  { id: "categories", label: "Ангилал", href: "/categories", isActive: true },
-  { id: "new", label: "Шинэ", href: "/products?filter=new", isActive: true },
-  { id: "featured", label: "Онцлох", href: "/products?filter=featured", isActive: true }
+  { id: "products", label: "Všechny produkty", href: "/products", isActive: true },
+  { id: "categories", label: "Kategorie", href: "/categories", isActive: true },
+  { id: "new", label: "Novinky", href: "/products?filter=new", isActive: true },
+  { id: "featured", label: "Doporučené", href: "/products?filter=featured", isActive: true }
 ];
 
 export const defaultFooterMenu: MenuLinkSetting[] = [
-  { id: "shipping", label: "Хүргэлт", href: "/shipping", isActive: true },
-  { id: "returns", label: "Буцаалт", href: "/returns", isActive: true },
-  { id: "contact", label: "Холбоо барих", href: "/contact", isActive: true },
-  { id: "partners", label: "Хамтын ажиллагаа", href: "/partners", isActive: true },
-  { id: "terms", label: "Нөхцөл", href: "/terms", isActive: true }
+  { id: "products", label: "Produkty", href: "/products", isActive: true },
+  { id: "shipping", label: "Doprava a platba", href: "/info/doprava", isActive: true },
+  { id: "returns", label: "Vrácení", href: "/info/vraceni", isActive: true },
+  { id: "contact", label: "Kontakt", href: "/info/kontakt", isActive: true },
+  { id: "terms", label: "Obchodní podmínky", href: "/info/obchodni-podminky", isActive: true }
 ];
 
 export const defaultStoreSettings = {
-  shippingText: "Улаанбаатар хотод 24-48 цаг, орон нутагт 2-5 хоногт хүргэнэ.",
-  returnsText: "Хүлээн авснаас хойш 7 хоногийн дотор солих, буцаах хүсэлт гаргах боломжтой.",
-  warrantyText: "Үйлдвэрлэлийн гэмтэлд баталгаа өгнө.",
-  helpText: "Асуух зүйл байвал дэлгүүртэй чат эсвэл утсаар холбогдоорой.",
-  paymentBank: "Хаан банк",
-  paymentAccountOwner: "Сэндэн Золзаяа",
+  shippingText: "Dostupné způsoby dopravy a cenu uvidíte v pokladně ještě před odesláním objednávky.",
+  returnsText: "Nepoužité zboží můžete vrátit podle podmínek uvedených na stránce Vrácení zboží.",
+  warrantyText: "Na vady se vztahují zákonná práva z odpovědnosti za vady.",
+  helpText: "Pokud potřebujete poradit s výběrem, napište nám přes kontaktní stránku.",
+  paymentBank: "Banka",
+  paymentAccountOwner: "NaRa",
   paymentAccountNumber: "5020961431",
-  paymentPhone: "+976 95958506",
-  paymentInstructions: "Төлбөр шилжүүлэхдээ гүйлгээний утга дээр захиалга өгсөн өөрийн 8 оронтой утасны дугаараа заавал бичнэ үү.",
+  paymentPhone: "+420 736 924 533",
+  paymentInstructions: "Při bankovním převodu uveďte do zprávy pro příjemce telefon z objednávky.",
   paymentReferenceFormat: "{phone}",
-  paymentWarningText: "Захиалга 24 цагийн дотор төлөгдөөгүй бол автоматаар цуцлагдаж болно.",
+  paymentWarningText: "Pokud objednávka nebude uhrazena včas, může být zrušena.",
   shippingUlaanbaatarFee: 0,
-  shippingProvinceFee: 5000,
+  shippingProvinceFee: 171,
   freeShippingThreshold: 0,
   paymentMethods: defaultPaymentMethods,
   paymentAccounts: defaultPaymentAccounts,
-  storeName: "MartX",
-  storeSubtitle: "martx.market.shop",
-  storeLogo: "/martx-logo.png",
-  contactPhone: "+976 95958506",
-  contactEmail: "hello@martx.mn",
+  storeName: "NaRa",
+  storeSubtitle: "Handmade leather bags",
+  storeLogo: "/nara-logo.svg",
+  contactPhone: "+420 736 924 533",
+  contactEmail: "narastore.help@gmail.com",
   facebookUrl: "#",
   instagramUrl: "#",
   youtubeUrl: "#",
-  footerText: "Copyright © All Right Reserved | Powered by MartX",
-  announcementText: "MARTX | УЛААНБААТАРТ ХҮРГЭЛТ ҮНЭГҮЙ, ОРОН НУТАГТ 5,000₮",
+  footerText: "Copyright © NaRa | Handmade leather bags",
+  announcementText: "NARA | HANDMADE LEATHER BAGS",
   heroProductId: "",
   headerMenu: defaultHeaderMenu,
   footerMenu: defaultFooterMenu

@@ -2,9 +2,9 @@ import type { MetadataRoute } from "next";
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: "MartX Store",
-    short_name: "MartX",
-    description: "MartX онлайн дэлгүүр",
+    name: "NaRa",
+    short_name: "NaRa",
+    description: "Ručně vyráběné kožené kabelky a doplňky",
     start_url: "/",
     scope: "/",
     display: "standalone",

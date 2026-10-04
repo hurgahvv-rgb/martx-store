@@ -49,18 +49,18 @@ async function verifyOrder(order: OrderRequest): Promise<OrderRequest> {
   const incomingItems = Array.isArray(order.items) ? order.items : [];
 
   if (incomingItems.length === 0) {
-    throw new Error("Сагс хоосон байна.");
+    throw new Error("Košík je prázdný.");
   }
 
   if (incomingItems.length > 50) {
-    throw new Error("Нэг захиалгад хэт олон мөр байна.");
+    throw new Error("V jedné objednávce je příliš mnoho položek.");
   }
 
   const productIds = Array.from(new Set(incomingItems.map((item) => item.productId).filter(Boolean)));
   const slugs = Array.from(new Set(incomingItems.map((item) => item.slug).filter(Boolean)));
 
   if (productIds.length === 0 && slugs.length === 0) {
-    throw new Error("Сагсанд танигдахгүй бараа байна.");
+    throw new Error("V košíku je nerozpoznaný produkt.");
   }
 
   const products = await prisma.product.findMany({
@@ -85,14 +85,14 @@ async function verifyOrder(order: OrderRequest): Promise<OrderRequest> {
     const quantity = Math.max(1, Math.min(99, Math.floor(Number(item.quantity) || 0)));
 
     if (!product) {
-      throw new Error("Сагсанд идэвхгүй эсвэл олдохгүй бараа байна.");
+      throw new Error("V košíku je neaktivní nebo nedostupný produkt.");
     }
 
     const variant = item.variantId ? product.variants.find((entry) => entry.id === item.variantId) ?? null : null;
     const availableStock = variant ? variant.stock : product.stock;
 
     if (quantity > availableStock) {
-      throw new Error(`${product.name} барааны үлдэгдэл хүрэлцэхгүй байна.`);
+      throw new Error(`Produkt ${product.name} není skladem v požadovaném množství.`);
     }
 
     return {
@@ -110,7 +110,7 @@ async function verifyOrder(order: OrderRequest): Promise<OrderRequest> {
   });
   const subtotal = verifiedItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
   const qualifiesForFreeShipping = settings.freeShippingThreshold > 0 && subtotal >= settings.freeShippingThreshold;
-  const isUlaanbaatar = order.customer.city === "Улаанбаатар";
+  const isUlaanbaatar = order.customer.city === "Ulaanbaatar";
   const shippingFee = qualifiesForFreeShipping ? 0 : isUlaanbaatar ? settings.shippingUlaanbaatarFee : settings.shippingProvinceFee;
 
   return {
@@ -132,7 +132,7 @@ async function saveOrder(order: OrderRequest) {
         shippingFee: order.shippingFee,
         total: order.total,
         paymentMethod: order.paymentMethod || "bank_transfer",
-        customerName: `${order.customer.firstName} ${order.customer.lastName}`.trim() || "Нэр оруулаагүй",
+        customerName: `${order.customer.firstName} ${order.customer.lastName}`.trim() || "Jméno neuvedeno",
         customerEmail: order.customer.email || null,
         customerPhone: order.customer.phone,
         shippingCity: order.customer.city,
@@ -200,43 +200,43 @@ async function renderOrderEmail(order: OrderRequest, savedToDatabase: boolean) {
 
   return `
     <div style="font-family: Arial, sans-serif; color: #111827; line-height: 1.6;">
-      <h1 style="margin: 0 0 12px;">Шинэ захиалга: ${escapeHtml(order.orderCode)}</h1>
-      <p style="margin: 0 0 24px;">Өөрсдөө урлая checkout дээр шинэ захиалга бүртгэгдлээ.</p>
-      <p><strong>Database:</strong> ${savedToDatabase ? "Хадгалагдсан" : "Хадгалагдаагүй, DATABASE_URL шалгана уу"}</p>
+      <h1 style="margin: 0 0 12px;">Nová objednávka: ${escapeHtml(order.orderCode)}</h1>
+      <p style="margin: 0 0 24px;">V obchodě NaRa byla vytvořena nová objednávka.</p>
+      <p><strong>Database:</strong> ${savedToDatabase ? "Uloženo" : "Neuloženo, zkontrolujte DATABASE_URL"}</p>
 
-      <h2>Хэрэглэгч</h2>
+      <h2>Zákazník</h2>
       <p>
-        <strong>Нэр:</strong> ${escapeHtml(customerName || "Нэр оруулаагүй")}<br />
-        <strong>Утас:</strong> ${escapeHtml(order.customer.phone)}<br />
-        <strong>И-мэйл:</strong> ${escapeHtml(order.customer.email)}<br />
-        <strong>Хот/Аймаг:</strong> ${escapeHtml(order.customer.city)}<br />
-        <strong>Дүүрэг/Сум:</strong> ${escapeHtml(order.customer.district)}<br />
-        <strong>Хаяг:</strong> ${escapeHtml(order.customer.address)}
+        <strong>Jméno:</strong> ${escapeHtml(customerName || "Jméno neuvedeno")}<br />
+        <strong>Telefon:</strong> ${escapeHtml(order.customer.phone)}<br />
+        <strong>E-mail:</strong> ${escapeHtml(order.customer.email)}<br />
+        <strong>Město:</strong> ${escapeHtml(order.customer.city)}<br />
+        <strong>Doplňující údaj:</strong> ${escapeHtml(order.customer.district)}<br />
+        <strong>Adresa:</strong> ${escapeHtml(order.customer.address)}
       </p>
 
-      <h2>Бараанууд</h2>
+      <h2>Produkty</h2>
       <table style="width: 100%; border-collapse: collapse;">
         <thead>
           <tr>
-            <th align="left" style="padding: 10px; border-bottom: 2px solid #111827;">Бараа</th>
-            <th align="left" style="padding: 10px; border-bottom: 2px solid #111827;">Сонголт</th>
-            <th align="left" style="padding: 10px; border-bottom: 2px solid #111827;">Тоо</th>
-            <th align="left" style="padding: 10px; border-bottom: 2px solid #111827;">Дүн</th>
+            <th align="left" style="padding: 10px; border-bottom: 2px solid #111827;">Produkt</th>
+            <th align="left" style="padding: 10px; border-bottom: 2px solid #111827;">Varianta</th>
+            <th align="left" style="padding: 10px; border-bottom: 2px solid #111827;">Množství</th>
+            <th align="left" style="padding: 10px; border-bottom: 2px solid #111827;">Cena</th>
           </tr>
         </thead>
         <tbody>${items}</tbody>
       </table>
 
-      <h2>Төлбөр</h2>
+      <h2>Platba</h2>
       <p>
-        <strong>Барааны дүн:</strong> ${formatPrice(order.subtotal, "MNT")}<br />
-        <strong>Хүргэлт:</strong> ${formatPrice(order.shippingFee, "MNT")}<br />
-        <strong>Нийт:</strong> ${formatPrice(order.total, "MNT")}<br />
-        <strong>Төлбөрийн арга:</strong> ${escapeHtml(paymentMethod?.label ?? "Дансаар шилжүүлэх")}<br />
-        <strong>Гүйлгээний утга:</strong> ${escapeHtml(order.customer.phone)}
+        <strong>Mezisoučet:</strong> ${formatPrice(order.subtotal, "CZK")}<br />
+        <strong>Doprava:</strong> ${formatPrice(order.shippingFee, "CZK")}<br />
+        <strong>Celkem:</strong> ${formatPrice(order.total, "CZK")}<br />
+        <strong>Způsob platby:</strong> ${escapeHtml(paymentMethod?.label ?? "Bankovní převod")}<br />
+        <strong>Zpráva pro příjemce:</strong> ${escapeHtml(order.customer.phone)}
       </p>
 
-      <h2>Данс</h2>
+      <h2>Účet</h2>
       ${paymentAccounts
         .map(
           (account) => `
@@ -248,7 +248,7 @@ async function renderOrderEmail(order: OrderRequest, savedToDatabase: boolean) {
           `
         )
         .join("")}
-      <p>Хэрэглэгч банкны гүйлгээний утга дээр өөрийн 8 оронтой утасны дугаараа бичнэ.</p>
+      <p>Zákazník při bankovním převodu uvede do zprávy pro příjemce telefon z objednávky.</p>
     </div>
   `;
 }
@@ -256,10 +256,10 @@ async function renderOrderEmail(order: OrderRequest, savedToDatabase: boolean) {
 async function sendOrderEmail(order: OrderRequest, savedToDatabase: boolean) {
   const resendApiKey = process.env.RESEND_API_KEY;
   const orderEmail = process.env.ORDER_EMAIL;
-  const fromEmail = process.env.ORDER_FROM_EMAIL ?? "Өөрсдөө урлая <onboarding@resend.dev>";
+  const fromEmail = process.env.ORDER_FROM_EMAIL ?? "NaRa <onboarding@resend.dev>";
 
   if (!resendApiKey || !orderEmail) {
-    throw new Error("Email тохиргоо дутуу байна. RESEND_API_KEY болон ORDER_EMAIL хэрэгтэй.");
+    throw new Error("Chybí nastavení e-mailu. Je potřeba RESEND_API_KEY a ORDER_EMAIL.");
   }
 
   const response = await fetch("https://api.resend.com/emails", {
@@ -271,13 +271,14 @@ async function sendOrderEmail(order: OrderRequest, savedToDatabase: boolean) {
     body: JSON.stringify({
       from: fromEmail,
       to: [orderEmail],
-      subject: `Өөрсдөө урлая шинэ захиалга ${order.orderCode}`,
+      subject: `NaRa nová objednávka ${order.orderCode}`,
       html: await renderOrderEmail(order, savedToDatabase)
     })
   });
 
   if (!response.ok) {
-    throw new Error(await response.text());
+    console.error("Order email send failed", await response.text());
+    throw new Error("E-mailové oznámení se nepodařilo odeslat. E-mailová služba ještě není plně nastavena.");
   }
 }
 
@@ -285,11 +286,11 @@ export async function POST(request: Request) {
   const rawOrder = (await request.json()) as OrderRequest;
 
   if (!rawOrder.customer || !rawOrder.items?.length) {
-    return NextResponse.json({ error: "Захиалгын мэдээлэл дутуу байна." }, { status: 400 });
+    return NextResponse.json({ error: "Chybí údaje objednávky." }, { status: 400 });
   }
 
-  if (!/^\d{8}$/.test(rawOrder.customer.phone)) {
-    return NextResponse.json({ error: "Утасны дугаар 8 оронтой байх ёстой." }, { status: 400 });
+  if (!/^[+\d][\d\s-]{5,19}$/.test(rawOrder.customer.phone)) {
+    return NextResponse.json({ error: "Zadejte platné telefonní číslo." }, { status: 400 });
   }
 
   let order: OrderRequest;
@@ -298,7 +299,7 @@ export async function POST(request: Request) {
     order = await verifyOrder(rawOrder);
   } catch (error) {
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : "Захиалгын мэдээлэл буруу байна." },
+      { error: error instanceof Error ? error.message : "Údaje objednávky nejsou správné." },
       { status: 400 }
     );
   }
@@ -316,7 +317,7 @@ export async function POST(request: Request) {
     await sendOrderEmail(order, savedToDatabase);
   } catch (error) {
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : "Email илгээхэд алдаа гарлаа." },
+      { error: error instanceof Error ? error.message : "E-mail se nepodařilo odeslat." },
       { status: 502 }
     );
   }

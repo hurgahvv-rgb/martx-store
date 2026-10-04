@@ -75,12 +75,12 @@ export function ReviewSection({ initialReviews }: ReviewSectionProps) {
       <div className="mx-auto max-w-6xl px-4 py-14 sm:px-6 lg:px-8 lg:py-20">
         <div className="mb-10 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
           <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.28em] text-stone-500">Reviews</p>
+            <p className="text-xs font-semibold uppercase tracking-[0.28em] text-stone-500">Recenze</p>
             <h2 className="mt-3 text-3xl font-medium text-stone-950 sm:text-4xl">
-              Худалдан авагчдын сэтгэгдэл
+              Recenze zákazníků
             </h2>
             <p className="mt-3 text-sm text-stone-600">
-              Дундаж үнэлгээ {average} / 5 · {reviewCount} сэтгэгдэл
+              Průměrné hodnocení {average} / 5 · {reviewCount} recenzí
             </p>
           </div>
 
@@ -89,7 +89,7 @@ export function ReviewSection({ initialReviews }: ReviewSectionProps) {
             onClick={() => setIsOpen((open) => !open)}
             className="rounded-2xl border border-stone-300 bg-white px-6 py-3 text-sm font-medium text-stone-900 transition hover:border-stone-900"
           >
-            Сэтгэгдэл бичих
+            Napsat recenzi
           </button>
         </div>
 
@@ -100,28 +100,28 @@ export function ReviewSection({ initialReviews }: ReviewSectionProps) {
           >
             <div className="grid gap-4 sm:grid-cols-2">
               <label className="space-y-2 text-sm text-stone-700">
-                <span>Нэр</span>
+                <span>Jméno</span>
                 <input
                   value={author}
                   onChange={(event) => setAuthor(event.target.value)}
                   className="w-full border border-stone-300 bg-white px-4 py-3 outline-none transition focus:border-stone-900"
-                  placeholder="Таны нэр"
+                  placeholder="Vaše jméno"
                 />
               </label>
 
               <label className="space-y-2 text-sm text-stone-700">
-                <span>Гарчиг</span>
+                <span>Nadpis</span>
                 <input
                   value={title}
                   onChange={(event) => setTitle(event.target.value)}
                   className="w-full border border-stone-300 bg-white px-4 py-3 outline-none transition focus:border-stone-900"
-                  placeholder="Сэтгэгдлийн гарчиг"
+                  placeholder="Nadpis recenze"
                 />
               </label>
             </div>
 
             <div className="space-y-2 text-sm text-stone-700">
-              <span>Үнэлгээ</span>
+              <span>Hodnocení</span>
               <div className="flex items-center gap-2">
                 {Array.from({ length: 5 }).map((_, index) => {
                   const starValue = index + 1;
@@ -145,19 +145,19 @@ export function ReviewSection({ initialReviews }: ReviewSectionProps) {
             </div>
 
             <label className="block space-y-2 text-sm text-stone-700">
-              <span>Сэтгэгдэл</span>
+              <span>Recenze</span>
               <textarea
                 value={body}
                 onChange={(event) => setBody(event.target.value)}
                 className="min-h-32 w-full border border-stone-300 bg-white px-4 py-3 outline-none transition focus:border-stone-900"
-                placeholder="Бүтээгдэхүүний талаар сэтгэгдлээ бичнэ үү"
+                placeholder="Napište, jak jste s produktem spokojeni"
               />
             </label>
 
             <div className="space-y-3">
               <label className="inline-flex cursor-pointer items-center gap-2 rounded-full border border-stone-300 bg-white px-4 py-2 text-sm text-stone-700 transition hover:border-stone-900">
                 <Camera size={16} />
-                <span>Зураг нэмэх</span>
+                <span>Přidat fotografii</span>
                 <input type="file" accept="image/*" className="hidden" onChange={handleImageChange} />
               </label>
 
@@ -173,14 +173,14 @@ export function ReviewSection({ initialReviews }: ReviewSectionProps) {
                 type="submit"
                 className="rounded-full bg-stone-950 px-6 py-3 text-sm font-semibold text-white transition hover:bg-stone-800"
               >
-                Сэтгэгдэл хадгалах
+                Uložit recenzi
               </button>
               <button
                 type="button"
                 onClick={() => setIsOpen(false)}
                 className="rounded-full border border-stone-300 px-6 py-3 text-sm font-semibold text-stone-700"
               >
-                Болих
+                Zrušit
               </button>
             </div>
           </form>
@@ -210,7 +210,7 @@ export function ReviewSection({ initialReviews }: ReviewSectionProps) {
             ))
           ) : (
             <article className="bg-[#faf8f4] p-6 text-sm leading-7 text-stone-600 shadow-[0_20px_50px_-36px_rgba(28,25,23,0.2)] lg:col-span-3">
-              Одоогоор сэтгэгдэл байхгүй байна. Эхний сэтгэгдлийг үлдээгээрэй.
+              Zatím tu nejsou žádné recenze. Buďte první, kdo ji napíše.
             </article>
           )}
         </div>

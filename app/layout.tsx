@@ -6,14 +6,14 @@ import { AppChrome } from "@/components/app-chrome";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "MartX",
-  description: "MartX онлайн дэлгүүрийн modern ecommerce эхлэл.",
+  title: "NaRa",
+  description: "Ručně vyráběné kožené kabelky a doplňky.",
   manifest: "/manifest.webmanifest",
-  applicationName: "MartX",
+  applicationName: "NaRa",
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
-    title: "MartX"
+    title: "NaRa"
   },
   icons: {
     icon: "/martx-app-icon.svg",
@@ -23,7 +23,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="mn">
+    <html lang="cs">
       <head>
         <Script id="client-error-reporter" strategy="beforeInteractive">
           {`

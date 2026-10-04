@@ -1,10 +1,10 @@
 export const paymentStatuses = ["PENDING", "CONFIRMED", "REFUNDED", "FAILED"] as const;
 
 export const paymentStatusLabels: Record<(typeof paymentStatuses)[number], string> = {
-  PENDING: "Төлбөр хүлээгдэж байна",
-  CONFIRMED: "Төлбөр баталгаажсан",
-  REFUNDED: "Буцаалт хийсэн",
-  FAILED: "Төлбөр амжилтгүй"
+  PENDING: "Platba čeká na potvrzení",
+  CONFIRMED: "Platba potvrzena",
+  REFUNDED: "Vráceno",
+  FAILED: "Platba se nezdařila"
 };
 
 export function getPaymentStatusLabel(status: string) {

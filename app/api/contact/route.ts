@@ -1,5 +1,9 @@
 import { NextResponse } from "next/server";
 
+import { sendGmailMessage } from "@/lib/gmail-smtp";
+
+export const runtime = "nodejs";
+
 type ContactRequest = {
   name?: string;
   email?: string;
@@ -28,52 +32,47 @@ export async function POST(request: Request) {
   const comment = clean(body?.comment);
 
   if (!email || !comment) {
-    return NextResponse.json({ error: "И-мэйл болон сэтгэгдэл заавал бөглөнө үү." }, { status: 400 });
+    return NextResponse.json({ error: "E-mail a zpráva jsou povinné." }, { status: 400 });
   }
 
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-    return NextResponse.json({ error: "И-мэйл хаяг зөв оруулна уу." }, { status: 400 });
+    return NextResponse.json({ error: "Zadejte platnou e-mailovou adresu." }, { status: 400 });
   }
 
-  const resendApiKey = process.env.RESEND_API_KEY;
-  const contactEmail = process.env.CONTACT_EMAIL || process.env.ORDER_EMAIL;
-  const fromEmail = process.env.ORDER_FROM_EMAIL ?? "MartX <onboarding@resend.dev>";
+  const contactEmail = process.env.CONTACT_EMAIL;
 
-  if (!resendApiKey || !contactEmail) {
+  if (!contactEmail) {
     return NextResponse.json(
-      { error: "Email тохиргоо дутуу байна. RESEND_API_KEY болон CONTACT_EMAIL эсвэл ORDER_EMAIL хэрэгтэй." },
+      { error: "Chybí nastavení e-mailu. Je potřeba CONTACT_EMAIL." },
       { status: 500 }
     );
   }
 
   const html = `
     <div style="font-family: Arial, sans-serif; color: #111827; line-height: 1.6;">
-      <h1 style="margin: 0 0 16px;">MartX холбоо барих хүсэлт</h1>
-      <p><strong>Нэр:</strong> ${escapeHtml(name || "Нэр оруулаагүй")}</p>
-      <p><strong>И-мэйл:</strong> ${escapeHtml(email)}</p>
-      <p><strong>Утас:</strong> ${escapeHtml(phone || "Утас оруулаагүй")}</p>
-      <p><strong>Сэтгэгдэл:</strong></p>
+      <h1 style="margin: 0 0 16px;">NaRa kontaktní zpráva</h1>
+      <p><strong>Jméno:</strong> ${escapeHtml(name || "Jméno neuvedeno")}</p>
+      <p><strong>E-mail:</strong> ${escapeHtml(email)}</p>
+      <p><strong>Telefon:</strong> ${escapeHtml(phone || "Telefon neuveden")}</p>
+      <p><strong>Zpráva:</strong></p>
       <p style="white-space: pre-wrap; padding: 12px; background: #f5f5f4; border-radius: 8px;">${escapeHtml(comment)}</p>
     </div>
   `;
 
-  const response = await fetch("https://api.resend.com/emails", {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${resendApiKey}`,
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({
-      from: fromEmail,
-      to: [contactEmail],
-      reply_to: email,
-      subject: `MartX холбоо барих хүсэлт${name ? ` - ${name}` : ""}`,
+  try {
+    await sendGmailMessage({
+      to: contactEmail,
+      fromName: "NaRa",
+      replyTo: email,
+      subject: `NaRa kontaktní zpráva${name ? ` - ${name}` : ""}`,
       html
-    })
-  });
-
-  if (!response.ok) {
-    return NextResponse.json({ error: await response.text() }, { status: 502 });
+    });
+  } catch (error) {
+    console.error("Contact email send failed", error);
+    return NextResponse.json(
+      { error: "Zprávu se nepodařilo odeslat. E-mailová služba ještě není plně nastavena." },
+      { status: 502 }
+    );
   }
 
   return NextResponse.json({ ok: true });

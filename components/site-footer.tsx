@@ -1,123 +1,85 @@
-"use client";
-
 import Link from "next/link";
-import { Facebook, Instagram, Youtube } from "lucide-react";
-import { useEffect, useState } from "react";
 
-import { defaultStoreSettings, type MenuLinkSetting } from "@/lib/store-settings";
+const infoLinks = [
+  { label: "Doprava a platba", href: "/info/doprava" },
+  { label: "Vrácení", href: "/info/vraceni" },
+  { label: "Odstoupení od smlouvy", href: "/info/odstoupeni" },
+  { label: "Péče o kůži", href: "/info/starostlivost" },
+  { label: "Obchodní podmínky", href: "/info/obchodni-podminky" },
+  { label: "Ochrana osobních údajů", href: "/info/ochrana-osobnich-udaju" },
+  { label: "Kontakt", href: "/info/kontakt" }
+];
 
-type FooterSettings = {
-  contactPhone: string;
-  contactEmail: string;
-  facebookUrl: string;
-  instagramUrl: string;
-  youtubeUrl: string;
-  footerText: string;
-  footerMenu: MenuLinkSetting[];
-};
-
-const defaultFooterSettings: FooterSettings = {
-  contactPhone: defaultStoreSettings.contactPhone,
-  contactEmail: defaultStoreSettings.contactEmail,
-  facebookUrl: defaultStoreSettings.facebookUrl,
-  instagramUrl: defaultStoreSettings.instagramUrl,
-  youtubeUrl: defaultStoreSettings.youtubeUrl,
-  footerText: defaultStoreSettings.footerText,
-  footerMenu: defaultStoreSettings.footerMenu
-};
-
-function normalizeFooterSettings(data: Partial<FooterSettings>): FooterSettings {
-  return {
-    ...defaultFooterSettings,
-    ...data,
-    contactPhone: data.contactPhone || defaultFooterSettings.contactPhone,
-    contactEmail: data.contactEmail || defaultFooterSettings.contactEmail,
-    footerText: data.footerText || defaultFooterSettings.footerText,
-    footerMenu: Array.isArray(data.footerMenu) && data.footerMenu.length > 0 ? data.footerMenu : defaultFooterSettings.footerMenu
-  };
-}
+const brandLinks = [
+  { label: "Náš příběh", href: "/about" },
+  { label: "Kolekce", href: "/products?filter=featured" },
+  { label: "Ateliér", href: "/about" }
+];
 
 export function SiteFooter() {
-  const [settings, setSettings] = useState<FooterSettings>(defaultFooterSettings);
-  const footerLinks = settings.footerMenu.filter((item) => item.isActive);
-  const socialLinks = [
-    { href: settings.facebookUrl, label: "Facebook", icon: Facebook },
-    { href: settings.instagramUrl, label: "Instagram", icon: Instagram },
-    { href: settings.youtubeUrl, label: "YouTube", icon: Youtube }
-  ].filter((item) => item.href && item.href !== "#");
-
-  useEffect(() => {
-    let active = true;
-
-    async function loadFooterSettings() {
-      try {
-        const response = await fetch("/api/settings/store", { cache: "no-store" });
-        if (!response.ok) {
-          return;
-        }
-
-        const data = (await response.json()) as Partial<FooterSettings>;
-        if (active) {
-          setSettings(normalizeFooterSettings(data));
-        }
-      } catch {
-        // Default footer keeps the storefront usable.
-      }
-    }
-
-    loadFooterSettings();
-
-    return () => {
-      active = false;
-    };
-  }, []);
-
   return (
-    <footer className="public-shell border-t border-stone-200 bg-white text-stone-700">
-      <div className="mx-auto max-w-6xl px-4 py-10 sm:px-6 lg:px-8">
-        <div className="text-center">
-          <h3 className="text-3xl font-medium text-stone-950">Холбоосууд</h3>
-          <div className="mt-3 flex flex-wrap items-center justify-center gap-x-10 gap-y-2 text-sm text-stone-500">
-            <span>Утас : {settings.contactPhone}</span>
-            <span>{settings.contactEmail}</span>
-          </div>
-
-          <div className="mt-6 flex flex-wrap items-center justify-center gap-x-6 gap-y-3 text-sm text-stone-600">
-            {footerLinks.map((item) => (
-              <Link key={item.label} href={item.href} className="transition hover:text-stone-950">
-                {item.label}
+    <footer className="public-shell bg-[#161311] text-[#f7f1e8]">
+      <div className="mx-auto max-w-6xl px-6 py-16 lg:px-8 lg:py-20">
+        <div className="grid gap-12 md:grid-cols-[1.35fr_0.9fr_0.75fr]">
+          <div className="space-y-8">
+            <div>
+              <Link href="/" className="text-3xl font-bold tracking-[0.08em] text-[#f8efe3]">
+                NaRa
               </Link>
-            ))}
+              <p className="mt-7 max-w-60 text-sm font-medium leading-7 text-[#e8d9c7]">
+                Navržené a ručně šité v ateliéru z poctivé kůže.
+              </p>
+            </div>
+
+            <div className="space-y-2 text-sm leading-6 text-[#e8d9c7]">
+              <p className="text-[11px] font-bold uppercase tracking-[0.22em] text-[#9f8767]">Provozovatel</p>
+              <p>LSHK lab s. r. o.</p>
+              <p>Ratibořská 751/32, Bohnice, Praha 8, Česká republika</p>
+              <p>IČO: 55602088</p>
+              <p>+420 736 924 533</p>
+              <p>narastore.help@gmail.com</p>
+            </div>
           </div>
 
-          {socialLinks.length > 0 ? (
-          <div className="mt-8 flex items-center justify-center gap-4">
-            {socialLinks.map((item) => {
-              const Icon = item.icon;
-
-              return (
-                <Link
-                  key={item.label}
-                  href={item.href}
-                  aria-label={item.label}
-                  className="flex h-10 w-10 items-center justify-center rounded-full border border-stone-200 text-stone-700 transition hover:border-stone-900 hover:text-stone-950"
-                >
-                  <Icon size={18} strokeWidth={1.8} />
-                </Link>
-              );
-            })}
-          </div>
-          ) : null}
+          <FooterColumn title="Info" links={infoLinks} />
+          <FooterColumn title="Značka" links={brandLinks} />
         </div>
-      </div>
 
-      <div className="bg-black px-4 py-5 text-white">
-        <div className="mx-auto flex max-w-6xl items-center justify-center">
-          <p className="text-center text-sm font-medium text-white/75">
-            {settings.footerText}
-          </p>
+        <div className="mt-14 border-t border-[#9f8767]/35 pt-8">
+          <div className="grid gap-6 text-xs text-[#b7a999] md:grid-cols-3 md:items-center">
+            <p>© 2026 NaRa. Všechna práva vyhrazena.</p>
+            <div className="flex items-center gap-4 md:justify-center">
+              <span className="font-bold italic text-[#f8efe3]">VISA</span>
+              <span className="relative inline-flex h-4 w-8 items-center">
+                <span className="absolute left-0 h-4 w-4 rounded-full bg-[#eb001b]" />
+                <span className="absolute right-0 h-4 w-4 rounded-full bg-[#f79e1b] mix-blend-screen" />
+              </span>
+            </div>
+            <p className="font-semibold uppercase tracking-[0.22em] md:text-right">100% ruční práce</p>
+          </div>
         </div>
       </div>
     </footer>
+  );
+}
+
+function FooterColumn({
+  title,
+  links
+}: {
+  title: string;
+  links: { label: string; href: string }[];
+}) {
+  return (
+    <div>
+      <p className="text-[11px] font-bold uppercase tracking-[0.22em] text-[#9f8767]">{title}</p>
+      <nav className="mt-7 grid gap-5 text-sm font-medium text-[#e8d9c7]">
+        {links.map((link) => (
+          <Link key={link.label} href={link.href} className="transition hover:text-[#f8efe3]">
+            {link.label}
+          </Link>
+        ))}
+      </nav>
+    </div>
   );
 }

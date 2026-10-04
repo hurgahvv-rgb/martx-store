@@ -68,7 +68,7 @@ export function VariantEditor({ name, initialValue }: { name: string; initialVal
   const [customSizes, setCustomSizes] = useState("");
   const [defaultPrice, setDefaultPrice] = useState("");
   const [defaultStock, setDefaultStock] = useState("");
-  const [skuPrefix, setSkuPrefix] = useState("MARTX");
+  const [skuPrefix, setSkuPrefix] = useState("URLAYA");
   const serialized = useMemo(() => serializeRows(rows), [rows]);
 
   const buildSku = (color: string, size: string, index: number) => {
@@ -79,7 +79,7 @@ export function VariantEditor({ name, initialValue }: { name: string; initialVal
       .replace(/[^\p{L}\p{N}-]/gu, "")
       .toUpperCase();
 
-    return [skuPrefix || "MARTX", suffix || String(index + 1).padStart(3, "0")].join("-");
+    return [skuPrefix || "URLAYA", suffix || String(index + 1).padStart(3, "0")].join("-");
   };
 
   const updateRow = (index: number, key: keyof VariantRow, value: string) => {
@@ -241,7 +241,7 @@ export function VariantEditor({ name, initialValue }: { name: string; initialVal
             <input
               value={skuPrefix}
               onChange={(event) => setSkuPrefix(event.target.value)}
-              placeholder="MARTX"
+              placeholder="URLAYA"
               className="w-full rounded-lg border border-blue-100 bg-white px-3 py-2 text-sm outline-none focus:border-blue-500"
             />
           </LabeledInput>

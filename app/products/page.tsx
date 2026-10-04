@@ -18,26 +18,26 @@ export default async function ProductsPage({
       : selectedFilter === "new"
         ? categoryProducts.slice(0, 8)
         : categoryProducts;
-  const title = selectedCategory || (selectedFilter === "featured" ? "Онцлох бараа" : selectedFilter === "new" ? "Шинэ бараа" : "Бүх бараа");
+  const title = selectedCategory || (selectedFilter === "featured" ? "Doporučené produkty" : selectedFilter === "new" ? "Novinky" : "Všechny produkty");
   const description = selectedCategory
-    ? `${selectedCategory} ангиллын идэвхтэй бараанууд.`
+    ? `Aktivní produkty v kategorii ${selectedCategory}.`
     : selectedFilter === "featured"
-      ? "Дэлгүүрээс онцолсон, хэрэглэгчдэд санал болгох бүтээгдэхүүнүүд."
+      ? "Produkty, které jsme vybrali jako doporučené kousky z obchodu."
       : selectedFilter === "new"
-        ? "Сүүлд нэмэгдсэн болон шинэчлэгдсэн бүтээгдэхүүнүүд."
-        : "Admin дээр нэмсэн идэвхтэй бараанууд энд шууд харагдана.";
+        ? "Naposledy přidané a aktualizované produkty."
+        : "Aktivní produkty z obchodu najdete přehledně na jednom místě.";
 
   return (
     <section className="mx-auto max-w-6xl px-4 py-14 sm:px-6 lg:px-8">
       <div className="mb-10 space-y-3">
-        <p className="section-title text-sm text-slate-500">Каталог</p>
+        <p className="section-title text-sm text-slate-500">Katalog</p>
         <h1 className="text-4xl font-semibold text-ink">{title}</h1>
         <p className="max-w-2xl text-base leading-7 text-slate-600">
           {description}
         </p>
         {selectedCategory || selectedFilter ? (
           <Link href="/products" className="inline-flex text-sm font-semibold text-stone-600 underline-offset-4 hover:underline">
-            Бүх бараа харах
+            Zobrazit všechny produkty
           </Link>
         ) : null}
       </div>
@@ -49,7 +49,7 @@ export default async function ProductsPage({
       </div>
       {visibleProducts.length === 0 ? (
         <div className="mt-10 rounded-2xl border border-stone-200 bg-white px-5 py-12 text-center text-sm text-stone-500">
-          Энэ ангилалд одоогоор идэвхтэй бараа алга.
+          V této kategorii zatím nejsou žádné aktivní produkty.
         </div>
       ) : null}
     </section>

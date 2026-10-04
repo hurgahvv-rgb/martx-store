@@ -2,379 +2,115 @@ import { Product } from "@/lib/types";
 
 export const products: Product[] = [
   {
-    id: "cmp8bd8860000tmcgj2xveptj",
-    name: "Өгзөг өргөгч",
-    slug: "өгзөг-өргөгч",
-    category: "Хувцас",
-    price: 38000,
-    currency: "MNT",
-    image: "https://res.cloudinary.com/dww8rawj0/image/upload/v1779076067/martx/products/xdd6wealc1tbiwf6gidh.png",
-    galleryImages: [
-      "https://res.cloudinary.com/dww8rawj0/image/upload/v1779033999/martx/products/zyao3zei0wxaqnjpdqwn.png",
-      "https://res.cloudinary.com/dww8rawj0/image/upload/v1779033999/martx/products/eigceqd2ivl0dpveqawu.png",
-      "https://res.cloudinary.com/dww8rawj0/image/upload/v1779034000/martx/products/nujdijsaezycd1e8kdsu.png",
-      "https://res.cloudinary.com/dww8rawj0/image/upload/v1779076090/martx/products/vtvxxh8gydmkw5u64xdq.png"
-    ],
-    rating: 5,
-    description:
-      "Өдөр тутам өмсөхөд биед эвтэйхэн, биеийн галбирыг илүү цэгцтэй харагдуулах зориулалттай хэлбэржүүлэгч шорт. Өндөр суудалтай загвар нь гэдэс, бэлхүүс орчмыг зөөлөн барьж, өгзөгний хэсгийг натурал хэлбэрээр тодруулна.",
-    subtitle: "Биеийн галбирыг цэгцэлж, өгзгийг илүү гоёмсог харагдуулах тухтай хэлбэржүүлэгч шорт.",
-    features: ["Өндөр суудалтай", "Өгзөг өргөж харагдуулна", "Өдөр тутам өмсөхөд эвтэйхэн"],
-    bullets: ["L - 55кг", "XL - 60кг", "2XL - 68кг", "3XL - 75-85кг"],
-    specs: [
-      "Материал: Суналттай зөөлөн даавуу",
-      "Загвар: Өндөр суудалтай хэлбэржүүлэгч шорт",
-      "Өнгө: Хар, Шаргал",
-      "Хэрэглээ: Өдөр тутам, арга хэмжээ, бариу хувцасны доор",
-      "Арчилгаа: Гараар эсвэл зөөлөн горимоор угаах"
-    ],
-    stock: 50,
-    isFeatured: true,
-    isActive: true,
-    variants: [
-      { id: "cmpaphec60000k00ba3o3zgp8", color: "Шаргал", size: "L", sku: "MARTX-BEIGE-L", price: null, stock: 10, image: null, isActive: true },
-      { id: "cmpaphec60001k00bjqrbaj2b", color: "Шаргал", size: "XL", sku: "MARTX-BEIGE-XL", price: null, stock: 10, image: null, isActive: true },
-      { id: "cmpaphec60002k00bagqwe2p8", color: "Шаргал", size: "XXL", sku: "MARTX-BEIGE-XXL", price: null, stock: 10, image: null, isActive: true },
-      { id: "cmpaphec60003k00bseikmytz", color: "Шаргал", size: "XXXL", sku: "MARTX-BEIGE-XXXL", price: null, stock: 10, image: null, isActive: true },
-      { id: "cmpaphec60004k00bmgesv3s8", color: "Хар", size: "XL", sku: "MARTX-HAR-XL", price: null, stock: 10, image: null, isActive: true },
-      { id: "cmpaphec60005k00b6wajn8xa", color: "Хар", size: "XXL", sku: "MARTX-HAR-XXL", price: null, stock: 10, image: null, isActive: true },
-      { id: "cmpaphec60006k00bh8ip3c28", color: "Хар", size: "XXXL", sku: "MARTX-HAR-XXXL", price: null, stock: 10, image: null, isActive: true }
-    ],
-    stories: [
-      {
-        title: "Төвөггүй өмсөж, илүү цэгцтэй харагд",
-        description:
-          "Зарим гэдэсний даруулга өмсөхөд хэт бариу, эвгүй, өдөржин өмсөхөд төвөгтэй санагддаг. Энэ загвар нь тэр асуудлыг илүү уян хатан, биед эвтэйхэн шийдсэн. Өндөр суудалтай хэсэг нь хэвлий орчмын сул унжилтыг зөөлөн барьж, бэлхүүсийг илүү цэгцтэй харагдуулна.",
-        image: "/products/shapewear/before-after-story.png"
-      },
-      {
-        title: "Өөртөө итгэлтэй алхам бүр",
-        description:
-          "Бариу даашинз, юбка эсвэл өдөр тутмын хувцасны доор өмсөхөд биеийн галбирыг илүү цэгцтэй харагдуулж, хөдөлгөөнд саад болохгүй тухтай мэдрэмж өгнө. Өндөр суудалтай хэлбэржүүлэлт нь хэвлий, бэлхүүс орчмыг зөөлөн барьж, алхам бүрийг илүү өөртөө итгэлтэй болгоно.",
-        image: "/products/shapewear/confidence-city-story.png"
-      },
-      {
-        title: "Зөөлөн суналт, цэвэр оёдол",
-        description:
-          "Биед эвтэйхэн суухад материалын уян хатан чанар хамгийн чухал. Зөөлөн суналттай даавуу, амьсгалах mesh хэсэг болон цэвэр оёдол нь хөдөлгөөн дагаж сууж, өдөр тутмын өмсөлтөд илүү тав тухтай мэдрэмж өгнө.",
-        image: "/products/shapewear/material-detail-story.png"
-      }
-    ],
-    reviews: [
-      {
-        author: "Номин",
-        rating: 5,
-        title: "Өдөржин өмсөхөд эвтэйхэн",
-        body: "Хэт бариу биш мөртлөө гэдэс, бэлхүүс хэсгийг гоё цэгцэлж өгдөг юм байна."
-      },
-      {
-        author: "Саруул",
-        rating: 5,
-        title: "Даашинзны доор ил мэдэгдэхгүй",
-        body: "Суухад эвгүй санагдаагүй. Өгзөгний хэлбэр арай гоё, натурал харагдсан."
-      },
-      {
-        author: "Ариунаа",
-        rating: 5,
-        title: "Материал нь зөөлөн",
-        body: "Хар өнгийг авсан. Суналттай, өмдний доор өмсөхөд биеийн галбир илүү цэгцтэй харагдаж байна."
-      },
-      {
-        author: "Мөнхзаяа",
-        rating: 4,
-        title: "Гэдэсний хэсгийг сайн барьдаг",
-        body: "Хэт шахахгүйгээр барьдаг нь таалагдсан. Өдөр тутам өмсөхөд боломжийн тухтай."
-      },
-      {
-        author: "Энхжин",
-        rating: 5,
-        title: "Size chart яг таарсан",
-        body: "XL авсан, яг таарсан. Бэлхүүс хэсэг доош хуйлрахгүй, хөдөлгөөнд саад болохгүй байна."
-      },
-      {
-        author: "Уянга",
-        rating: 5,
-        title: "Confidence өгдөг бүтээгдэхүүн",
-        body: "Бариу даашинз, юбка өмсөх үед галбир илүү цэгцтэй харагдаад их гоё санагдсан."
-      }
-    ]
-  },
-  {
-    id: "felt-weekender",
-    name: "Эсгий аяллын цүнх",
-    slug: "felt-weekender-bag",
-    category: "Цүнх",
-    price: 189000,
-    compareAtPrice: 229000,
-    currency: "MNT",
-    image:
-      "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?auto=format&fit=crop&w=1200&q=80",
-    rating: 4.8,
-    description: "Монгол эсгий урлалаас санаа авсан, аялал болон өдөр тутмын хэрэглээнд тохирсон premium цүнх.",
-    features: ["Ус тогтоохгүй доторлогоо", "Laptop хийх тасалгаа", "Онгоцонд авч явахад тохиромжтой"],
-    isFeatured: true
-  },
-  {
-    id: "cashmere-wrap",
-    name: "Ноолууран нөмрөг",
-    slug: "nomad-cashmere-wrap",
-    category: "Хувцас",
-    price: 249000,
-    compareAtPrice: 289000,
-    currency: "MNT",
-    image:
-      "https://images.unsplash.com/photo-1529139574466-a303027c1d8b?auto=format&fit=crop&w=1200&q=80",
+    id: "duna-street-shopper",
+    name: "Duna Street shopper",
+    slug: "duna-street-shopper",
+    category: "Kabelky",
+    price: 2690,
+    currency: "CZK",
+    image: "/uploads/products/starter-kit.svg",
+    galleryImages: ["/uploads/products/starter-kit.svg"],
     rating: 4.9,
-    description: "Хүйтэн өглөө, аялал, өдөр тутмын давхарлаж өмсөхөд зориулсан зөөлөн ноолууран нөмрөг.",
-    features: ["100% ноолуур", "Бэлгийн хайрцагтай", "Дөрвөн улиралд өмсөх боломжтой"],
-    isFeatured: true
-  },
-  {
-    id: "cedar-candle",
-    name: "Талын хуш үнэрт лаа",
-    slug: "steppe-cedar-candle",
-    category: "Гэр ахуй",
-    price: 59000,
-    compareAtPrice: 79000,
-    currency: "MNT",
-    image:
-      "https://images.unsplash.com/photo-1603006905003-be475563bc59?auto=format&fit=crop&w=1200&q=80",
-    rating: 4.6,
-    description: "Хуш мод, зөөлөн утаат үнэр хосолсон, өрөөнд тайван premium уур амьсгал бүрдүүлэх лаа.",
-    features: ["45 цаг асна", "Шар буурцгийн лавтай", "Дахин ашиглах шилэн савтай"]
-  },
-  {
-    id: "wave-floor-lamp",
-    name: "Долгион хэлбэртэй шалны гэрэл",
-    slug: "wave-floor-lamp",
-    category: "Гэр ахуй",
-    price: 75000,
-    compareAtPrice: 81000,
-    currency: "MNT",
-    image: "/uploads/products/wave-floor-lamp/warm-lifestyle.png",
-    galleryImages: [
-      "/uploads/products/wave-floor-lamp/cool-catalog.png",
-      "/uploads/products/wave-floor-lamp/natural-lifestyle.png",
-      "/uploads/products/wave-floor-lamp/daylight-off.png",
-      "/uploads/products/wave-floor-lamp/texture-detail.png"
-    ],
-    rating: 4.9,
-    description:
-      "Зөөлөн долгионт хэлбэр, сарнисан гэрэлтүүлэгтэй энэхүү шалны гэрэл нь өрөөнд шууд л дулаан, тухтай уур амьсгал нэмнэ. Унтлагын өрөө, зочны өрөө, булангийн чимэглэлд тохиромжтой бөгөөд шар, цагаан, байгалийн гэрлийн 3 горимоор орчны мэдрэмжийг амархан өөрчилнө.",
-    subtitle:
-      "Өрөөний буланг premium харагдуулах, 3 өнгийн гэрлийн горимтой долгион хэлбэрийн шалны гэрэл.",
-    features: ["3 өнгийн гэрлийн горимтой", "Долгионт pleated дизайн", "Зочны болон унтлагын өрөөнд тохиромжтой"],
-    bullets: [
-      "Шар гэрэл - орой амрах, cozy уур амьсгал бүрдүүлэхэд",
-      "Цагаан гэрэл - цэвэрхэн, тод modern мэдрэмж өгөхөд",
-      "Байгалийн гэрэл - өдөр тутмын тайван гэрэлтүүлэгт",
-      "Өндөр нарийн хэлбэртэй тул булангийн зайд амархан байрлана"
-    ],
-    specs: [
-      "Гэрлийн горим: Шар, цагаан, байгалийн гэрэл",
-      "Загвар: Долгион хэлбэртэй өндөр шалны гэрэл",
-      "Материал: Цагаан pleated гэрэл сарниулагч бүрхүүл",
-      "Хэрэглээ: Зочны өрөө, унтлагын өрөө, lounge булан",
-      "Өнгө: Цагаан их бие, зөөлөн сарнисан гэрэлтүүлэг"
-    ],
-    stock: 45,
-    isFeatured: true,
-    isActive: true,
-    stories: [
-      {
-        title: "Өрөөний буланг дулаан акцент болгоно",
-        description:
-          "Өндөр нарийн хэлбэр нь их зай эзлэхгүйгээр интерьерийг илүү цэгцтэй харагдуулна. Долгионт бүрхүүлээр гэрэл зөөлөн сарниж, буйдан, хөшиг, ор, комодны дэргэд дулаан уур амьсгал нэмнэ.",
-        image: "/uploads/products/wave-floor-lamp/warm-lifestyle.png"
-      },
-      {
-        title: "Гэрлийн 3 өнгөөр уур амьсгалаа соль",
-        description:
-          "Шар гэрэл нь оройн амралтад, цагаан гэрэл нь цэвэрхэн modern орчинд, байгалийн гэрэл нь өдөр тутмын тайван хэрэглээнд тохиромжтой. Нэг гэрэл, гурван өөр мэдрэмж.",
-        image: "/uploads/products/wave-floor-lamp/natural-lifestyle.png"
-      },
-      {
-        title: "Унтраалттай үедээ ч чимэглэл хэвээр",
-        description:
-          "Цагаан pleated бүрхүүл, давхар долгионт хэлбэр нь гэрэл асаагүй үед ч өрөөнд sculptural decor мэт харагдана. Minimal интерьер дээр зөөлөн, цэвэрхэн цэг нэмнэ.",
-        image: "/uploads/products/wave-floor-lamp/daylight-off.png"
-      }
-    ],
-    reviews: [
-      {
-        author: "Namuun",
-        rating: 5,
-        title: "Орой асаахад үнэхээр тухтай",
-        body: "Шар гэрэл дээр нь асаахаар өрөө шууд дулаан уур амьсгалтай болдог. Буйдангийн хажууд тавихад яг тохирсон."
-      },
-      {
-        author: "Энхриймаа",
-        rating: 5,
-        title: "Зураг дээрхээсээ илүү гоё харагдсан",
-        body: "Долгионт хэлбэр нь гэрэл асаагүй үедээ ч чимэглэл шиг харагддаг. Унтлагын өрөөний буланд их цэвэрхэн зохисон."
-      },
-      {
-        author: "Bilguun",
-        rating: 4,
-        title: "3 өнгийн горим нь хэрэгтэй юм байна",
-        body: "Өдөр нь цагаан гэрэл дээр, орой нь шар гэрэл дээр хэрэглэж байна. Гэрэл нь нүдэнд хурц биш, зөөлөн сарнидаг."
-      },
-      {
-        author: "Марал",
-        rating: 5,
-        title: "Зочны өрөөнд premium мэдрэмж нэмсэн",
-        body: "Өндөр нарийн хэлбэртэй болохоор их зай эзлэхгүй. Комодны дэргэд тавьсан чинь өрөө илүү тохижсон харагдаж байна."
-      },
-      {
-        author: "Tuvshin",
-        rating: 5,
-        title: "Бэлгэнд авахад ч гоё сонголт",
-        body: "Энгийн гэрэл биш, интерьерийн decor шиг санагдсан. Байгалийн гэрэл нь өдөр тутам асаахад хамгийн таатай байна."
-      }
-    ]
-  },
-  {
-    id: "hair-growth-dermapen",
-    name: "Үс ургуулагч Derma pen",
-    slug: "hair-growth-derma-pen",
-    category: "Гоо сайхан",
-    price: 89000,
-    compareAtPrice: 109000,
-    currency: "MNT",
-    image: "/uploads/products/dermapen/box-flatlay.png",
-    galleryImages: [
-      "/uploads/products/dermapen/clean-studio.png",
-      "/uploads/products/dermapen/lifestyle-group.png",
-      "/uploads/products/dermapen/type-c-detail.png"
-    ],
-    rating: 4.8,
-    description:
-      "Үс унаж шингэрсэн хэсэгт хуйхны гадарга хатуурч, үсний уг орчмын цусны эргэлт болон тэжээл очих орчин сулрах үед дахин ургах боломж багасдаг. Үс ургуулагч Derma pen нь тэр хэсгийн хуйханд маш нарийн бичил сувгууд үүсгэж, үсний угийг сэргээх орчныг идэвхжүүлэхэд тусалдаг. Ингэснээр амьд үсний угтай хэсэг дахин ургах боломжтой болж, үс арчилгааны тос, түрхлэг хуйханд илүү сайн шингэх нөхцөл бүрдэнэ. Derma roller-оос ялгаатай нь босоо чиглэлтэй, жигд хөдөлгөөнөөр илүү нарийн, зөөлөн арчилгаа хийнэ.",
-    subtitle:
-      "Хуйхны арчилгаанд зориулсан, үсний угийг идэвхжүүлж ургалтыг дэмжих зөөлөн мэдрэмжтэй төхөөрөмж.",
-    features: ["Үсний угийг идэвхжүүлнэ", "Зөөлөн, өвдөлтгүй мэдрэмжтэй", "Ягаан болон саарал өнгөтэй"],
-    bullets: [
-      "Амьд үсний угтай хэсгийн дахин ургах боломжийг дэмжинэ",
-      "Хуйхны цусны эргэлт, тэжээл очих орчныг идэвхжүүлэхэд тусална",
-      "Үс арчилгааны тос, түрхлэгийн шингэлтийг сайжруулна",
-      "Derma roller-оос илүү жигд, зөөлөн хөдөлгөөнтэй",
-      "Зөв хэрэглэвэл өвдөлтгүй мэдрэмжтэй"
-    ],
-    specs: [
-      "Төрөл: Цахилгаан бичил үзүүртэй арчилгааны үзэг",
-      "Хэрэглээ: Хуйх, үсний угийн арчилгаа",
-      "Горим: Хурдны тохиргоотой LED дэлгэцтэй",
-      "Цэнэглэлт: Type-C оролттой",
-      "Өнгө: Ягаан, саарал"
-    ],
-    stock: 40,
+    description: "Prostorná kožená shopper kabelka pro práci, město i každodenní nošení.",
+    subtitle: "Čistý tvar, měkká kůže a dostatek prostoru na běžný den.",
+    features: ["Ručně šitá", "Přírodní kůže", "Každodenní velikost"],
+    bullets: ["Pevné uši do ruky i přes rameno", "Minimalistický vzhled bez výrazného loga", "Vhodná do práce i na cestování"],
+    specs: ["Materiál: přírodní kůže", "Zapínání: otevřený shopper", "Vyrobeno v malé sérii"],
+    stock: 12,
     isFeatured: true,
     isActive: true,
     variants: [
       {
-        id: "dermapen-pink",
-        color: "Ягаан",
-        size: null,
-        sku: "MARTX-DERMAPEN-PINK",
+        id: "duna-beige",
+        color: "Béžová",
+        size: "Standard",
+        sku: "NARA-DUNA-BEIGE",
         price: null,
-        stock: 20,
-        image: null,
+        stock: 6,
+        image: "/uploads/products/starter-kit.svg",
         isActive: true
       },
       {
-        id: "dermapen-gray",
-        color: "Саарал",
-        size: null,
-        sku: "MARTX-DERMAPEN-GRAY",
+        id: "duna-black",
+        color: "Černá",
+        size: "Standard",
+        sku: "NARA-DUNA-BLACK",
         price: null,
-        stock: 20,
-        image: null,
+        stock: 6,
+        image: "/uploads/products/card-holder-pattern.svg",
         isActive: true
       }
     ],
     stories: [
       {
-        title: "Шингэрсэн хэсэгт шинэ ургалтын орчин бүрдүүлнэ",
-        description:
-          "Үс унаж сийрэгжсэн хэсэгт хуйхны орчин суларснаар үсний уг идэвхгүй болох нь бий. Derma pen нь хуйхны гадаргыг зөөлөн идэвхжүүлж, үсний уг орчмын цусны эргэлт болон тэжээл очих нөхцөлийг дэмжинэ. Ингэснээр амьд үсний угтай хэсэгт жижиг шинэ үс жигд ургаж эхлэх боломж бүрддэг.",
-        image: "/uploads/products/dermapen/baby-hair-closeup.png"
-      },
-      {
-        title: "Үс уналтыг тоолгүй орхих хэрэггүй",
-        description:
-          "Үс самнах бүрт их хэмжээгээр унаж эхэлсэн бол “аяндаа эргээд ургана” гэж найдаад орхих нь халзрах, шингэрэлт нэмэгдэх эрсдэлтэй. Derma pen-ийг тогтмол хэрэглэснээр хуйхны гадарга зөөлөн идэвхжиж, амьд үсний угтай хэсэгт дахин ургах боломж бүрдэнэ. Зөв хэрэглэвэл өвдөлтгүй, хуйханд зөөлөн мэдрэмжтэй.",
-        image: "/uploads/products/dermapen/hair-fall-comb.png"
-      },
-      {
-        title: "Цэнэглээд дахин ашиглах боломжтой",
-        description:
-          "Type-C оролттой тул өдөр тутмын цэнэглэгчээрээ цэнэглэж хэрэглэнэ. Компакт хэмжээтэй, ягаан болон саарал өнгийн сонголттой.",
-        image: "/uploads/products/dermapen/type-c-detail.png"
+        title: "Na každý den",
+        description: "Velikost kabelky je navržená tak, aby unesla běžné věci do práce i na procházku městem.",
+        image: "/uploads/products/starter-kit.svg"
       }
     ],
     reviews: [
       {
-        author: "Ariuka",
+        author: "Klára",
         rating: 5,
-        title: "Духны хоёр талд жижиг үс гарч эхэлсэн",
-        body: "3 долоо хоног орчим үсний тосоо түрхэхээсээ өмнө хэрэглэсэн. Духны хоёр талд ойроос харахад жижиг шинэ үснүүд цухуйж байна.",
-        image: "/uploads/products/dermapen/review-new-hair-front.png"
-      },
-      {
-        author: "Мишээл",
-        rating: 5,
-        title: "Шингэрсэн хэсэг арай дүүрэн харагдаж байна",
-        body: "Сар гаран тогтмол хэрэглэсэн. Самнахад өмнөх шиг их унахгүй, урд талын шингэрсэн хэсэг арай бараантаж харагддаг болсон."
-      },
-      {
-        author: "Tselmeg",
-        rating: 4,
-        title: "Өвдөлтгүй, хэрэглэж сурахад амар",
-        body: "Зүүтэй гэхээр айж байсан ч өвдөөгүй. Хуйхандаа зөөлөн явуулаад дараа нь тосоо түрхдэг, routine-д оруулахад амар юм байна."
-      },
-      {
-        author: "Тэмүүлэн",
-        rating: 5,
-        title: "Үсний уг сэргэж байгаа мэдрэмжтэй",
-        body: "7 хоногт хэдэн удаа хэрэглэж байгаа. Хуйх маань арай сэргэг, сүмбэ хэсгээр богино жижиг үснүүд нэмэгдэж байгаа нь зураг дээр ч харагдана.",
-        image: "/uploads/products/dermapen/review-new-hair-temple.png"
-      },
-      {
-        author: "Болороо",
-        rating: 5,
-        title: "Самнахад унах нь бага болсон",
-        body: "Эхний үед сам дээр үс их үлддэг байсан. Одоо угаасны дараа самнахад арай тайван болсон, хуйх ч хуурайшаад байдаггүй."
-      },
-      {
-        author: "Munkhjin",
-        rating: 4,
-        title: "Жижиг үснүүд ургаж байгааг анзаарсан",
-        body: "Сүмбэ хэсэг дээрээ голчлон хэрэглэсэн. Камераар ойртуулаад харахад өмнө нь хоосон байсан захаар богино үснүүд гарч иржээ."
+        title: "Krásná jednoduchá kabelka",
+        body: "Líbí se mi čistý tvar a kvalitní materiál. Působí elegantně a není přezdobená."
       }
     ]
   },
   {
-    id: "ceramic-set",
-    name: "Шороон өнгийн керамик сет",
-    slug: "earth-tone-ceramic-set",
-    category: "Гэр ахуй",
-    price: 129000,
-    compareAtPrice: 159000,
-    currency: "MNT",
-    image:
-      "https://images.unsplash.com/photo-1517705008128-361805f42e86?auto=format&fit=crop&w=1200&q=80",
-    rating: 4.7,
-    description: "Ширээний засалт болон өдөр тутмын хэрэглээнд зориулсан minimal загвартай аяга, тавагны цуглуулга.",
-    features: ["Гараар бүрж шатаасан", "Аяга угаагчинд хийж болно", "Хязгаарлагдмал тоо ширхэгтэй"]
+    id: "nara-card-holder",
+    name: "Kožené pouzdro na karty",
+    slug: "nara-card-holder",
+    category: "Peněženky",
+    price: 690,
+    currency: "CZK",
+    image: "/uploads/products/card-holder-pattern.svg",
+    galleryImages: ["/uploads/products/card-holder-pattern.svg"],
+    rating: 4.8,
+    description: "Kompaktní kožené pouzdro na karty a drobnosti do malé kabelky.",
+    subtitle: "Malý kožený doplněk, který se vejde všude.",
+    features: ["Kompaktní", "Pevné šití", "Dárkové balení"],
+    bullets: ["Na karty a drobné bankovky", "Lehké a praktické", "Vhodné jako dárek"],
+    specs: ["Materiál: přírodní kůže", "Velikost: kompaktní", "Údržba: jemná péče o kůži"],
+    stock: 20,
+    isFeatured: true,
+    isActive: true
+  },
+  {
+    id: "nara-mini-bag",
+    name: "Mini kožená kabelka",
+    slug: "nara-mini-bag",
+    category: "Kabelky",
+    price: 1890,
+    currency: "CZK",
+    image: "/uploads/products/leather-wallet-pattern.svg",
+    galleryImages: ["/uploads/products/leather-wallet-pattern.svg"],
+    rating: 4.9,
+    description: "Menší kožená kabelka na telefon, peněženku a každodenní drobnosti.",
+    subtitle: "Lehká kabelka pro dny, kdy chcete mít volné ruce.",
+    features: ["Nastavitelný popruh", "Malá série", "Lehká konstrukce"],
+    bullets: ["Na telefon a drobnosti", "Čistý minimalistický vzhled", "Dobře se kombinuje s každodenním outfitem"],
+    specs: ["Materiál: přírodní kůže", "Popruh: nastavitelný", "Výroba: ruční práce"],
+    stock: 10,
+    isFeatured: true,
+    isActive: true
   }
 ];
 
 export const featuredProducts = products.filter((product) => product.isFeatured);
 
 export function formatPrice(price: number, currency: string) {
-  const amount = new Intl.NumberFormat("en-US", {
+  const amount = new Intl.NumberFormat("cs-CZ", {
     maximumFractionDigits: 0
   }).format(price);
 
-  return currency === "MNT" ? `${amount} ₮` : `${amount} ${currency}`;
+  if (currency === "MNT") {
+    return `${amount} ₮`;
+  }
+
+  if (currency === "CZK") {
+    return `${amount} Kč`;
+  }
+
+  return `${amount} ${currency}`;
 }

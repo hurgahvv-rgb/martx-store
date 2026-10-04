@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 180" role="img" aria-labelledby="title">
+  <title id="title">Өөрсдөө урлая</title>
+  <rect width="720" height="180" fill="none"/>
+  <path d="M78 124c28-48 58-72 91-72 27 0 43 14 43 35 0 33-43 56-101 54-14 0-26-3-33-17Z" fill="#7a4a2d"/>
+  <path d="M94 119c24-36 49-54 75-54 18 0 29 9 29 23 0 22-34 39-79 39-10 0-18-2-25-8Z" fill="#c08a5a"/>
+  <path d="M106 116c39-6 65-21 78-44" fill="none" stroke="#3b2418" stroke-width="7" stroke-linecap="round"/>
+  <path d="M246 61h12v60h-12V61Zm23 0h13l21 39 21-39h13v60h-12V82l-18 34h-8l-18-34v39h-12V61Zm84 0h45v11h-33v13h29v11h-29v14h34v11h-46V61Zm62 0h13v49h31v11h-44V61Z" fill="#3b2418"/>
+  <text x="246" y="153" font-family="Arial, sans-serif" font-size="25" font-weight="700" letter-spacing="3" fill="#7a4a2d">ӨӨРСДӨӨ УРЛАЯ</text>
+</svg>

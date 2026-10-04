@@ -8,10 +8,10 @@ export const orderStatuses = [
 ] as const;
 
 export const orderStatusLabels: Record<(typeof orderStatuses)[number], string> = {
-  PENDING: "Хүлээгдэж байна",
-  PAID: "Төлбөр төлөгдсөн",
-  PROCESSING: "Бэлтгэж байна",
-  SHIPPED: "Хүргэлтэд гарсан",
-  DELIVERED: "Хүргэгдсэн",
-  CANCELED: "Цуцлагдсан"
+  PENDING: "Čeká na zpracování",
+  PAID: "Zaplaceno",
+  PROCESSING: "Připravuje se",
+  SHIPPED: "Odesláno",
+  DELIVERED: "Doručeno",
+  CANCELED: "Zrušeno"
 };

@@ -1,7 +1,12 @@
 .next
 node_modules
+.android-build-tools/
+rezero_calculator_android/.gradle/
+rezero_calculator_android/local.properties
+rezero_calculator_android/**/build/
 .env
 dist
 coverage
 *.log
 tsconfig.tsbuildinfo
+_organized/

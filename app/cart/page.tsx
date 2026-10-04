@@ -8,7 +8,7 @@ import { useEffect, useState } from "react";
 import { CartItem, readCart, writeCart } from "@/lib/cart";
 import { formatPrice } from "@/lib/data";
 
-const shippingFee = 12000;
+const shippingFee = 0;
 
 export default function CartPage() {
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
@@ -53,7 +53,7 @@ export default function CartPage() {
   return (
     <section className="mx-auto grid max-w-6xl gap-8 px-4 py-14 sm:px-6 lg:grid-cols-[1fr_360px] lg:px-8">
       <div className="space-y-4">
-        <h1 className="text-4xl font-semibold text-ink">Таны сагс</h1>
+        <h1 className="text-4xl font-semibold text-ink">Váš košík</h1>
         <div className="space-y-4">
           {cartItems.length > 0 ? (
             cartItems.map((item) => (
@@ -67,7 +67,7 @@ export default function CartPage() {
                 <div>
                   <p className="text-xs uppercase tracking-[0.2em] text-slate-500">{item.category}</p>
                   <p className="mt-2 text-lg font-semibold text-ink">{item.name}</p>
-                  <p className="mt-1 text-sm text-slate-500">Сонголт: {item.variant}</p>
+                  <p className="mt-1 text-sm text-slate-500">Varianta: {item.variant}</p>
                   <div className="mt-4 flex flex-wrap items-center gap-3">
                     <div className="inline-flex items-center rounded-full border border-stone-200 bg-white">
                       <button
@@ -92,7 +92,7 @@ export default function CartPage() {
                       className="inline-flex h-9 items-center gap-2 rounded-full border border-red-100 bg-red-50 px-4 text-sm font-medium text-red-600 transition hover:border-red-200 hover:bg-red-100"
                     >
                       <Trash2 size={15} />
-                      Устгах
+                      Odebrat
                     </button>
                   </div>
                 </div>
@@ -103,13 +103,13 @@ export default function CartPage() {
             ))
           ) : (
             <div className="glass-panel rounded-[2rem] p-8 text-center">
-              <p className="text-lg font-semibold text-ink">Сагс хоосон байна</p>
-              <p className="mt-2 text-sm text-slate-600">Та бүтээгдэхүүн сонгоод сагсанд нэмээрэй.</p>
+              <p className="text-lg font-semibold text-ink">Košík je prázdný</p>
+              <p className="mt-2 text-sm text-slate-600">Vyberte si produkt a přidejte ho do košíku.</p>
               <Link
                 href="/products"
                 className="mt-6 inline-flex rounded-full bg-stone-950 px-6 py-3 text-sm font-semibold text-white"
               >
-                Бараа үзэх
+                Zobrazit produkty
               </Link>
             </div>
           )}
@@ -117,19 +117,19 @@ export default function CartPage() {
       </div>
 
       <aside className="glass-panel h-fit rounded-[2rem] p-6">
-        <p className="section-title text-sm text-slate-500">Захиалгын дүн</p>
+        <p className="section-title text-sm text-slate-500">Souhrn objednávky</p>
         <div className="mt-6 space-y-4 text-sm text-slate-600">
           <div className="flex justify-between">
-            <span>Барааны дүн</span>
-            <span>{formatPrice(subtotal, "MNT")}</span>
+            <span>Mezisoučet</span>
+            <span>{formatPrice(subtotal, cartItems[0]?.currency ?? "CZK")}</span>
           </div>
           <div className="flex justify-between">
-            <span>Хүргэлт</span>
-            <span>{cartItems.length > 0 ? formatPrice(shippingFee, "MNT") : formatPrice(0, "MNT")}</span>
+            <span>Doprava</span>
+            <span>Vypočítá se v pokladně</span>
           </div>
           <div className="flex justify-between border-t border-slate-200 pt-4 text-base font-semibold text-ink">
-            <span>Нийт</span>
-            <span>{formatPrice(total, "MNT")}</span>
+            <span>Celkem</span>
+            <span>{formatPrice(total, cartItems[0]?.currency ?? "CZK")}</span>
           </div>
         </div>
         <Link
@@ -139,7 +139,7 @@ export default function CartPage() {
             cartItems.length > 0 ? "bg-pine text-white" : "pointer-events-none bg-slate-200 text-slate-400"
           ].join(" ")}
         >
-          Төлбөр хэсэг рүү
+          Přejít do pokladny
         </Link>
       </aside>
     </section>

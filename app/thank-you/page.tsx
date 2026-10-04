@@ -33,29 +33,29 @@ export default async function ThankYouPage({ searchParams }: ThankYouPageProps) 
           <CheckCircle2 size={34} />
         </div>
 
-        <p className="section-title mt-6 text-sm text-slate-500">Захиалга хүлээн авлаа</p>
+        <p className="section-title mt-6 text-sm text-slate-500">Objednávka přijata</p>
         <h1 className="mt-3 text-4xl font-semibold leading-tight text-ink sm:text-5xl">
-          Баярлалаа, таны захиалга бүртгэгдлээ
+          Děkujeme, vaše objednávka je vytvořená
         </h1>
         <p className="mx-auto mt-4 max-w-2xl text-sm leading-7 text-slate-600">
-          Төлбөрөө доорх данс руу шилжүүлэхдээ гүйлгээний утга дээр захиалга өгсөн өөрийн 8 оронтой утасны дугаараа заавал бичээрэй.
-          Бид банкны гүйлгээнээс утсаар нь захиалгыг таньж баталгаажуулна.
+          Pokud platíte bankovním převodem, uveďte do zprávy pro příjemce telefonní číslo z objednávky.
+          Díky tomu platbu rychleji přiřadíme k vaší objednávce.
         </p>
 
         <div className="mx-auto mt-8 grid max-w-2xl gap-3 text-left">
           <div className="rounded-2xl border-2 border-emerald-200 bg-emerald-50 px-5 py-5">
-            <p className="text-xs uppercase tracking-[0.18em] text-emerald-700">Гүйлгээний утга дээр бичих</p>
+            <p className="text-xs uppercase tracking-[0.18em] text-emerald-700">Zpráva pro příjemce</p>
             <p className="mt-2 text-3xl font-semibold text-emerald-950">{paymentReference}</p>
-            <p className="mt-2 text-sm leading-6 text-emerald-800">Төлбөр шилжүүлэхдээ энэ 8 оронтой утасны дугаарыг гүйлгээний утга дээр бичнэ.</p>
+            <p className="mt-2 text-sm leading-6 text-emerald-800">Při bankovním převodu uveďte tuto hodnotu do zprávy pro příjemce.</p>
           </div>
 
           {[
-            { label: "Төлөх дүн", value: formatPrice(total, "MNT") },
+            { label: "Částka k úhradě", value: formatPrice(total, "CZK") },
             ...activeAccounts.flatMap((account) => [
-              { label: `${account.bank} эзэмшигч`, value: account.owner },
-              { label: `${account.bank} данс`, value: account.number }
+              { label: `${account.bank} majitel účtu`, value: account.owner },
+              { label: `${account.bank} účet`, value: account.number }
             ]),
-            { label: "Захиалгын код", value: orderCode, note: "Лавлагаанд ашиглана" }
+            { label: "Kód objednávky", value: orderCode, note: "Použijte při komunikaci s podporou" }
           ].map((item) => (
             <div
               key={item.label}
@@ -74,7 +74,7 @@ export default async function ThankYouPage({ searchParams }: ThankYouPageProps) 
           <div className="flex gap-3">
             <MessageCircle className="mt-1 shrink-0" size={18} />
             <p>
-              Гүйлгээний утга дээр <strong>{paymentReference}</strong> гэж бичсэн эсэхээ шалгаарай. {settings.paymentWarningText}
+              Zkontrolujte prosím, že ve zprávě pro příjemce uvádíte <strong>{paymentReference}</strong>.
             </p>
           </div>
         </div>
@@ -84,13 +84,13 @@ export default async function ThankYouPage({ searchParams }: ThankYouPageProps) 
             href="/products"
             className="rounded-full bg-stone-950 px-6 py-3 text-sm font-semibold text-white transition hover:bg-stone-800"
           >
-            Бараа үргэлжлүүлэн үзэх
+            Pokračovat v nákupu
           </Link>
           <Link
             href="/"
             className="rounded-full border border-stone-300 px-6 py-3 text-sm font-semibold text-stone-700 transition hover:border-stone-900"
           >
-            Нүүр рүү буцах
+            Zpět na úvod
           </Link>
         </div>
       </div>

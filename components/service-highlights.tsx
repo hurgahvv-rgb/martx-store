@@ -2,23 +2,23 @@ import { BadgeCheck, Headphones, ShieldCheck, Truck } from "lucide-react";
 
 const highlights = [
   {
-    title: "ШУУРХАЙ ХҮРГЭЛТ",
-    description: "Улаанбаатарт үнэгүй, орон нутагт 5,000₮-ийн хүргэлттэй.",
+    title: "RUČNÍ VÝROBA",
+    description: "Produkty vznikají v malých sériích s důrazem na detail a materiál.",
     icon: Truck
   },
   {
-    title: "БАТАЛГААТ ЗАХИАЛГА",
-    description: "Төлбөр баталгаажмагц захиалгыг бэлтгэж, хүргэлтийн мэдээллийг утсаар баталгаажуулна.",
+    title: "KVALITNÍ KŮŽE",
+    description: "Používáme přírodní materiály, které časem získávají charakter.",
     icon: BadgeCheck
   },
   {
-    title: "БАТАЛГААТ ҮЙЛЧИЛГЭЭ",
-    description: "Тохирохгүй тохиолдолд солих, буцаах хүсэлт үлдээж болно.",
+    title: "PÉČE O PRODUKT",
+    description: "Ke každému produktu najdete jednoduché doporučení k údržbě.",
     icon: ShieldCheck
   },
   {
-    title: "24/7 ДЭМЖЛЭГ",
-    description: "Онлайн асуултад өдөр бүр богино хугацаанд хариулна.",
+    title: "PODPORA",
+    description: "S výběrem, objednávkou nebo péčí o kůži vám rádi poradíme.",
     icon: Headphones
   }
 ];

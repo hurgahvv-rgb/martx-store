@@ -31,7 +31,7 @@ export function ProductCard({ product }: { product: Product }) {
           <span className="text-sm font-semibold text-stone-900">
             {formatPrice(product.price, product.currency)}
           </span>
-          <span className="text-sm text-stone-500 transition group-hover:text-stone-900">Дэлгэрэнгүй</span>
+          <span className="text-sm text-stone-500 transition group-hover:text-stone-900">Detail</span>
         </div>
       </div>
     </Link>

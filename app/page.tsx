@@ -12,7 +12,7 @@ export default async function HomePage() {
   const bestSellerProducts = products.slice(0, 6);
   const settings = await getStoreSettings();
   const selectedBannerProduct = settings.heroProductId ? products.find((product) => product.id === settings.heroProductId) : null;
-  const lampProduct = products.find((product) => product.slug === "wave-floor-lamp");
+  const lampProduct = products.find((product) => product.slug === "wallet-pattern-beginner");
   const bannerProduct = selectedBannerProduct ?? lampProduct ?? featuredProducts[0] ?? products[0];
 
   return (
@@ -28,26 +28,26 @@ export default async function HomePage() {
           <div className="relative flex min-h-[540px] items-center justify-center px-6 py-16 text-center text-white sm:px-10 lg:min-h-[640px]">
             <div className="max-w-3xl">
               <p className="text-xs font-semibold uppercase tracking-[0.34em] text-white/70">
-                MartX онцлох бүтээгдэхүүн
+                NaRa
               </p>
               <h1 className="mt-6 text-4xl font-medium leading-tight sm:text-6xl">
-                {bannerProduct.name} - өрөөнд дулаан уур амьсгал нэмэх minimal сонголт.
+                Ručně vyráběné kožené kabelky a doplňky s nadčasovým klidem.
               </h1>
               <p className="mx-auto mt-5 max-w-2xl text-sm font-medium uppercase tracking-[0.2em] text-white/75 sm:text-base">
-                3 өнгийн гэрлийн горим, долгионт хэлбэр, гэр ахуйн тухтай premium акцент.
+                Poctivá kůže, čisté tvary a malé série šité s důrazem na detail.
               </p>
               <div className="mt-8 flex flex-wrap items-center justify-center gap-4">
                 <Link
                   href={`/products/${bannerProduct.slug}`}
                   className="bg-white px-8 py-4 text-sm font-semibold text-stone-950 transition hover:bg-stone-100"
                 >
-                  Дэлгэрэнгүй үзэх
+                  Zobrazit detail
                 </Link>
                 <Link
                   href="/products"
                   className="border border-white/30 px-8 py-4 text-sm font-semibold text-white transition hover:border-white hover:bg-white/10"
                 >
-                  Бүх бараа
+                  Prohlédnout produkty
                 </Link>
               </div>
               <p className="mt-8 text-lg font-medium text-white">
@@ -62,12 +62,12 @@ export default async function HomePage() {
         <div className="mb-10 flex items-end justify-between gap-4">
           <div>
             <p className="text-xs font-semibold uppercase tracking-[0.28em] text-stone-500">
-              Best Sellers
+              Bestsellery
             </p>
-            <h2 className="mt-3 text-3xl font-medium text-stone-950 sm:text-4xl">Онцлох бараанууд</h2>
+            <h2 className="mt-3 text-3xl font-medium text-stone-950 sm:text-4xl">Oblíbené produkty</h2>
           </div>
           <Link href="/products" className="text-sm font-medium text-stone-500 transition hover:text-stone-900">
-            Бүгдийг харах
+            Zobrazit vše
           </Link>
         </div>
 
@@ -80,15 +80,13 @@ export default async function HomePage() {
 
       <section className="border-y border-stone-900 bg-[#242321] text-white">
         <div className="mx-auto max-w-6xl px-4 py-16 text-center sm:px-6 lg:px-8 lg:py-20">
-          <p className="text-xs font-semibold uppercase tracking-[0.32em] text-white/45">Why Customers Choose MartX</p>
+          <p className="text-xs font-semibold uppercase tracking-[0.32em] text-white/45">Proč si vybrat NaRa</p>
           <h2 className="mx-auto mt-5 max-w-3xl text-3xl font-medium leading-tight sm:text-5xl">
-            Найдвартай захиалга, тодорхой мэдээлэл, чанартай сонголт.
+            Kůže, která časem získává charakter. Zpracování, které působí tiše a jistě.
           </h2>
           <p className="mx-auto mt-6 max-w-4xl text-base leading-8 text-white/72 sm:text-lg sm:leading-9">
-            MartX дээрх бараа бүрийг өдөр тутмын хэрэглээнд эвтэйхэн эсэх, материалын мэдрэмж,
-            загварын цэвэрхэн харагдах байдал, бодитоор хэрэглэх үнэ цэнээр нь сонгож байршуулдаг.
-            Үнэ, үлдэгдэл, өнгө хэмжээ, зураг, хүргэлт болон тусламжийн мэдээлэл ил тод тул
-            худалдан авагч захиалгаа эргэлзээгүй, тайван хийх боломжтой.
+            Každý kousek vybíráme a připravujeme tak, aby dobře sloužil v každodenním životě. Dáváme přednost čistým liniím,
+            kvalitním materiálům a detailům, které nejsou hlučné, ale vydrží.
           </p>
         </div>
       </section>
@@ -97,9 +95,9 @@ export default async function HomePage() {
         <div className="mb-10 flex items-end justify-between gap-4">
           <div>
             <p className="text-xs font-semibold uppercase tracking-[0.28em] text-stone-500">
-              Featured Picks
+              Doporučené
             </p>
-            <h2 className="mt-3 text-3xl font-medium text-stone-950 sm:text-4xl">Сонгомол бүтээгдэхүүн</h2>
+            <h2 className="mt-3 text-3xl font-medium text-stone-950 sm:text-4xl">Vybrané produkty</h2>
           </div>
         </div>
 
@@ -121,7 +119,7 @@ export default async function HomePage() {
                     href={`/products/${product.slug}`}
                     className="mt-8 inline-flex w-fit rounded-full border border-stone-300 px-6 py-3 text-sm font-semibold text-stone-700 transition hover:border-stone-900 hover:text-stone-900"
                   >
-                    Дэлгэрэнгүй үзэх
+                    Zobrazit detail
                   </Link>
                 </div>
               </div>

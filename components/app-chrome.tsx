@@ -4,7 +4,7 @@ import { usePathname } from "next/navigation";
 
 import { InstallAppBanner } from "@/components/install-app-banner";
 import { MobileAppNav } from "@/components/mobile-app-nav";
-import { ServiceHighlights } from "@/components/service-highlights";
+import { CartDrawer } from "@/components/cart-drawer";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 
@@ -20,10 +20,10 @@ export function AppChrome({ children }: { children: React.ReactNode }) {
     <>
       <SiteHeader />
       <main>{children}</main>
-      <ServiceHighlights />
       <SiteFooter />
       <InstallAppBanner />
       <MobileAppNav />
+      <CartDrawer />
     </>
   );
 }

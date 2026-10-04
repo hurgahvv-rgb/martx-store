@@ -1,4 +1,4 @@
-const FALLBACK_IMAGE = "/martx-logo.png";
+const FALLBACK_IMAGE = "/uursduu-urlaya-logo.svg";
 
 function isUsableImageSrc(value: unknown): value is string {
   if (typeof value !== "string") {

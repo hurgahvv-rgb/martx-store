@@ -1,29 +1,44 @@
 "use client";
 
-import {
-  ChevronDown,
-  CircleHelp,
-  Heart,
-  Minus,
-  PackageCheck,
-  Plus,
-  RotateCcw,
-  Star
-} from "lucide-react";
+import { FormEvent, useMemo, useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { useMemo, useState } from "react";
+import { Plus, X } from "lucide-react";
 
-import { addCartItem, createCartItem } from "@/lib/cart";
+import { addCartItem, createCartItem, openCartDrawer } from "@/lib/cart";
 import { formatPrice } from "@/lib/data";
 import { Product, ProductDetail } from "@/lib/types";
 
-const infoItems = [
-  { key: "shipping", title: "Хүргэлт", icon: PackageCheck, href: "/shipping", linkLabel: "Хүргэлтийн дэлгэрэнгүй мэдээлэл" },
-  { key: "returns", title: "Буцаалт", icon: RotateCcw, href: "/returns", linkLabel: "Буцаалтын дэлгэрэнгүй нөхцөл" },
-  { key: "warranty", title: "Баталгаа", icon: Heart, href: "/terms", linkLabel: "Баталгааны нөхцөлийг дэлгэрэнгүй харах" },
-  { key: "help", title: "Тусламж", icon: CircleHelp, href: "/contact", linkLabel: "Тусламж авах, холбоо барих" }
-] as const;
+type AccordionKey = "size" | "care" | "question";
+type SubmitState = "idle" | "sending" | "success" | "error";
+
+const colorMap: Record<string, string> = {
+  black: "#050505",
+  cern: "#050505",
+  hned: "#6f453d",
+  brown: "#6f453d",
+  bez: "#c3926f",
+  beige: "#c3926f",
+  zelen: "#a9c8ac",
+  green: "#a9c8ac"
+};
+
+function normalizeColor(value: string) {
+  return value
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "");
+}
+
+function swatchColor(value: string, index: number) {
+  const normalized = normalizeColor(value);
+  const match = Object.entries(colorMap).find(([key]) => normalized.includes(key));
+
+  if (match) {
+    return match[1];
+  }
+
+  return ["#050505", "#151515", "#6f453d", "#c3926f", "#a9c8ac"][index % 5];
+}
 
 export function ProductPurchasePanel({
   product,
@@ -34,102 +49,116 @@ export function ProductPurchasePanel({
   detail: ProductDetail;
   onVariantImageChange?: (image: string) => void;
 }) {
-  const router = useRouter();
   const variantOptions = product.variants?.length
-    ? product.variants.map((item) => {
+    ? product.variants.map((item, index) => {
         const label = [item.color, item.size].filter(Boolean).join(" / ") || item.sku || "Standard";
         return {
           id: item.id,
           label,
-          color: item.color,
-          size: item.size,
+          color: item.color || label,
           image: item.image,
           price: item.price ?? product.price,
-          stock: item.stock
+          stock: item.stock,
+          swatch: swatchColor(item.color || label, index)
         };
       })
-    : detail.variants.map((item) => ({
+    : detail.variants.map((item, index) => ({
         id: undefined,
         label: item,
         color: item,
-        size: null,
         image: null,
         price: product.price,
-        stock: product.stock ?? 0
+        stock: product.stock ?? 0,
+        swatch: swatchColor(item, index)
       }));
+
   const hasSelectableVariants =
     (product.variants?.length ?? 0) > 0 || detail.variants.some((item) => item.toLowerCase() !== "standard");
   const [variant, setVariant] = useState(variantOptions[0]?.label ?? "Standard");
   const [variantId, setVariantId] = useState<string | undefined>(variantOptions[0]?.id);
-  const [quantity, setQuantity] = useState(1);
   const [added, setAdded] = useState(false);
-  const [openItem, setOpenItem] = useState<(typeof infoItems)[number]["key"] | null>(null);
-
-  const reviewSummary = useMemo(() => {
-    if (detail.reviews.length === 0) {
-      return { average: product.rating, count: 12 };
-    }
-
-    const total = detail.reviews.reduce((sum, review) => sum + review.rating, 0);
-    return {
-      average: (total / detail.reviews.length).toFixed(1),
-      count: detail.reviews.length
-    };
-  }, [detail.reviews, product.rating]);
-
-  const infoContent = {
-    shipping: detail.shipping,
-    returns: detail.returns,
-    warranty: detail.warranty,
-    help: detail.help
-  };
-
-  const handleAddToCart = () => {
-    addCartItem(createCartItem(product, hasSelectableVariants ? variant : "Сонголтгүй", quantity, variantId));
-    setAdded(true);
-    window.setTimeout(() => setAdded(false), 1800);
-  };
-
-  const handleBuyNow = () => {
-    addCartItem(createCartItem(product, hasSelectableVariants ? variant : "Сонголтгүй", quantity, variantId));
-    router.push("/checkout");
-  };
+  const [openItem, setOpenItem] = useState<AccordionKey | null>(null);
+  const [questionStatus, setQuestionStatus] = useState<SubmitState>("idle");
+  const [questionMessage, setQuestionMessage] = useState("");
 
   const selectedVariant = variantOptions.find((item) => item.label === variant && item.id === variantId) ?? variantOptions[0];
   const displayPrice = selectedVariant?.price ?? product.price;
   const selectedStock = selectedVariant?.stock ?? product.stock ?? 0;
+  const selectedColorLabel = selectedVariant?.color ?? variant;
+  const specsText = useMemo(() => detail.specs.join("\n"), [detail.specs]);
+  const careText = detail.warranty || "Kůži pravidelně ošetřujte jemným voskem a chraňte před vlhkem a přímým sluncem.";
+
+  const handleAddToCart = () => {
+    addCartItem(createCartItem(product, hasSelectableVariants ? variant : "Bez varianty", 1, variantId));
+    setAdded(true);
+    openCartDrawer();
+    window.setTimeout(() => setAdded(false), 1800);
+  };
+
+  async function handleQuestionSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    setQuestionStatus("sending");
+    setQuestionMessage("");
+
+    const form = event.currentTarget;
+    const formData = new FormData(form);
+    const name = String(formData.get("name") ?? "");
+    const email = String(formData.get("email") ?? "");
+    const phone = String(formData.get("phone") ?? "");
+    const question = String(formData.get("question") ?? "");
+
+    const response = await fetch("/api/contact", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        name,
+        email,
+        phone,
+        comment: `Dotaz k produktu: ${product.name}\nVybraná varianta: ${selectedColorLabel}\n\n${question}`
+      })
+    });
+    const data = await response.json().catch(() => ({}));
+
+    if (!response.ok) {
+      setQuestionStatus("error");
+      setQuestionMessage(data?.error ?? "Odeslání se nepodařilo. Zkuste to prosím znovu.");
+      return;
+    }
+
+    form.reset();
+    setQuestionStatus("success");
+    setQuestionMessage("Dotaz byl odeslán. Brzy se vám ozveme.");
+  }
 
   return (
-    <div className="space-y-7 self-start">
-      <div className="space-y-3">
-        <p className="text-xs uppercase tracking-[0.28em] text-stone-500">{product.category}</p>
-        <h1 className="text-4xl font-medium text-stone-950 sm:text-5xl">{product.name}</h1>
-        <div className="flex items-center gap-3 text-sm text-stone-600">
-          <div className="flex items-center gap-1 text-stone-900">
-            <Star size={15} className="fill-stone-900 text-stone-900" />
-            <span className="font-medium">{reviewSummary.average}</span>
-          </div>
-          <span>({reviewSummary.count} сэтгэгдэл)</span>
-        </div>
-        <div className="flex items-center gap-3">
-          {product.compareAtPrice && product.compareAtPrice > displayPrice ? (
-            <span className="text-lg font-medium text-stone-400 line-through">
-              {formatPrice(product.compareAtPrice, product.currency)}
-            </span>
-          ) : null}
-          <span className="text-2xl font-semibold text-stone-950">
-            {formatPrice(displayPrice, product.currency)}
-          </span>
-        </div>
-        <p className="max-w-xl text-base leading-8 text-stone-600">{detail.subtitle}</p>
+    <div className="self-start pt-8 lg:pt-10">
+      <div className="mb-7 text-sm text-stone-500">
+        <Link href="/products" className="transition hover:text-stone-900">
+          Obchod
+        </Link>
+        <span className="mx-1.5">/</span>
+        <span>{product.name}</span>
       </div>
 
-      <div className="space-y-5 border-y border-stone-200 py-6">
-        {hasSelectableVariants ? (
-          <div>
-            <p className="mb-3 text-sm font-medium text-stone-800">Сонголт</p>
-            <div className="flex flex-wrap gap-2">
-              {variantOptions.map((item) => (
+      <div className="space-y-4">
+        <h1 className="font-serif text-4xl font-normal leading-tight tracking-tight text-[#2d241f] sm:text-5xl">
+          {product.name}
+        </h1>
+        <div className="font-serif text-4xl font-normal text-[#2d241f]">
+          {formatPrice(displayPrice, product.currency)}
+        </div>
+      </div>
+
+      {hasSelectableVariants ? (
+        <div className="mt-7">
+          <p className="mb-3 text-[11px] font-semibold uppercase tracking-[0.22em] text-stone-500">
+            Barva <span className="normal-case tracking-normal text-emerald-700">- jiná barva skladem</span>
+          </p>
+          <div className="flex flex-wrap gap-3">
+            {variantOptions.map((item) => {
+              const isSelected = variant === item.label && variantId === item.id;
+
+              return (
                 <button
                   key={`${item.id ?? item.label}`}
                   type="button"
@@ -138,135 +167,138 @@ export function ProductPurchasePanel({
                     setVariantId(item.id);
                     onVariantImageChange?.(item.image || product.image);
                   }}
-                  className={[
-                    "rounded-full border px-4 py-2 text-sm transition disabled:cursor-not-allowed disabled:opacity-45",
-                    variant === item.label && variantId === item.id
-                      ? "border-stone-900 bg-stone-900 text-white"
-                      : "border-stone-300 text-stone-700 hover:border-stone-900"
-                  ].join(" ")}
                   disabled={item.stock <= 0}
+                  className={[
+                    "h-10 w-10 rounded-full border transition disabled:cursor-not-allowed disabled:opacity-40",
+                    isSelected ? "border-stone-900 p-1" : "border-transparent hover:border-stone-300"
+                  ].join(" ")}
+                  aria-label={item.label}
+                  title={item.label}
                 >
-                  {item.label}
-                  {item.stock <= 0 ? " - дууссан" : ""}
+                  <span className="block h-full w-full rounded-full" style={{ backgroundColor: item.swatch }} />
                 </button>
-              ))}
-            </div>
-            {selectedVariant?.image ? (
-              <p className="mt-3 text-xs leading-5 text-stone-500">
-                Сонгосон өнгөний зураг preview дээр солигдлоо. Gallery дотор зөвхөн ерөнхий зургууд үлдэнэ.
+              );
+            })}
+          </div>
+        </div>
+      ) : null}
+
+      <button
+        type="button"
+        onClick={handleAddToCart}
+        disabled={selectedStock <= 0}
+        className="mt-8 w-full bg-[#2d241f] px-6 py-4 text-xs font-bold uppercase tracking-[0.2em] text-white transition hover:bg-black disabled:cursor-not-allowed disabled:bg-stone-300"
+      >
+        {added ? "Přidáno do košíku" : "Přidat do košíku"}
+      </button>
+
+      <p className="mt-4 text-sm text-stone-500">Čas výroby: 2-3 týdny</p>
+
+      <div className="mt-6 border-y border-stone-200">
+        <AccordionItem title="Rozmer" isOpen={openItem === "size"} onClick={() => setOpenItem(openItem === "size" ? null : "size")}>
+          <div className="whitespace-pre-line">{specsText || "Rozměr doplníme podle vybrané varianty."}</div>
+        </AccordionItem>
+        <AccordionItem title="Údržba" isOpen={openItem === "care"} onClick={() => setOpenItem(openItem === "care" ? null : "care")}>
+          <p>{careText}</p>
+          <p className="mt-5">
+            Podrobný návod najdete tu:{" "}
+            <Link href="/info/starostlivost" className="underline underline-offset-4">
+              /info/starostlivost
+            </Link>
+          </p>
+        </AccordionItem>
+        <AccordionItem
+          title="Máte otázku k tomuto kúsku?"
+          isOpen={openItem === "question"}
+          onClick={() => setOpenItem(openItem === "question" ? null : "question")}
+          eyebrow
+        >
+          <p className="mb-5">Napište nám - rádi poradíme s velikostí, materiálem, dostupností či úpravou na míru.</p>
+          <form onSubmit={handleQuestionSubmit} className="space-y-4">
+            <PanelInput label="Meno *" name="name" required />
+            <PanelInput label="Email *" name="email" type="email" required />
+            <PanelInput label="Telefón" name="phone" />
+            <PanelTextarea label="Vaša otázka *" name="question" required />
+            <button
+              type="submit"
+              disabled={questionStatus === "sending"}
+              className="bg-[#2d241f] px-8 py-4 text-xs font-bold uppercase tracking-[0.2em] text-white transition hover:bg-black disabled:cursor-not-allowed disabled:bg-stone-400"
+            >
+              {questionStatus === "sending" ? "Odesílám" : "Poslať otázku"}
+            </button>
+            {questionMessage ? (
+              <p className={["text-sm", questionStatus === "error" ? "text-red-600" : "text-stone-600"].join(" ")}>
+                {questionMessage}
               </p>
             ) : null}
-          </div>
-        ) : null}
-
-        <div>
-          <p className="mb-3 text-sm font-medium text-stone-800">Тоо ширхэг</p>
-          <div className="inline-flex items-center rounded-full border border-stone-300">
-            <button
-              type="button"
-              onClick={() => setQuantity((value) => Math.max(1, value - 1))}
-              className="flex h-11 w-11 items-center justify-center text-stone-700"
-            >
-              <Minus size={16} />
-            </button>
-            <span className="min-w-10 text-center text-sm font-medium text-stone-900">{quantity}</span>
-            <button
-              type="button"
-              onClick={() => setQuantity((value) => Math.min(Math.max(selectedStock, 1), value + 1))}
-              className="flex h-11 w-11 items-center justify-center text-stone-700"
-            >
-              <Plus size={16} />
-            </button>
-          </div>
-        </div>
-
-        <div className="grid gap-3 sm:grid-cols-2">
-          <button
-            type="button"
-            onClick={handleAddToCart}
-            disabled={selectedStock <= 0}
-            className="rounded-full border border-stone-300 px-6 py-3 text-sm font-semibold text-stone-800 transition hover:border-stone-900 disabled:cursor-not-allowed disabled:border-stone-200 disabled:text-stone-300"
-          >
-            {added ? "Сагсанд нэмэгдлээ" : "Сагсанд нэмэх"}
-          </button>
-          <button
-            type="button"
-            onClick={handleBuyNow}
-            disabled={selectedStock <= 0}
-            className="rounded-full bg-stone-950 px-6 py-3 text-sm font-semibold text-white transition hover:bg-stone-800 disabled:cursor-not-allowed disabled:bg-stone-300"
-          >
-            Шууд худалдан авах
-          </button>
-        </div>
+          </form>
+        </AccordionItem>
       </div>
 
-      <div className="space-y-4">
-        <ul className="space-y-2 text-sm leading-7 text-stone-700">
-          {detail.bullets.map((item) => (
-            <li key={item} className="flex gap-2">
-              <span className="mt-[0.7em] h-1 w-1 shrink-0 rounded-full bg-stone-500" />
-              <span>{item}</span>
-            </li>
-          ))}
-        </ul>
+      <div className="mt-8 space-y-4">
+        <h2 className="text-base font-medium text-stone-950">O produkte</h2>
+        <p className="text-sm leading-7 text-stone-600">{detail.subtitle}</p>
         <p className="text-sm leading-7 text-stone-600">{product.description}</p>
-        <ul className="grid gap-2 text-sm text-stone-700 sm:grid-cols-2">
-          {detail.specs.map((item) => (
-            <li key={item} className="rounded-lg border border-stone-200 bg-white/55 px-3 py-2 leading-6">
-              {item}
-            </li>
-          ))}
-        </ul>
-      </div>
-
-      <div className="border-t border-stone-200 transition-all duration-300">
-        {infoItems.map((item) => {
-          const Icon = item.icon;
-          const isOpen = openItem === item.key;
-
-          return (
-            <div key={item.key} className="border-b border-stone-200">
-              <button
-                type="button"
-                onClick={() => setOpenItem(isOpen ? null : item.key)}
-                className="flex w-full items-center justify-between gap-4 py-5 text-left"
-              >
-                <div className="flex items-center gap-3">
-                  <Icon size={20} strokeWidth={1.8} className="text-stone-800" />
-                  <span className="text-[1.05rem] font-medium text-stone-900">{item.title}</span>
-                </div>
-                <ChevronDown
-                  size={18}
-                  className={[
-                    "text-stone-500 transition-transform duration-300",
-                    isOpen ? "rotate-180" : ""
-                  ].join(" ")}
-                />
-              </button>
-
-              <div
-                className={[
-                  "grid transition-all duration-300 ease-out",
-                  isOpen ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-70"
-                ].join(" ")}
-              >
-                <div className="overflow-hidden">
-                  <div className="pb-5 pl-8 pr-8 text-sm leading-7 text-stone-600">
-                    <p>{infoContent[item.key]}</p>
-                    <p className="mt-3">
-                      Дэлгэрэнгүй мэдээлэл авах бол{" "}
-                      <Link href={item.href} className="font-semibold text-stone-950 underline underline-offset-4 transition hover:text-stone-600">
-                        {item.linkLabel}
-                      </Link>
-                      .
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          );
-        })}
       </div>
     </div>
+  );
+}
+
+function AccordionItem({
+  title,
+  isOpen,
+  onClick,
+  children,
+  eyebrow = false
+}: {
+  title: string;
+  isOpen: boolean;
+  onClick: () => void;
+  children: React.ReactNode;
+  eyebrow?: boolean;
+}) {
+  return (
+    <div className="border-b border-stone-200 last:border-b-0">
+      <button type="button" onClick={onClick} className="flex w-full items-center justify-between gap-4 py-4 text-left">
+        <span
+          className={
+            eyebrow
+              ? "text-[11px] font-semibold uppercase tracking-[0.2em] text-stone-500"
+              : "font-serif text-xl font-normal text-[#2d241f]"
+          }
+        >
+          {title}
+        </span>
+        {isOpen ? <X size={18} strokeWidth={1.7} /> : <Plus size={20} strokeWidth={1.7} />}
+      </button>
+      {isOpen ? <div className="pb-7 text-sm leading-7 text-stone-600">{children}</div> : null}
+    </div>
+  );
+}
+
+function PanelInput({ label, name, type = "text", required = false }: { label: string; name: string; type?: string; required?: boolean }) {
+  return (
+    <label className="block">
+      <span className="text-[11px] font-semibold uppercase tracking-[0.22em] text-stone-500">{label}</span>
+      <input
+        name={name}
+        type={type}
+        required={required}
+        className="mt-2 h-12 w-full border border-stone-200 bg-white px-4 text-sm text-stone-900 outline-none transition focus:border-stone-950"
+      />
+    </label>
+  );
+}
+
+function PanelTextarea({ label, name, required = false }: { label: string; name: string; required?: boolean }) {
+  return (
+    <label className="block">
+      <span className="text-[11px] font-semibold uppercase tracking-[0.22em] text-stone-500">{label}</span>
+      <textarea
+        name={name}
+        required={required}
+        className="mt-2 min-h-36 w-full border border-stone-200 bg-white px-4 py-3 text-sm text-stone-900 outline-none transition focus:border-stone-950"
+      />
+    </label>
   );
 }

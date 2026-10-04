@@ -33,7 +33,7 @@ export default async function AdminLoginPage({
     <main className="flex min-h-screen items-center justify-center px-4 py-12">
       <div className="w-full max-w-md overflow-hidden rounded-[2rem] border border-slate-200 bg-white shadow-2xl shadow-slate-300/40">
         <div className="bg-slate-950 px-8 py-8 text-white">
-          <p className="text-sm font-semibold uppercase tracking-[0.26em] text-blue-200">MartX Admin</p>
+          <p className="text-sm font-semibold uppercase tracking-[0.26em] text-blue-200">Өөрсдөө урлая Admin</p>
           <h1 className="mt-3 text-3xl font-bold">Удирдлагын хэсэг</h1>
           <p className="mt-3 text-sm leading-6 text-slate-300">
             Захиалга, бараа, үлдэгдлээ нэг газраас хянахын тулд нэвтэрнэ үү.

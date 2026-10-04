@@ -1,6 +1,7 @@
 import { Product } from "@/lib/types";
 
 export const CART_STORAGE_KEY = "martx-cart";
+export const CART_OPEN_EVENT = "martx-cart-open";
 
 export type CartItem = {
   productId: string;
@@ -77,4 +78,12 @@ export function addCartItem(item: CartItem) {
   }
 
   writeCart([...current, item]);
+}
+
+export function openCartDrawer() {
+  if (typeof window === "undefined") {
+    return;
+  }
+
+  window.dispatchEvent(new Event(CART_OPEN_EVENT));
 }

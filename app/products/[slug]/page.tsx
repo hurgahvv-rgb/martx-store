@@ -28,14 +28,6 @@ export default async function ProductDetailPage({ params, searchParams }: Produc
   return (
     <div className="bg-[#fbfaf7]">
       <section className="mx-auto max-w-6xl px-4 py-12 sm:px-6 lg:px-8 lg:py-16">
-        <div className="mb-8 text-sm text-stone-500">
-          <Link href="/products" className="transition hover:text-stone-900">
-            Бүх бараа
-          </Link>
-          <span className="mx-2">/</span>
-          <span>{product.name}</span>
-        </div>
-
         <ProductDetailClient product={product} detail={detail} selectedImage={selectedImage} />
       </section>
 
@@ -77,9 +69,9 @@ export default async function ProductDetailPage({ params, searchParams }: Produc
         <div className="mb-10 flex items-end justify-between gap-4">
           <div>
             <p className="text-xs font-semibold uppercase tracking-[0.28em] text-stone-500">
-              You May Also Like
+              Doporučujeme
             </p>
-            <h2 className="mt-3 text-3xl font-medium text-stone-950 sm:text-4xl">Төстэй бараанууд</h2>
+            <h2 className="mt-3 text-3xl font-medium text-stone-950 sm:text-4xl">Podobné produkty</h2>
           </div>
         </div>
 

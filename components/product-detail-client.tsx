@@ -19,7 +19,7 @@ export function ProductDetailClient({
   const [activeImage, setActiveImage] = useState(selectedImage ?? initialVariantImage ?? product.image);
 
   return (
-    <div className="items-start gap-12 lg:grid lg:grid-cols-[1.05fr_0.95fr]">
+    <div className="items-start gap-12 lg:grid lg:grid-cols-[minmax(0,1.08fr)_minmax(360px,0.92fr)]">
       <ProductGallery images={detail.gallery} title={product.name} selectedImage={activeImage} onImageChange={setActiveImage} />
       <ProductPurchasePanel product={product} detail={detail} onVariantImageChange={setActiveImage} />
     </div>

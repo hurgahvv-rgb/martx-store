@@ -1,0 +1,20 @@
+<svg width="720" height="280" viewBox="0 0 720 280" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <title>NaRa clean logo preview</title>
+  <rect width="720" height="280" fill="white"/>
+
+  <text
+    x="360"
+    y="154"
+    text-anchor="middle"
+    font-family="Didot, Bodoni 72, Georgia, 'Times New Roman', serif"
+    font-size="116"
+    font-style="italic"
+    font-weight="700"
+    letter-spacing="-10"
+    fill="#16110F"
+  >NaRa</text>
+  <path
+    d="M390 83C405 80 416 90 417 103C427 108 425 123 412 127C414 139 402 146 389 140C378 146 364 138 366 125C355 118 360 102 373 99C374 90 381 84 390 83Z"
+    fill="#EF2F2F"
+  />
+</svg>

@@ -4,7 +4,7 @@ import { FormEvent, useState } from "react";
 
 type SubmitState = "idle" | "sending" | "success" | "error";
 
-export function ContactForm() {
+export function ContactForm({ compact = false }: { compact?: boolean }) {
   const [status, setStatus] = useState<SubmitState>("idle");
   const [message, setMessage] = useState("");
 
@@ -31,29 +31,29 @@ export function ContactForm() {
 
     if (!response.ok) {
       setStatus("error");
-      setMessage(data?.error ?? "Илгээхэд алдаа гарлаа. Түр хүлээгээд дахин оролдоно уу.");
+      setMessage(data?.error ?? "Odeslání se nepodařilo. Zkuste to prosím znovu za chvíli.");
       return;
     }
 
     form.reset();
     setStatus("success");
-    setMessage("Таны хүсэлт илгээгдлээ. Бид удахгүй холбогдоно.");
+    setMessage("Vaše zpráva byla odeslána. Brzy se vám ozveme.");
   }
 
   return (
-    <section className="mx-auto max-w-5xl px-4 pb-16 sm:px-6 lg:px-8">
-      <form onSubmit={handleSubmit} className="mx-auto grid max-w-3xl gap-5">
+    <section className={compact ? "mt-8" : "mx-auto max-w-5xl px-4 pb-16 sm:px-6 lg:px-8"}>
+      <form onSubmit={handleSubmit} className={compact ? "grid gap-5" : "mx-auto grid max-w-3xl gap-5"}>
         <div className="grid gap-5 sm:grid-cols-2">
           <input
             name="name"
             type="text"
-            placeholder="Нэр"
+            placeholder={compact ? "Jméno *" : "Jméno"}
             className="h-14 border border-stone-300 bg-white px-5 text-sm text-stone-950 outline-none transition placeholder:text-stone-500 focus:border-stone-950"
           />
           <input
             name="email"
             type="email"
-            placeholder="И-мэйл *"
+            placeholder="E-mail *"
             required
             className="h-14 border border-stone-300 bg-white px-5 text-sm text-stone-950 outline-none transition placeholder:text-stone-500 focus:border-stone-950"
           />
@@ -62,13 +62,13 @@ export function ContactForm() {
         <input
           name="phone"
           type="tel"
-          placeholder="Утасны дугаар"
+          placeholder="Telefon"
           className="h-14 border border-stone-300 bg-white px-5 text-sm text-stone-950 outline-none transition placeholder:text-stone-500 focus:border-stone-950"
         />
 
         <textarea
           name="comment"
-          placeholder="Сэтгэгдэл"
+          placeholder="Zpráva"
           required
           rows={5}
           className="min-h-32 resize-y border border-stone-300 bg-white px-5 py-4 text-sm text-stone-950 outline-none transition placeholder:text-stone-500 focus:border-stone-950"
@@ -78,9 +78,13 @@ export function ContactForm() {
           <button
             type="submit"
             disabled={status === "sending"}
-            className="inline-flex h-14 w-36 items-center justify-center bg-stone-950 px-6 text-sm font-semibold text-white transition hover:bg-stone-800 disabled:cursor-not-allowed disabled:bg-stone-400"
+            className={
+              compact
+                ? "inline-flex h-14 items-center justify-center bg-[#2d241f] px-8 text-xs font-bold uppercase tracking-[0.2em] text-white transition hover:bg-black disabled:cursor-not-allowed disabled:bg-stone-400"
+                : "inline-flex h-14 w-36 items-center justify-center bg-stone-950 px-6 text-sm font-semibold text-white transition hover:bg-stone-800 disabled:cursor-not-allowed disabled:bg-stone-400"
+            }
           >
-            {status === "sending" ? "Илгээж байна" : "Илгээх"}
+            {status === "sending" ? "Odesílám" : compact ? "Odeslat zprávu" : "Odeslat"}
           </button>
 
           {message ? (

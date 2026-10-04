@@ -5,12 +5,12 @@ import { usePathname } from "next/navigation";
 import { PackageSearch, ShoppingBag, UserRound } from "lucide-react";
 import { useEffect, useState } from "react";
 
-import { getCartQuantity, readCart } from "@/lib/cart";
+import { getCartQuantity, openCartDrawer, readCart } from "@/lib/cart";
 
 const items = [
-  { href: "/products", label: "Бараа", icon: PackageSearch },
-  { href: "/cart", label: "Сагс", icon: ShoppingBag },
-  { href: "/account", label: "Профайл", icon: UserRound }
+  { href: "/products", label: "Produkty", icon: PackageSearch },
+  { href: "/cart", label: "Košík", icon: ShoppingBag },
+  { href: "/account", label: "Profil", icon: UserRound }
 ];
 
 export function MobileAppNav() {
@@ -42,12 +42,8 @@ export function MobileAppNav() {
           const Icon = item.icon;
           const isCart = item.href === "/cart";
 
-          return (
-            <Link
-              key={item.href}
-              href={item.href}
-              className="relative flex flex-col items-center justify-center gap-1 rounded-2xl px-2 py-2 text-[11px] font-semibold text-stone-600 transition active:bg-stone-100"
-            >
+          const content = (
+            <>
               <span className="relative">
                 <Icon size={20} strokeWidth={1.9} />
                 {isCart && cartQuantity > 0 ? (
@@ -57,6 +53,25 @@ export function MobileAppNav() {
                 ) : null}
               </span>
               {item.label}
+            </>
+          );
+
+          return isCart ? (
+            <button
+              key={item.href}
+              type="button"
+              onClick={openCartDrawer}
+              className="relative flex flex-col items-center justify-center gap-1 rounded-2xl px-2 py-2 text-[11px] font-semibold text-stone-600 transition active:bg-stone-100"
+            >
+              {content}
+            </button>
+          ) : (
+            <Link
+              key={item.href}
+              href={item.href}
+              className="relative flex flex-col items-center justify-center gap-1 rounded-2xl px-2 py-2 text-[11px] font-semibold text-stone-600 transition active:bg-stone-100"
+            >
+              {content}
             </Link>
           );
         })}

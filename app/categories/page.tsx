@@ -6,10 +6,9 @@ import { prisma } from "@/lib/prisma";
 export const dynamic = "force-dynamic";
 
 const fallbackCategories = [
-  { name: "Гоо сайхан", slug: "goo-saihan", description: "Арьс, үс болон өдөр тутмын арчилгаанд зориулсан сонголтууд.", count: 0 },
-  { name: "Хувцас", slug: "huvtsas", description: "Ноолуур, гадуур хувцас, өдөр тутмын premium загварууд.", count: 0 },
-  { name: "Гэр ахуй", slug: "ger-ahuj", description: "Үнэртэн, керамик болон өдөр тутмын тав тух нэмэх бүтээгдэхүүн.", count: 0 },
-  { name: "Цүнх", slug: "tsunh", description: "Аялал, ажил, амралтад тохирсон загварлаг сонголтууд.", count: 0 }
+  { name: "Kabelky", slug: "kabelky", description: "Ručně vyráběné kožené kabelky pro každý den.", count: 0 },
+  { name: "Ledvinky", slug: "ledvinky", description: "Praktické kožené ledvinky a menší doplňky.", count: 0 },
+  { name: "Batohy", slug: "batohy", description: "Kožené batohy s čistým a nadčasovým vzhledem.", count: 0 }
 ];
 
 async function getCategories() {
@@ -32,7 +31,7 @@ async function getCategories() {
       return categories.map((category) => ({
         name: category.name,
         slug: category.slug,
-        description: category.description || "Энэ ангиллын бараануудыг харах.",
+        description: category.description || "Zobrazit produkty v této kategorii.",
         count: counts.get(category.name) ?? 0
       }));
     }
@@ -49,8 +48,8 @@ export default async function CategoriesPage() {
   return (
     <section className="mx-auto max-w-6xl px-4 py-14 sm:px-6 lg:px-8">
       <div className="mb-10 space-y-3">
-        <p className="section-title text-sm text-slate-500">Ангилал</p>
-        <h1 className="text-4xl font-semibold text-ink">Ангиллаар сонгох</h1>
+        <p className="section-title text-sm text-slate-500">Kategorie</p>
+        <h1 className="text-4xl font-semibold text-ink">Vyberte si kategorii</h1>
       </div>
       <div className="grid gap-6 md:grid-cols-3">
         {categories.map((category) => (
@@ -59,10 +58,10 @@ export default async function CategoriesPage() {
             href={`/products?category=${encodeURIComponent(category.name)}`}
             className="glass-panel rounded-[2rem] p-6 transition duration-300 hover:-translate-y-1"
           >
-            <p className="section-title text-sm text-slate-500">Ангилал</p>
+            <p className="section-title text-sm text-slate-500">Kategorie</p>
             <h2 className="mt-3 text-2xl font-semibold text-ink">{category.name}</h2>
             <p className="mt-4 text-sm leading-7 text-slate-600">{category.description}</p>
-            <p className="mt-5 text-sm font-semibold text-stone-900">{category.count} бараа</p>
+            <p className="mt-5 text-sm font-semibold text-stone-900">{category.count} produktů</p>
           </Link>
         ))}
       </div>

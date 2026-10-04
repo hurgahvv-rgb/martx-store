@@ -3,18 +3,17 @@
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { ChevronDown, Menu, Search, ShoppingBag, User } from "lucide-react";
+import { ChevronDown, Menu, ShoppingBag, User } from "lucide-react";
 import { useEffect, useState } from "react";
 
-import { getCartQuantity, readCart } from "@/lib/cart";
+import { getCartQuantity, openCartDrawer, readCart } from "@/lib/cart";
 
 const actionItems = [
-  { href: "/products", label: "Хайх", icon: Search },
-  { href: "/account", label: "Хэрэглэгч", icon: User },
-  { href: "/cart", label: "Сагс", icon: ShoppingBag }
+  { href: "/account", label: "Účet", icon: User },
+  { href: "/cart", label: "Košík", icon: ShoppingBag }
 ];
 
-const categoryItems = ["Гоо сайхан", "Хувцас", "Гэр ахуй", "Цүнх"];
+const categoryItems = ["Kabelky", "Ledvinky", "Batohy", "Peněženky", "Oblečení", "Sety"];
 
 type StoreProfile = {
   storeName: string;
@@ -24,16 +23,24 @@ type StoreProfile = {
 };
 
 const defaultStoreProfile: StoreProfile = {
-  storeName: "MartX",
-  storeLogo: "/martx-logo.png",
-  announcementText: "MARTX | УЛААНБААТАРТ ХҮРГЭЛТ ҮНЭГҮЙ, ОРОН НУТАГТ 5,000₮",
+  storeName: "NaRa",
+  storeLogo: "/nara-logo.svg",
+  announcementText: "NARA | HANDMADE LEATHER BAGS",
   headerMenu: [
-    { id: "products", label: "Бүх бараа", href: "/products", isActive: true },
-    { id: "categories", label: "Ангилал", href: "/categories", isActive: true },
-    { id: "new", label: "Шинэ", href: "/products?filter=new", isActive: true },
-    { id: "featured", label: "Онцлох", href: "/products?filter=featured", isActive: true }
+    { id: "products", label: "Všechny produkty", href: "/products", isActive: true },
+    { id: "categories", label: "Kategorie", href: "/categories", isActive: true },
+    { id: "new", label: "Novinky", href: "/products?filter=new", isActive: true },
+    { id: "featured", label: "Doporučené", href: "/products?filter=featured", isActive: true }
   ]
 };
+
+function resolveStoreLogo(logo?: string) {
+  if (!logo || logo === "/uursduu-urlaya-logo.svg") {
+    return defaultStoreProfile.storeLogo;
+  }
+
+  return logo;
+}
 
 function resolveMenuHref(item: StoreProfile["headerMenu"][number]) {
   if (item.id === "new" && item.href === "/products") {
@@ -52,7 +59,7 @@ function normalizeStoreProfile(data: Partial<StoreProfile>): StoreProfile {
     ...defaultStoreProfile,
     ...data,
     storeName: data.storeName || defaultStoreProfile.storeName,
-    storeLogo: data.storeLogo || defaultStoreProfile.storeLogo,
+    storeLogo: resolveStoreLogo(data.storeLogo),
     announcementText: data.announcementText || defaultStoreProfile.announcementText,
     headerMenu: Array.isArray(data.headerMenu) && data.headerMenu.length > 0 ? data.headerMenu : defaultStoreProfile.headerMenu
   };
@@ -66,9 +73,11 @@ export function SiteHeader() {
   const [categoryMenuOpen, setCategoryMenuOpen] = useState(false);
   const [mobileCategoryOpen, setMobileCategoryOpen] = useState(false);
   const [profile, setProfile] = useState<StoreProfile>(defaultStoreProfile);
+  const isHome = pathname === "/";
+  const showHeaderMenu = isHome;
   const isCheckout = pathname === "/checkout";
   const isProductDetail = pathname.startsWith("/products/");
-  const hideMobileMenu = isCheckout || isProductDetail;
+  const hideMobileMenu = !showHeaderMenu || isCheckout || isProductDetail;
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 18);
@@ -134,59 +143,61 @@ export function SiteHeader() {
               type="button"
               aria-expanded={mobileMenuOpen}
               onClick={() => setMobileMenuOpen((open) => !open)}
-              aria-label="Цэс"
+              aria-label="Menu"
               className="flex h-10 w-10 items-center justify-center rounded-full border border-stone-200 text-stone-600 transition hover:border-stone-300 hover:text-stone-900 lg:hidden"
             >
               <Menu size={18} />
             </button>
             )}
 
-            <nav className="hidden items-center gap-6 text-sm font-medium text-stone-700 lg:flex">
-              {profile.headerMenu.filter((item) => item.isActive).map((item) =>
-                item.id === "categories" ? (
-                  <div
-                    key={`${item.href}-${item.label}`}
-                    className="relative"
-                    onMouseEnter={() => setCategoryMenuOpen(true)}
-                    onMouseLeave={() => setCategoryMenuOpen(false)}
-                  >
-                    <button
-                      type="button"
-                      onClick={() => setCategoryMenuOpen((open) => !open)}
-                      className="inline-flex items-center gap-1.5 transition hover:text-black"
-                      aria-expanded={categoryMenuOpen}
+            {showHeaderMenu ? (
+              <nav className="hidden items-center gap-6 text-sm font-medium text-stone-700 lg:flex">
+                {profile.headerMenu.filter((item) => item.isActive).map((item) =>
+                  item.id === "categories" ? (
+                    <div
+                      key={`${item.href}-${item.label}`}
+                      className="relative"
+                      onMouseEnter={() => setCategoryMenuOpen(true)}
+                      onMouseLeave={() => setCategoryMenuOpen(false)}
                     >
-                      {item.label}
-                      <ChevronDown
-                        size={14}
-                        className={["transition-transform", categoryMenuOpen ? "rotate-180" : ""].join(" ")}
-                      />
-                    </button>
+                      <button
+                        type="button"
+                        onClick={() => setCategoryMenuOpen((open) => !open)}
+                        className="inline-flex items-center gap-1.5 transition hover:text-black"
+                        aria-expanded={categoryMenuOpen}
+                      >
+                        {item.label}
+                        <ChevronDown
+                          size={14}
+                          className={["transition-transform", categoryMenuOpen ? "rotate-180" : ""].join(" ")}
+                        />
+                      </button>
 
-                    {categoryMenuOpen ? (
-                      <div className="absolute left-0 top-full z-50 pt-4">
-                        <div className="min-w-44 rounded-2xl border border-stone-200 bg-white p-2 shadow-xl shadow-stone-900/10">
-                          {categoryItems.map((category) => (
-                            <Link
-                              key={category}
-                              href={`/products?category=${encodeURIComponent(category)}`}
-                              onClick={() => setCategoryMenuOpen(false)}
-                              className="block rounded-xl px-4 py-2.5 text-sm text-stone-700 transition hover:bg-stone-50 hover:text-stone-950"
-                            >
-                              {category}
-                            </Link>
-                          ))}
+                      {categoryMenuOpen ? (
+                        <div className="absolute left-0 top-full z-50 pt-4">
+                          <div className="min-w-44 rounded-2xl border border-stone-200 bg-white p-2 shadow-xl shadow-stone-900/10">
+                            {categoryItems.map((category) => (
+                              <Link
+                                key={category}
+                                href={`/products?category=${encodeURIComponent(category)}`}
+                                onClick={() => setCategoryMenuOpen(false)}
+                                className="block rounded-xl px-4 py-2.5 text-sm text-stone-700 transition hover:bg-stone-50 hover:text-stone-950"
+                              >
+                                {category}
+                              </Link>
+                            ))}
+                          </div>
                         </div>
-                      </div>
-                    ) : null}
-                  </div>
-                ) : (
-                  <Link key={`${item.href}-${item.label}`} href={resolveMenuHref(item)} className="transition hover:text-black">
-                    {item.label}
-                  </Link>
-                )
-              )}
-            </nav>
+                      ) : null}
+                    </div>
+                  ) : (
+                    <Link key={`${item.href}-${item.label}`} href={resolveMenuHref(item)} className="transition hover:text-black">
+                      {item.label}
+                    </Link>
+                  )
+                )}
+              </nav>
+            ) : null}
           </div>
 
           <Link href="/" className="absolute left-1/2 -translate-x-1/2 text-center">
@@ -214,25 +225,33 @@ export function SiteHeader() {
             {actionItems.map((item) => {
               const Icon = item.icon;
               const isCart = item.href === "/cart";
-              const isSearch = item.href === "/products";
 
               return (
-                <Link
-                  key={item.label}
-                  href={item.href}
-                  aria-label={item.label}
-                  className={[
-                    "relative h-10 w-10 items-center justify-center rounded-full text-stone-600 transition hover:bg-stone-100 hover:text-black",
-                    isSearch ? "hidden lg:flex" : "flex"
-                  ].join(" ")}
-                >
-                  <Icon size={18} strokeWidth={1.9} />
-                  {isCart && cartQuantity > 0 ? (
-                    <span className="absolute -right-1 -top-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-red-600 px-1 text-[10px] font-bold leading-none text-white shadow-sm">
-                      {cartQuantity > 99 ? "99+" : cartQuantity}
-                    </span>
-                  ) : null}
-                </Link>
+                isCart ? (
+                  <button
+                    key={item.label}
+                    type="button"
+                    onClick={openCartDrawer}
+                    aria-label={item.label}
+                    className="relative flex h-10 w-10 items-center justify-center rounded-full text-stone-600 transition hover:bg-stone-100 hover:text-black"
+                  >
+                    <Icon size={18} strokeWidth={1.9} />
+                    {cartQuantity > 0 ? (
+                      <span className="absolute -right-1 -top-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-red-600 px-1 text-[10px] font-bold leading-none text-white shadow-sm">
+                        {cartQuantity > 99 ? "99+" : cartQuantity}
+                      </span>
+                    ) : null}
+                  </button>
+                ) : (
+                  <Link
+                    key={item.label}
+                    href={item.href}
+                    aria-label={item.label}
+                    className="relative flex h-10 w-10 items-center justify-center rounded-full text-stone-600 transition hover:bg-stone-100 hover:text-black"
+                  >
+                    <Icon size={18} strokeWidth={1.9} />
+                  </Link>
+                )
               );
             })}
           </div>

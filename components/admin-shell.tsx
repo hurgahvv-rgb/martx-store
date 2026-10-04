@@ -40,7 +40,7 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const isLogin = pathname === "/admin/login";
   const [pendingOrders, setPendingOrders] = useState(0);
-  const [profile, setProfile] = useState<StoreProfile>({ storeName: "MartX", storeSubtitle: "martx.market.shop" });
+  const [profile, setProfile] = useState<StoreProfile>({ storeName: "Өөрсдөө урлая", storeSubtitle: "Арьсан бүтээлийн pattern, сургалт" });
 
   useEffect(() => {
     if (isLogin) {

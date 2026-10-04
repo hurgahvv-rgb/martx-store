@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 1400">
+  <rect width="1200" height="1400" fill="#efe8dc"/>
+  <rect x="190" y="190" width="820" height="1020" rx="38" fill="#f8f3ea" stroke="#7a4a2d" stroke-width="10"/>
+  <path d="M310 380h580M310 520h580M310 660h580M310 800h580" stroke="#d2b48c" stroke-width="5" stroke-dasharray="18 16"/>
+  <path d="M360 360h480v560H360z" fill="none" stroke="#5b3824" stroke-width="14"/>
+  <path d="M360 640h480M600 360v560" stroke="#5b3824" stroke-width="10"/>
+  <circle cx="600" cy="1080" r="78" fill="#7a4a2d"/>
+  <text x="600" y="1095" text-anchor="middle" font-family="Arial, sans-serif" font-size="46" font-weight="700" fill="#fff">PDF</text>
+  <text x="600" y="1280" text-anchor="middle" font-family="Arial, sans-serif" font-size="52" font-weight="700" fill="#3b2418">Wallet Pattern</text>
+</svg>

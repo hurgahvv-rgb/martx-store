@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 1400">
+  <rect width="1200" height="1400" fill="#f1ede5"/>
+  <rect x="210" y="240" width="780" height="500" rx="42" fill="#2f251f"/>
+  <polygon points="555,395 555,585 720,490" fill="#c08a5a"/>
+  <rect x="260" y="850" width="680" height="110" rx="24" fill="#7a4a2d"/>
+  <rect x="260" y="995" width="520" height="34" rx="17" fill="#c8a17a"/>
+  <rect x="260" y="1060" width="610" height="34" rx="17" fill="#c8a17a"/>
+  <text x="600" y="1230" text-anchor="middle" font-family="Arial, sans-serif" font-size="52" font-weight="700" fill="#3b2418">Анхан шатны сургалт</text>
+</svg>

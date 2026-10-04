@@ -1,0 +1,67 @@
+<svg width="920" height="320" viewBox="0 0 920 320" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <title>NaRa gradient logo preview</title>
+  <defs>
+    <linearGradient id="wordmark" x1="278" y1="94" x2="641" y2="218" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#8F1118"/>
+      <stop offset="0.46" stop-color="#E32924"/>
+      <stop offset="0.72" stop-color="#F06A22"/>
+      <stop offset="1" stop-color="#F5A52A"/>
+    </linearGradient>
+    <linearGradient id="underline" x1="298" y1="232" x2="650" y2="195" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#641014" stop-opacity="0.1"/>
+      <stop offset="0.28" stop-color="#B1181F"/>
+      <stop offset="0.68" stop-color="#E95020"/>
+      <stop offset="1" stop-color="#D6A15F"/>
+    </linearGradient>
+    <radialGradient id="sealRed" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(652 139) rotate(39) scale(38)">
+      <stop stop-color="#F54131"/>
+      <stop offset="1" stop-color="#B9141B"/>
+    </radialGradient>
+    <radialGradient id="sealGold" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(696 139) rotate(45) scale(38)">
+      <stop stop-color="#FFB23B"/>
+      <stop offset="1" stop-color="#E66320"/>
+    </radialGradient>
+    <filter id="softShadow" x="205" y="54" width="514" height="204" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+      <feDropShadow dx="0" dy="10" stdDeviation="12" flood-color="#000000" flood-opacity="0.32"/>
+    </filter>
+  </defs>
+
+  <rect width="920" height="320" rx="0" fill="#15110F"/>
+  <rect x="1" y="1" width="918" height="318" stroke="#2B211B" stroke-opacity="0.8"/>
+
+  <g filter="url(#softShadow)">
+    <text
+      x="460"
+      y="176"
+      text-anchor="middle"
+      font-family="Georgia, 'Times New Roman', serif"
+      font-size="116"
+      font-style="italic"
+      letter-spacing="2"
+      fill="url(#wordmark)"
+    >NaRa</text>
+
+    <path
+      d="M292 218C378 248 539 242 637 199"
+      stroke="url(#underline)"
+      stroke-width="5"
+      stroke-linecap="round"
+    />
+
+    <g opacity="0.96">
+      <circle cx="652" cy="138" r="25" fill="url(#sealRed)"/>
+      <circle cx="689" cy="138" r="25" fill="url(#sealGold)" style="mix-blend-mode:screen"/>
+    </g>
+  </g>
+
+  <text
+    x="460"
+    y="247"
+    text-anchor="middle"
+    font-family="Arial, Helvetica, sans-serif"
+    font-size="13"
+    font-weight="700"
+    letter-spacing="7"
+    fill="#BDA184"
+  >100% RUČNÍ PRÁCE</text>
+</svg>

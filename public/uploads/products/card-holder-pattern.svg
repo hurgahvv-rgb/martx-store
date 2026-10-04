@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 1400">
+  <rect width="1200" height="1400" fill="#eee9e1"/>
+  <rect x="250" y="360" width="700" height="510" rx="60" fill="#8a5537"/>
+  <rect x="305" y="420" width="590" height="150" rx="26" fill="#c08a5a"/>
+  <rect x="305" y="600" width="590" height="150" rx="26" fill="#ad744b"/>
+  <path d="M250 870c120 80 580 80 700 0" fill="none" stroke="#4b2f20" stroke-width="18"/>
+  <path d="M340 950h520" stroke="#4b2f20" stroke-width="10" stroke-dasharray="20 16"/>
+  <text x="600" y="1120" text-anchor="middle" font-family="Arial, sans-serif" font-size="54" font-weight="700" fill="#3b2418">Card Holder</text>
+  <text x="600" y="1185" text-anchor="middle" font-family="Arial, sans-serif" font-size="34" fill="#7a4a2d">Beginner Pattern</text>
+</svg>

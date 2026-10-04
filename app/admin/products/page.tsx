@@ -516,7 +516,7 @@ export default async function AdminProductsPage({
               <input name="slug" placeholder="jishee-ariisan-tsunh" className="w-full rounded-xl border border-slate-200 px-4 py-3 text-sm outline-none focus:border-blue-500" />
             </Field>
             <Field label="Ангилал">
-              <input name="category" list="product-category-options" placeholder="Жишээ: Цүнх" className="w-full rounded-xl border border-slate-200 px-4 py-3 text-sm outline-none focus:border-blue-500" />
+              <input name="category" list="product-category-options" placeholder="Жишээ: Pattern" className="w-full rounded-xl border border-slate-200 px-4 py-3 text-sm outline-none focus:border-blue-500" />
             </Field>
             <div className="md:col-span-2">
               <ImageUploadField name="mainImageFile" label="Үндсэн зураг" />

@@ -70,7 +70,7 @@ export default async function AdminPage() {
       <div className="mx-auto max-w-7xl">
         <div className="mb-8">
           <div>
-            <p className="text-sm font-semibold uppercase tracking-[0.22em] text-slate-400">MartX Admin</p>
+            <p className="text-sm font-semibold uppercase tracking-[0.22em] text-slate-400">Өөрсдөө урлая Admin</p>
             <h1 className="mt-2 text-3xl font-bold text-slate-950">Удирдлагын самбар</h1>
             <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-500">
               Бараа, зураг, үлдэгдэл, захиалгаа browser дотроосоо удирдана.
